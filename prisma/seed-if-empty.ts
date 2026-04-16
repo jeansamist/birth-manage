@@ -2,7 +2,7 @@
  * Conditional seeder — runs only when the database has no users yet.
  * Used in the Vercel build command to safely seed production on first deploy.
  *
- *   prisma migrate deploy && tsx prisma/seed-if-empty.ts && next build
+ *   tsx prisma/migrate-deploy-with-retry.ts && tsx prisma/seed-if-empty.ts && next build
  */
 
 import "dotenv/config"
