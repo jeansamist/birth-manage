@@ -62,7 +62,8 @@ export const birthFormSchema = babyStepSchema
   .merge(fatherStepSchema)
   .merge(reviewStepSchema)
 
-export type BirthFormInput = z.infer<typeof birthFormSchema>
+export type BirthFormInput = z.input<typeof birthFormSchema>
+export type BirthFormData = z.output<typeof birthFormSchema>
 
 export const babyStepFields = Object.keys(babyStepSchema.shape) as (keyof BirthFormInput)[]
 export const motherStepFields = Object.keys(motherStepSchema.shape) as (keyof BirthFormInput)[]
