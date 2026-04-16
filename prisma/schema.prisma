@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -21,36 +18,59 @@ enum UserRole {
   MAINTAINER
 }
 
+enum BirthStatus {
+  DRAFT             // Doctor saved, not yet submitted
+  SUBMITTED         // Doctor submitted to city hall
+  PROCESSING        // Secretaire claimed and is completing info
+  PENDING_APPROVAL  // Secretaire submitted to Maire
+  APPROVED          // Maire approved — certificate generated
+  DECLINED          // Maire declined with reason
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum DeliveryType {
+  NATURAL
+  CAESAREAN
+  FORCEPS
+  VACUUM
+}
+
 // ─── Institutions ─────────────────────────────────────────────────────────────
 
 model Hospital {
-  id        String  @id @default(cuid())
-  name      String
-  city      String
-  address   String?
-  phone     String?
-  email     String?
-  isActive  Boolean @default(true)
+  id       String  @id @default(cuid())
+  name     String
+  city     String
+  address  String?
+  phone    String?
+  email    String?
+  isActive Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   doctorAssignments DoctorHospitalAssignment[]
+  births            BirthRecord[]
 }
 
 model CityHall {
-  id        String  @id @default(cuid())
-  name      String
-  city      String
-  address   String?
-  phone     String?
-  email     String?
-  isActive  Boolean @default(true)
+  id       String  @id @default(cuid())
+  name     String
+  city     String
+  address  String?
+  phone    String?
+  email    String?
+  isActive Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users User[]
+  users  User[]
+  births BirthRecord[]
 }
 
 // ─── Users ────────────────────────────────────────────────────────────────────
@@ -65,12 +85,14 @@ model User {
   role      UserRole
   isActive  Boolean  @default(true)
 
-  // City hall affiliation (MAIRE | SECRETAIRE | MAINTAINER)
   cityHallId String?
   cityHall   CityHall? @relation(fields: [cityHallId], references: [id])
 
-  // Hospital affiliation (DOCTOR) via join table
   hospitalAssignments DoctorHospitalAssignment[]
+
+  birthsAsDoctor     BirthRecord[] @relation("BirthDoctor")
+  birthsAsSecretaire BirthRecord[] @relation("BirthSecretaire")
+  birthsAsMaire      BirthRecord[] @relation("BirthMaire")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -84,11 +106,83 @@ model DoctorHospitalAssignment {
   hospitalId String
   isApproved Boolean   @default(false)
   approvedAt DateTime?
-
-  createdAt DateTime @default(now())
+  createdAt  DateTime  @default(now())
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
 
   @@unique([userId, hospitalId])
+}
+
+// ─── Birth record ─────────────────────────────────────────────────────────────
+
+model BirthRecord {
+  id     String      @id @default(cuid())
+  status BirthStatus @default(DRAFT)
+
+  // ── Baby ──────────────────────────────────────────
+  babyFirstName String?
+  babyLastName  String?
+  babyGender    Gender?
+  birthDate     DateTime?
+  birthTime     String?   // "HH:MM"
+  birthPlace    String?   // ward / room
+
+  // ── Medical (doctor) ──────────────────────────────
+  weightGrams  Int?
+  heightCm     Float?
+  apgarScore   Int?
+  deliveryType DeliveryType?
+  medicalNotes String?
+
+  // ── Mother ────────────────────────────────────────
+  motherFirstName   String?
+  motherLastName    String?
+  motherBirthDate   DateTime?
+  motherNationality String?
+  motherCni         String?
+  motherProfession  String?
+  motherAddress     String?
+  motherPhone       String?
+  motherEmail       String?
+
+  // ── Father ────────────────────────────────────────
+  fatherFirstName   String?
+  fatherLastName    String?
+  fatherBirthDate   DateTime?
+  fatherNationality String?
+  fatherCni         String?
+  fatherProfession  String?
+  fatherAddress     String?
+  fatherPhone       String?
+
+  // ── Marriage ──────────────────────────────────────
+  parentsMarried     Boolean   @default(false)
+  marriageCertNumber String?
+  marriageDate       DateTime?
+
+  // ── Approval ──────────────────────────────────────
+  declineReason     String?
+  approvedAt        DateTime?
+  declinedAt        DateTime?
+  certificateNumber String?   @unique
+
+  // ── Relations ─────────────────────────────────────
+  hospitalId String
+  hospital   Hospital @relation(fields: [hospitalId], references: [id])
+
+  doctorId String
+  doctor   User   @relation("BirthDoctor", fields: [doctorId], references: [id])
+
+  cityHallId   String?
+  cityHall     CityHall? @relation(fields: [cityHallId], references: [id])
+
+  secretaireId String?
+  secretaire   User?   @relation("BirthSecretaire", fields: [secretaireId], references: [id])
+
+  maireId String?
+  maire   User?   @relation("BirthMaire", fields: [maireId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
