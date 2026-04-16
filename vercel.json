@@ -1,5 +1,5 @@
 {
-  "buildCommand": "prisma migrate deploy && tsx prisma/seed-if-empty.ts && next build",
+  "buildCommand": "tsx prisma/migrate-deploy-with-retry.ts && tsx prisma/seed-if-empty.ts && next build",
   "installCommand": "pnpm install",
   "framework": "nextjs"
 }
