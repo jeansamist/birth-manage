@@ -1,0 +1,202 @@
+{
+  "hospitals": [
+    {
+      "id": "hospital-chu-yaounde",
+      "name": "CHU de Yaoundé",
+      "city": "Yaoundé",
+      "address": "Rue Henri Dunant, Yaoundé Centre",
+      "phone": "+237 222 23 40 40",
+      "email": "contact@chu-yaounde.cm"
+    },
+    {
+      "id": "hospital-central-yaounde",
+      "name": "Hôpital Central de Yaoundé",
+      "city": "Yaoundé",
+      "address": "Avenue Henri Dunant, Nlongkak",
+      "phone": "+237 222 22 08 26",
+      "email": "contact@hopital-central.cm"
+    },
+    {
+      "id": "hospital-laquintinie-douala",
+      "name": "Centre Hospitalier Laquintinie",
+      "city": "Douala",
+      "address": "Rue du Lycée Joss, Akwa",
+      "phone": "+237 233 42 48 18",
+      "email": "contact@laquintinie.cm"
+    }
+  ],
+  "cityHalls": [
+    {
+      "id": "cityhall-yaounde-1",
+      "name": "Mairie de Yaoundé 1er",
+      "city": "Yaoundé",
+      "address": "Place de l'Indépendance, Yaoundé",
+      "phone": "+237 222 22 10 06",
+      "email": "mairie@yaounde1.cm"
+    },
+    {
+      "id": "cityhall-douala-2",
+      "name": "Mairie de Douala 2ème",
+      "city": "Douala",
+      "address": "Rue du Commerce, Akwa",
+      "phone": "+237 233 42 32 21",
+      "email": "mairie@douala2.cm"
+    },
+    {
+      "id": "cityhall-bafoussam-1",
+      "name": "Mairie de Bafoussam 1er",
+      "city": "Bafoussam",
+      "address": "Avenue du Marché, Bafoussam",
+      "phone": "+237 233 44 11 27",
+      "email": "mairie@bafoussam1.cm"
+    }
+  ],
+  "doctors": [
+    {
+      "username": "dr.kouam.jean",
+      "email": "jean.kouam@chu-yaounde.cm",
+      "firstName": "Jean",
+      "lastName": "Kouam",
+      "hospitalId": "hospital-chu-yaounde",
+      "isApproved": true
+    },
+    {
+      "username": "dr.ngo.claude",
+      "email": "claude.ngo@chu-yaounde.cm",
+      "firstName": "Claude",
+      "lastName": "Ngo",
+      "hospitalId": "hospital-chu-yaounde",
+      "isApproved": true
+    },
+    {
+      "username": "dr.ateba.paul",
+      "email": "paul.ateba@chu-yaounde.cm",
+      "firstName": "Paul",
+      "lastName": "Ateba",
+      "hospitalId": "hospital-chu-yaounde",
+      "isApproved": false
+    },
+    {
+      "username": "dr.manga.rose",
+      "email": "rose.manga@hopital-central.cm",
+      "firstName": "Rose",
+      "lastName": "Manga",
+      "hospitalId": "hospital-central-yaounde",
+      "isApproved": true
+    },
+    {
+      "username": "dr.ndedi.marc",
+      "email": "marc.ndedi@hopital-central.cm",
+      "firstName": "Marc",
+      "lastName": "Ndedi",
+      "hospitalId": "hospital-central-yaounde",
+      "isApproved": true
+    },
+    {
+      "username": "dr.eba.claire",
+      "email": "claire.eba@hopital-central.cm",
+      "firstName": "Claire",
+      "lastName": "Eba",
+      "hospitalId": "hospital-central-yaounde",
+      "isApproved": false
+    },
+    {
+      "username": "dr.mbarga.alice",
+      "email": "alice.mbarga@laquintinie.cm",
+      "firstName": "Alice",
+      "lastName": "Mbarga",
+      "hospitalId": "hospital-laquintinie-douala",
+      "isApproved": true
+    },
+    {
+      "username": "dr.bell.pierre",
+      "email": "pierre.bell@laquintinie.cm",
+      "firstName": "Pierre",
+      "lastName": "Bell",
+      "hospitalId": "hospital-laquintinie-douala",
+      "isApproved": true
+    },
+    {
+      "username": "dr.boko.serge",
+      "email": "serge.boko@laquintinie.cm",
+      "firstName": "Serge",
+      "lastName": "Boko",
+      "hospitalId": "hospital-laquintinie-douala",
+      "isApproved": false
+    }
+  ],
+  "cityHallUsers": [
+    {
+      "username": "maire.yaounde1",
+      "email": "maire@yaounde1.cm",
+      "firstName": "Paul",
+      "lastName": "Nkomo",
+      "role": "MAIRE",
+      "cityHallId": "cityhall-yaounde-1"
+    },
+    {
+      "username": "secretaire.yaounde1",
+      "email": "secretaire@yaounde1.cm",
+      "firstName": "Marie",
+      "lastName": "Essono",
+      "role": "SECRETAIRE",
+      "cityHallId": "cityhall-yaounde-1"
+    },
+    {
+      "username": "maintainer.yaounde1",
+      "email": "tech@yaounde1.cm",
+      "firstName": "Eric",
+      "lastName": "Ondo",
+      "role": "MAINTAINER",
+      "cityHallId": "cityhall-yaounde-1"
+    },
+    {
+      "username": "maire.douala2",
+      "email": "maire@douala2.cm",
+      "firstName": "Simon",
+      "lastName": "Biya",
+      "role": "MAIRE",
+      "cityHallId": "cityhall-douala-2"
+    },
+    {
+      "username": "secretaire.douala2",
+      "email": "secretaire@douala2.cm",
+      "firstName": "Cécile",
+      "lastName": "Mbuyi",
+      "role": "SECRETAIRE",
+      "cityHallId": "cityhall-douala-2"
+    },
+    {
+      "username": "maintainer.douala2",
+      "email": "tech@douala2.cm",
+      "firstName": "Roger",
+      "lastName": "Ekani",
+      "role": "MAINTAINER",
+      "cityHallId": "cityhall-douala-2"
+    },
+    {
+      "username": "maire.bafoussam1",
+      "email": "maire@bafoussam1.cm",
+      "firstName": "Nadège",
+      "lastName": "Fotso",
+      "role": "MAIRE",
+      "cityHallId": "cityhall-bafoussam-1"
+    },
+    {
+      "username": "secretaire.bafoussam1",
+      "email": "secretaire@bafoussam1.cm",
+      "firstName": "Louise",
+      "lastName": "Tchamba",
+      "role": "SECRETAIRE",
+      "cityHallId": "cityhall-bafoussam-1"
+    },
+    {
+      "username": "maintainer.bafoussam1",
+      "email": "tech@bafoussam1.cm",
+      "firstName": "David",
+      "lastName": "Kamga",
+      "role": "MAINTAINER",
+      "cityHallId": "cityhall-bafoussam-1"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  // url is managed in prisma.config.ts (Prisma 7)
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  DOCTOR
+  MAIRE
+  SECRETAIRE
+  MAINTAINER
+}
+
+// ─── Institutions ─────────────────────────────────────────────────────────────
+
+model Hospital {
+  id        String  @id @default(cuid())
+  name      String
+  city      String
+  address   String?
+  phone     String?
+  email     String?
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctorAssignments DoctorHospitalAssignment[]
+}
+
+model CityHall {
+  id        String  @id @default(cuid())
+  name      String
+  city      String
+  address   String?
+  phone     String?
+  email     String?
+  isActive  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users User[]
+}
+
+// ─── Users ────────────────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  email     String?  @unique
+  firstName String
+  lastName  String
+  role      UserRole
+  isActive  Boolean  @default(true)
+
+  // City hall affiliation (MAIRE | SECRETAIRE | MAINTAINER)
+  cityHallId String?
+  cityHall   CityHall? @relation(fields: [cityHallId], references: [id])
+
+  // Hospital affiliation (DOCTOR) via join table
+  hospitalAssignments DoctorHospitalAssignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Doctor–Hospital assignment ───────────────────────────────────────────────
+
+model DoctorHospitalAssignment {
+  id         String    @id @default(cuid())
+  userId     String
+  hospitalId String
+  isApproved Boolean   @default(false)
+  approvedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, hospitalId])
+}
