@@ -154,8 +154,10 @@ export async function GET(
   )
 
   const pdfBytes = await doc.save()
+  const pdfBuffer = new ArrayBuffer(pdfBytes.length)
+  new Uint8Array(pdfBuffer).set(pdfBytes)
 
-  return new NextResponse(pdfBytes, {
+  return new NextResponse(pdfBuffer, {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `inline; filename="acte-naissance-${birth.certificateNumber}.pdf"`,
