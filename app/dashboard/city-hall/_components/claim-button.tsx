@@ -13,7 +13,11 @@ export function ClaimButton({ birthId }: { birthId: string }) {
       variant="outline"
       className="h-6 text-xs"
       disabled={isPending}
-      onClick={() => startTransition(() => claimBirth(birthId))}
+      onClick={() =>
+        startTransition(() => {
+          void claimBirth(birthId)
+        })
+      }
     >
       {isPending ? "…" : "Prendre en charge"}
     </Button>
