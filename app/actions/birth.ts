@@ -4,7 +4,7 @@ import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { getSession } from "@/lib/auth"
 import { birthFormSchema, type BirthFormInput } from "@/lib/schemas/birth"
-import type { ActionResult } from "@/types/birth"
+import type { ActionResult, DeliveryType } from "@/types/birth"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -21,11 +21,33 @@ function generateCertificateNumber(cityHallId: string): string {
   return `ACN-${year}-${code}-${seq}`
 }
 
+function generateCitizenAccessId(cityHallId: string): string {
+  const year = new Date().getFullYear()
+  const seq = Math.floor(10000000 + Math.random() * 90000000)
+  const code = cityHallId.slice(-3).toUpperCase()
+  return `CID-${year}-${code}-${seq}`
+}
+
+async function generateUniqueCitizenAccessId(
+  cityHallId: string
+): Promise<string> {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const citizenAccessId = generateCitizenAccessId(cityHallId)
+    const existing = await prisma.birthRecord.findUnique({
+      where: { citizenAccessId },
+      select: { id: true },
+    })
+    if (!existing) return citizenAccessId
+  }
+
+  throw new Error("Impossible de générer un identifiant citoyen unique.")
+}
+
 // ─── Doctor actions ───────────────────────────────────────────────────────────
 
 export async function saveBirthDraft(
   data: Partial<BirthFormInput>,
-  existingId?: string,
+  existingId?: string
 ): Promise<ActionResult> {
   const session = await getSession()
   if (!session || session.role !== "DOCTOR") {
@@ -39,10 +61,12 @@ export async function saveBirthDraft(
     birthDate: parseDateField(data.birthDate),
     birthTime: data.birthTime ?? null,
     birthPlace: data.birthPlace ?? null,
-    weightGrams: data.weightGrams != null ? Math.round(Number(data.weightGrams)) : null,
+    weightGrams:
+      data.weightGrams != null ? Math.round(Number(data.weightGrams)) : null,
     heightCm: data.heightCm != null ? Number(data.heightCm) : null,
-    apgarScore: data.apgarScore != null ? Math.round(Number(data.apgarScore)) : null,
-    deliveryType: (data.deliveryType as any) ?? null,
+    apgarScore:
+      data.apgarScore != null ? Math.round(Number(data.apgarScore)) : null,
+    deliveryType: (data.deliveryType as DeliveryType | undefined) ?? null,
     medicalNotes: data.medicalNotes ?? null,
     motherFirstName: data.motherFirstName ?? null,
     motherLastName: data.motherLastName ?? null,
@@ -67,7 +91,10 @@ export async function saveBirthDraft(
   }
 
   if (existingId) {
-    await prisma.birthRecord.update({ where: { id: existingId }, data: payload })
+    await prisma.birthRecord.update({
+      where: { id: existingId },
+      data: payload,
+    })
     return { success: true, id: existingId }
   }
 
@@ -75,7 +102,10 @@ export async function saveBirthDraft(
     where: { userId: session.userId, isApproved: true },
   })
   if (!assignment) {
-    return { success: false, error: "Aucun hôpital approuvé trouvé pour ce médecin." }
+    return {
+      success: false,
+      error: "Aucun hôpital approuvé trouvé pour ce médecin.",
+    }
   }
 
   const record = await prisma.birthRecord.create({
@@ -91,7 +121,7 @@ export async function saveBirthDraft(
 
 export async function submitBirthToCityHall(
   data: BirthFormInput,
-  existingId?: string,
+  existingId?: string
 ): Promise<ActionResult> {
   const session = await getSession()
   if (!session || session.role !== "DOCTOR") {
@@ -112,10 +142,12 @@ export async function submitBirthToCityHall(
     birthDate: parseDateField(rest.birthDate),
     birthTime: rest.birthTime ?? null,
     birthPlace: rest.birthPlace ?? null,
-    weightGrams: rest.weightGrams != null ? Math.round(Number(rest.weightGrams)) : null,
+    weightGrams:
+      rest.weightGrams != null ? Math.round(Number(rest.weightGrams)) : null,
     heightCm: rest.heightCm != null ? Number(rest.heightCm) : null,
-    apgarScore: rest.apgarScore != null ? Math.round(Number(rest.apgarScore)) : null,
-    deliveryType: (rest.deliveryType as any) ?? null,
+    apgarScore:
+      rest.apgarScore != null ? Math.round(Number(rest.apgarScore)) : null,
+    deliveryType: (rest.deliveryType as DeliveryType | undefined) ?? null,
     medicalNotes: rest.medicalNotes ?? null,
     motherFirstName: rest.motherFirstName,
     motherLastName: rest.motherLastName,
@@ -142,7 +174,10 @@ export async function submitBirthToCityHall(
   }
 
   if (existingId) {
-    await prisma.birthRecord.update({ where: { id: existingId }, data: payload })
+    await prisma.birthRecord.update({
+      where: { id: existingId },
+      data: payload,
+    })
   } else {
     const assignment = await prisma.doctorHospitalAssignment.findFirst({
       where: { userId: session.userId, isApproved: true },
@@ -151,7 +186,11 @@ export async function submitBirthToCityHall(
       return { success: false, error: "Aucun hôpital approuvé trouvé." }
     }
     await prisma.birthRecord.create({
-      data: { ...payload, doctorId: session.userId, hospitalId: assignment.hospitalId },
+      data: {
+        ...payload,
+        doctorId: session.userId,
+        hospitalId: assignment.hospitalId,
+      },
     })
   }
 
@@ -176,7 +215,7 @@ export async function claimBirth(birthId: string): Promise<ActionResult> {
 
 export async function completeBirthRecord(
   birthId: string,
-  data: Partial<BirthFormInput>,
+  data: Partial<BirthFormInput>
 ): Promise<ActionResult> {
   const session = await getSession()
   if (!session || session.role !== "SECRETAIRE") {
@@ -238,7 +277,15 @@ export async function approveBirth(birthId: string): Promise<ActionResult> {
   })
   if (!birth) return { success: false, error: "Dossier introuvable." }
 
-  const certificateNumber = generateCertificateNumber(birth.cityHallId!)
+  if (!birth.cityHallId || birth.cityHallId !== session.institutionId) {
+    return { success: false, error: "Dossier introuvable dans votre mairie." }
+  }
+
+  const certificateNumber =
+    birth.certificateNumber ?? generateCertificateNumber(birth.cityHallId)
+  const citizenAccessId =
+    birth.citizenAccessId ??
+    (await generateUniqueCitizenAccessId(birth.cityHallId))
 
   await prisma.birthRecord.update({
     where: { id: birthId },
@@ -247,6 +294,7 @@ export async function approveBirth(birthId: string): Promise<ActionResult> {
       maireId: session.userId,
       approvedAt: new Date(),
       certificateNumber,
+      citizenAccessId,
     },
   })
 
@@ -255,7 +303,7 @@ export async function approveBirth(birthId: string): Promise<ActionResult> {
 
 export async function declineBirth(
   birthId: string,
-  reason: string,
+  reason: string
 ): Promise<ActionResult> {
   const session = await getSession()
   if (!session || session.role !== "MAIRE") {
@@ -269,6 +317,84 @@ export async function declineBirth(
       maireId: session.userId,
       declinedAt: new Date(),
       declineReason: reason,
+    },
+  })
+
+  redirect("/dashboard/maire")
+}
+
+// ─── Transfer request actions ────────────────────────────────────────────────
+
+export async function approveTransferRequest(requestId: string): Promise<void> {
+  const session = await getSession()
+  if (!session || session.role !== "MAIRE" || !session.institutionId) {
+    redirect("/dashboard/maire")
+  }
+
+  const request = await prisma.transferRequest.findUnique({
+    where: { id: requestId },
+    include: { birthRecord: true },
+  })
+  if (!request || request.sourceCityHallId !== session.institutionId) {
+    redirect("/dashboard/maire")
+  }
+  if (request.status !== "PENDING") {
+    redirect("/dashboard/maire")
+  }
+  if (request.birthRecord.status !== "APPROVED") {
+    redirect("/dashboard/maire")
+  }
+
+  await prisma.$transaction([
+    prisma.transferRequest.update({
+      where: { id: requestId },
+      data: {
+        status: "APPROVED",
+        decidedAt: new Date(),
+        decidedByMaireId: session.userId,
+      },
+    }),
+    prisma.birthRecordCopy.upsert({
+      where: {
+        birthRecordId_cityHallId: {
+          birthRecordId: request.birthRecordId,
+          cityHallId: request.targetCityHallId,
+        },
+      },
+      update: { transferRequestId: request.id },
+      create: {
+        birthRecordId: request.birthRecordId,
+        cityHallId: request.targetCityHallId,
+        transferRequestId: request.id,
+      },
+    }),
+  ])
+
+  redirect("/dashboard/maire")
+}
+
+export async function declineTransferRequest(requestId: string): Promise<void> {
+  const session = await getSession()
+  if (!session || session.role !== "MAIRE" || !session.institutionId) {
+    redirect("/dashboard/maire")
+  }
+
+  const request = await prisma.transferRequest.findUnique({
+    where: { id: requestId },
+  })
+  if (!request || request.sourceCityHallId !== session.institutionId) {
+    redirect("/dashboard/maire")
+  }
+  if (request.status !== "PENDING") {
+    redirect("/dashboard/maire")
+  }
+
+  await prisma.transferRequest.update({
+    where: { id: requestId },
+    data: {
+      status: "DECLINED",
+      decidedAt: new Date(),
+      decidedByMaireId: session.userId,
     },
   })
 

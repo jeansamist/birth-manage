@@ -1,0 +1,88 @@
+"use server"
+
+import { redirect } from "next/navigation"
+import { prisma } from "@/lib/prisma"
+function normalizeAccessId(value: FormDataEntryValue | null): string {
+  return String(value ?? "")
+    .trim()
+    .toUpperCase()
+}
+
+function redirectToPortal(
+  accessId: string,
+  params: Record<string, string>
+): never {
+  const search = new URLSearchParams({ code: accessId, ...params })
+  redirect(`/citizen?${search.toString()}`)
+}
+
+export async function findCitizenRecord(formData: FormData): Promise<void> {
+  const accessId = normalizeAccessId(formData.get("accessId"))
+  if (!accessId) redirect("/citizen?error=missing-code")
+
+  redirect(`/citizen?code=${encodeURIComponent(accessId)}`)
+}
+
+export async function requestBirthTransfer(formData: FormData): Promise<void> {
+  const accessId = normalizeAccessId(formData.get("accessId"))
+  const targetCityHallId = String(formData.get("targetCityHallId") ?? "").trim()
+  const requesterName = String(formData.get("requesterName") ?? "").trim()
+  const requesterPhone = String(formData.get("requesterPhone") ?? "").trim()
+  const reason = String(formData.get("reason") ?? "").trim()
+
+  if (!accessId || !targetCityHallId || !requesterName) {
+    redirectToPortal(accessId, { error: "missing-fields" })
+  }
+
+  const birth = await prisma.birthRecord.findUnique({
+    where: { citizenAccessId: accessId },
+    include: { copies: true },
+  })
+  if (!birth || birth.status !== "APPROVED" || !birth.cityHallId) {
+    redirectToPortal(accessId, { error: "not-found" })
+  }
+
+  if (targetCityHallId === birth.cityHallId) {
+    redirectToPortal(accessId, { error: "same-city-hall" })
+  }
+
+  const targetCityHall = await prisma.cityHall.findUnique({
+    where: { id: targetCityHallId },
+    select: { id: true, isActive: true },
+  })
+  if (!targetCityHall?.isActive) {
+    redirectToPortal(accessId, { error: "target-not-found" })
+  }
+
+  const alreadyAvailable = birth.copies.some(
+    (copy) => copy.cityHallId === targetCityHallId
+  )
+  if (alreadyAvailable) {
+    redirectToPortal(accessId, { success: "already-available" })
+  }
+
+  const pendingRequest = await prisma.transferRequest.findFirst({
+    where: {
+      birthRecordId: birth.id,
+      targetCityHallId,
+      status: "PENDING",
+    },
+    select: { id: true },
+  })
+  if (pendingRequest) {
+    redirectToPortal(accessId, { success: "pending" })
+  }
+
+  await prisma.transferRequest.create({
+    data: {
+      birthRecordId: birth.id,
+      sourceCityHallId: birth.cityHallId,
+      targetCityHallId,
+      requesterName,
+      requesterPhone: requesterPhone || null,
+      reason: reason || null,
+    },
+  })
+
+  redirectToPortal(accessId, { success: "request-created" })
+}

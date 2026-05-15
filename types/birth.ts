@@ -8,6 +8,7 @@ export type BirthStatus =
 
 export type Gender = "MALE" | "FEMALE"
 export type DeliveryType = "NATURAL" | "CAESAREAN" | "FORCEPS" | "VACUUM"
+export type TransferRequestStatus = "PENDING" | "APPROVED" | "DECLINED"
 
 export interface BirthRecordSummary {
   id: string
@@ -17,6 +18,7 @@ export interface BirthRecordSummary {
   babyGender: Gender | null
   birthDate: Date | null
   certificateNumber: string | null
+  citizenAccessId: string | null
   createdAt: Date
   updatedAt: Date
   hospital: { id: string; name: string; city: string }

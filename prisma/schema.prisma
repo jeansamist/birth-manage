@@ -19,12 +19,12 @@ enum UserRole {
 }
 
 enum BirthStatus {
-  DRAFT             // Doctor saved, not yet submitted
-  SUBMITTED         // Doctor submitted to city hall
-  PROCESSING        // Secretaire claimed and is completing info
-  PENDING_APPROVAL  // Secretaire submitted to Maire
-  APPROVED          // Maire approved — certificate generated
-  DECLINED          // Maire declined with reason
+  DRAFT // Doctor saved, not yet submitted
+  SUBMITTED // Doctor submitted to city hall
+  PROCESSING // Secretaire claimed and is completing info
+  PENDING_APPROVAL // Secretaire submitted to Maire
+  APPROVED // Maire approved — certificate generated
+  DECLINED // Maire declined with reason
 }
 
 enum Gender {
@@ -37,6 +37,12 @@ enum DeliveryType {
   CAESAREAN
   FORCEPS
   VACUUM
+}
+
+enum TransferRequestStatus {
+  PENDING
+  APPROVED
+  DECLINED
 }
 
 // ─── Institutions ─────────────────────────────────────────────────────────────
@@ -69,8 +75,11 @@ model CityHall {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users  User[]
-  births BirthRecord[]
+  users                    User[]
+  births                   BirthRecord[]
+  birthCopies              BirthRecordCopy[]
+  outgoingTransferRequests TransferRequest[] @relation("TransferSourceCityHall")
+  incomingTransferRequests TransferRequest[] @relation("TransferTargetCityHall")
 }
 
 // ─── Users ────────────────────────────────────────────────────────────────────
@@ -90,9 +99,10 @@ model User {
 
   hospitalAssignments DoctorHospitalAssignment[]
 
-  birthsAsDoctor     BirthRecord[] @relation("BirthDoctor")
-  birthsAsSecretaire BirthRecord[] @relation("BirthSecretaire")
-  birthsAsMaire      BirthRecord[] @relation("BirthMaire")
+  birthsAsDoctor          BirthRecord[]     @relation("BirthDoctor")
+  birthsAsSecretaire      BirthRecord[]     @relation("BirthSecretaire")
+  birthsAsMaire           BirthRecord[]     @relation("BirthMaire")
+  decidedTransferRequests TransferRequest[] @relation("TransferDecidedByMaire")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -125,8 +135,8 @@ model BirthRecord {
   babyLastName  String?
   babyGender    Gender?
   birthDate     DateTime?
-  birthTime     String?   // "HH:MM"
-  birthPlace    String?   // ward / room
+  birthTime     String? // "HH:MM"
+  birthPlace    String? // ward / room
 
   // ── Medical (doctor) ──────────────────────────────
   weightGrams  Int?
@@ -166,6 +176,7 @@ model BirthRecord {
   approvedAt        DateTime?
   declinedAt        DateTime?
   certificateNumber String?   @unique
+  citizenAccessId   String?   @unique
 
   // ── Relations ─────────────────────────────────────
   hospitalId String
@@ -174,14 +185,62 @@ model BirthRecord {
   doctorId String
   doctor   User   @relation("BirthDoctor", fields: [doctorId], references: [id])
 
-  cityHallId   String?
-  cityHall     CityHall? @relation(fields: [cityHallId], references: [id])
+  cityHallId String?
+  cityHall   CityHall? @relation(fields: [cityHallId], references: [id])
 
   secretaireId String?
   secretaire   User?   @relation("BirthSecretaire", fields: [secretaireId], references: [id])
 
   maireId String?
   maire   User?   @relation("BirthMaire", fields: [maireId], references: [id])
+
+  transferRequests TransferRequest[]
+  copies           BirthRecordCopy[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BirthRecordCopy {
+  id String @id @default(cuid())
+
+  birthRecordId String
+  birthRecord   BirthRecord @relation(fields: [birthRecordId], references: [id], onDelete: Cascade)
+
+  cityHallId String
+  cityHall   CityHall @relation(fields: [cityHallId], references: [id], onDelete: Cascade)
+
+  transferRequestId String?          @unique
+  transferRequest   TransferRequest? @relation(fields: [transferRequestId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@unique([birthRecordId, cityHallId])
+}
+
+model TransferRequest {
+  id     String                @id @default(cuid())
+  status TransferRequestStatus @default(PENDING)
+
+  requesterName  String
+  requesterPhone String?
+  reason         String?
+  decisionNote   String?
+  decidedAt      DateTime?
+
+  birthRecordId String
+  birthRecord   BirthRecord @relation(fields: [birthRecordId], references: [id], onDelete: Cascade)
+
+  sourceCityHallId String
+  sourceCityHall   CityHall @relation("TransferSourceCityHall", fields: [sourceCityHallId], references: [id])
+
+  targetCityHallId String
+  targetCityHall   CityHall @relation("TransferTargetCityHall", fields: [targetCityHallId], references: [id])
+
+  decidedByMaireId String?
+  decidedByMaire   User?   @relation("TransferDecidedByMaire", fields: [decidedByMaireId], references: [id])
+
+  copy BirthRecordCopy?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
