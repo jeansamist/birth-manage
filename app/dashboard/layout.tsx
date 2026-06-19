@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation"
 import { getSession } from "@/lib/auth"
-import { DashboardNav } from "./_components/nav"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
+import { DashboardSidebar } from "./_components/sidebar"
+import { DashboardHeader } from "./_components/header"
 
 export default async function DashboardLayout({
   children,
@@ -11,9 +13,13 @@ export default async function DashboardLayout({
   if (!session) redirect("/auth/login")
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <DashboardNav session={session} />
-      <main className="flex-1 overflow-y-auto">{children}</main>
-    </div>
+    <SidebarProvider>
+      <DashboardSidebar session={session} />
+      <SidebarInset>
+        <DashboardHeader />
+        <main className="flex-1 overflow-y-auto">{children}</main>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
+
