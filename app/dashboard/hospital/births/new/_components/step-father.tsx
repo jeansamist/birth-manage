@@ -1,11 +1,12 @@
 "use client"
 
+import { Controller } from "react-hook-form"
 import type { UseFormReturn } from "react-hook-form"
 import type { BirthFormInput } from "@/lib/schemas/birth"
+import { FormField, SectionTitle, DatePicker } from "./form-primitives"
 import { Input } from "@/components/ui/input"
-import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { FormField, SectionTitle } from "./form-primitives"
+import { motion } from "framer-motion"
 
 interface StepFatherProps {
   form: UseFormReturn<BirthFormInput>
@@ -14,7 +15,13 @@ interface StepFatherProps {
 }
 
 export function StepFather({ form, fatherUnknown, onToggle }: StepFatherProps) {
-  const { register } = form
+  const { register, control } = form
+
+  const quickNationalities = [
+    { label: "🇨🇲 Camerounais", value: "Camerounais" },
+    { label: "🇫🇷 Français", value: "Français" },
+    { label: "🇳G Nigérian", value: "Nigérian" },
+  ]
 
   return (
     <div className="space-y-6">
@@ -26,7 +33,7 @@ export function StepFather({ form, fatherUnknown, onToggle }: StepFatherProps) {
           type="button"
           onClick={() => onToggle(false)}
           className={cn(
-            "flex-1 py-3 text-sm font-medium transition-colors",
+            "flex-1 py-3 text-sm font-medium transition-colors cursor-pointer",
             !fatherUnknown
               ? "bg-primary text-primary-foreground"
               : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
@@ -38,7 +45,7 @@ export function StepFather({ form, fatherUnknown, onToggle }: StepFatherProps) {
           type="button"
           onClick={() => onToggle(true)}
           className={cn(
-            "flex-1 py-3 text-sm font-medium transition-colors",
+            "flex-1 py-3 text-sm font-medium transition-colors cursor-pointer",
             fatherUnknown
               ? "bg-primary text-primary-foreground"
               : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
@@ -90,10 +97,16 @@ export function StepFather({ form, fatherUnknown, onToggle }: StepFatherProps) {
             </p>
             <div className="grid grid-cols-2 gap-4">
               <FormField label="Date de naissance">
-                <Input
-                  type="date"
-                  {...register("fatherBirthDate")}
-                  className="h-10"
+                <Controller
+                  control={control}
+                  name="fatherBirthDate"
+                  render={({ field }) => (
+                    <DatePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Date de naissance"
+                    />
+                  )}
                 />
               </FormField>
               <FormField label="Nationalité">
@@ -102,6 +115,19 @@ export function StepFather({ form, fatherUnknown, onToggle }: StepFatherProps) {
                   placeholder="Camerounais"
                   className="h-10"
                 />
+                {/* Quick Nationality Pills */}
+                <div className="flex gap-1.5 mt-1.5">
+                  {quickNationalities.map((nat) => (
+                    <button
+                      key={nat.value}
+                      type="button"
+                      onClick={() => form.setValue("fatherNationality", nat.value)}
+                      className="text-[10px] border px-2 py-0.5 rounded hover:bg-muted cursor-pointer"
+                    >
+                      {nat.label}
+                    </button>
+                  ))}
+                </div>
               </FormField>
             </div>
             <div className="grid grid-cols-2 gap-4">

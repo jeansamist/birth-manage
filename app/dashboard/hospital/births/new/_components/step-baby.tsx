@@ -10,7 +10,7 @@ import { RadioCardGroup } from "@/components/form/radio-card"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronDownIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { FormField, SectionTitle } from "./form-primitives"
+import { FormField, SectionTitle, DatePicker } from "./form-primitives"
 
 const GENDER_OPTIONS = [
   { value: "MALE" as const, label: "Masculin", icon: "👦" },
@@ -90,7 +90,17 @@ export function StepBaby({ form }: StepBabyProps) {
           required
           error={errors.birthDate?.message}
         >
-          <Input type="date" {...register("birthDate")} className="h-10" />
+          <Controller
+            control={control}
+            name="birthDate"
+            render={({ field }) => (
+              <DatePicker
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Date de naissance"
+              />
+            )}
+          />
         </FormField>
         <FormField label="Heure de naissance">
           <Input type="time" {...register("birthTime")} className="h-10" />
@@ -133,13 +143,53 @@ export function StepBaby({ form }: StepBabyProps) {
               <div className="p-4 space-y-4">
                 <div className="grid grid-cols-3 gap-4">
                   <FormField label="Poids (g)">
-                    <Input
-                      type="number"
-                      {...register("weightGrams")}
-                      placeholder="3200"
-                      className="h-10"
-                    />
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        {...register("weightGrams")}
+                        placeholder="3200"
+                        className="h-10"
+                      />
+                    </div>
+                    {/* Quick Select & Increments */}
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const wVal = Number(form.watch("weightGrams") || 3200)
+                          form.setValue("weightGrams", Math.max(0, wVal - 100))
+                        }}
+                        className="text-[10px] font-semibold border px-1.5 py-0.5 rounded hover:bg-muted cursor-pointer"
+                      >
+                        -100g
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const wVal = Number(form.watch("weightGrams") || 3200)
+                          form.setValue("weightGrams", wVal + 100)
+                        }}
+                        className="text-[10px] font-semibold border px-1.5 py-0.5 rounded hover:bg-muted cursor-pointer"
+                      >
+                        +100g
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => form.setValue("weightGrams", 3000)}
+                        className="text-[10px] border px-1.5 py-0.5 rounded hover:bg-muted text-muted-foreground cursor-pointer"
+                      >
+                        3kg
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => form.setValue("weightGrams", 3500)}
+                        className="text-[10px] border px-1.5 py-0.5 rounded hover:bg-muted text-muted-foreground cursor-pointer"
+                      >
+                        3.5kg
+                      </button>
+                    </div>
                   </FormField>
+
                   <FormField label="Taille (cm)">
                     <Input
                       type="number"
@@ -148,7 +198,38 @@ export function StepBaby({ form }: StepBabyProps) {
                       placeholder="50"
                       className="h-10"
                     />
+                    {/* Quick Select & Increments */}
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const hVal = Number(form.watch("heightCm") || 50)
+                          form.setValue("heightCm", Math.max(0, hVal - 1))
+                        }}
+                        className="text-[10px] font-semibold border px-1.5 py-0.5 rounded hover:bg-muted cursor-pointer"
+                      >
+                        -1
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const hVal = Number(form.watch("heightCm") || 50)
+                          form.setValue("heightCm", hVal + 1)
+                        }}
+                        className="text-[10px] font-semibold border px-1.5 py-0.5 rounded hover:bg-muted cursor-pointer"
+                      >
+                        +1
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => form.setValue("heightCm", 50)}
+                        className="text-[10px] border px-1.5 py-0.5 rounded hover:bg-muted text-muted-foreground cursor-pointer"
+                      >
+                        50
+                      </button>
+                    </div>
                   </FormField>
+
                   <FormField label="Score Apgar">
                     <Input
                       type="number"
@@ -158,6 +239,30 @@ export function StepBaby({ form }: StepBabyProps) {
                       placeholder="9"
                       className="h-10"
                     />
+                    {/* Quick Select & Increments */}
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      <button
+                        type="button"
+                        onClick={() => form.setValue("apgarScore", 8)}
+                        className="text-[10px] border px-1.5 py-0.5 rounded hover:bg-muted cursor-pointer"
+                      >
+                        8
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => form.setValue("apgarScore", 9)}
+                        className="text-[10px] border px-1.5 py-0.5 rounded hover:bg-muted cursor-pointer"
+                      >
+                        9
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => form.setValue("apgarScore", 10)}
+                        className="text-[10px] border px-1.5 py-0.5 rounded hover:bg-muted cursor-pointer font-semibold"
+                      >
+                        10
+                      </button>
+                    </div>
                   </FormField>
                 </div>
 
