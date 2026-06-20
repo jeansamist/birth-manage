@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useTransition, useEffect } from "react"
+import { useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { birthFormSchema, type BirthFormInput } from "@/lib/schemas/birth"
-import { saveBirthDraft, submitBirthToCityHall } from "@/app/actions/birth"
+import { saveBirthDraft } from "@/app/actions/birth"
 import type { SaveState } from "@/components/form/auto-save-indicator"
 
 export function useBirthForm(initialData?: Partial<BirthFormInput>, id?: string, defaultBirthPlace?: string) {
@@ -32,32 +32,22 @@ export function useBirthForm(initialData?: Partial<BirthFormInput>, id?: string,
     },
   })
 
-  const values = form.watch()
-  useEffect(() => {
-    if (isPending) return
-    const timer = setTimeout(() => {
-      setSaveState("saving")
-      startTransition(async () => {
-        const result = await saveBirthDraft(form.getValues(), savedId)
-        if (result.success && result.id) {
-          setSavedId(result.id)
-          setSaveState("saved")
-          setSavedAt(new Date())
-        } else {
-          setSaveState("error")
-        }
-      })
-    }, 1200)
-    return () => clearTimeout(timer)
-  }, [values, savedId, isPending])
-
   const triggerSave = async () => {
     setSaveState("saving")
-    const result = await saveBirthDraft(form.getValues(), savedId)
-    if (result.success && result.id) {
-      setSavedId(result.id)
-      setSaveState("saved")
-      setSavedAt(new Date())
+    try {
+      const result = await saveBirthDraft(form.getValues(), savedId)
+      if (result.success && result.id) {
+        setSavedId(result.id)
+        setSaveState("saved")
+        setSavedAt(new Date())
+        return result.id
+      } else {
+        setSaveState("error")
+        return null
+      }
+    } catch {
+      setSaveState("error")
+      return null
     }
   }
 
