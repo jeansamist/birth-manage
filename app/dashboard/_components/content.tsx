@@ -127,27 +127,27 @@ export function DashboardContent({
 
       {/* ── Stats Cards ─────────────────────────────────────────────── */}
       {showStatsCards && statsCards && statsCards.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {statsCards.map((stat) => {
             const Icon = ICON_MAP[stat.icon]
             const SubIcon = ICON_MAP[stat.subtitleIcon]
             return (
               <div
                 key={stat.title}
-                className="relative p-5 rounded-xl border border-border bg-card overflow-hidden shadow-sm"
+                className="relative p-5 rounded-xl border bg-card overflow-hidden"
               >
-                <div className="absolute inset-0 bg-linear-to-br from-black/5 to-transparent pointer-events-none dark:from-white/5" />
+                <div className="absolute inset-0 bg-linear-to-br from-black/5 to-transparent pointer-events-none" />
                 <div className="relative flex items-start justify-between">
-                  <div className="flex flex-col gap-5">
+                  <div className="flex flex-col gap-6">
                     <p className="text-sm font-medium text-muted-foreground">
                       {stat.title}
                     </p>
-                    <p className="text-3xl font-semibold tracking-tight">
+                    <p className="text-2xl sm:text-[26px] font-semibold tracking-tight">
                       {stat.value}
                     </p>
                     <div className="flex items-center gap-1.5 text-muted-foreground">
-                      <SubIcon className="size-3.5" />
-                      <span className="text-xs font-medium">{stat.subtitle}</span>
+                      <SubIcon className="size-4" />
+                      <span className="text-sm font-medium">{stat.subtitle}</span>
                     </div>
                   </div>
                   <Button variant="outline" size="icon" className="size-10 shrink-0">
@@ -162,7 +162,7 @@ export function DashboardContent({
 
       {/* ── Table / Children ────────────────────────────────────────── */}
       {showTable && (table || children) && (
-        <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div className="overflow-hidden">
           {table ?? children}
         </div>
       )}
