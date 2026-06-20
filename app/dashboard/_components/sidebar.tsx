@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import {
   Sidebar,
   SidebarContent,
@@ -73,7 +73,31 @@ function NavLink({
   exact?: boolean
 }) {
   const pathname = usePathname()
-  const active = exact ? pathname === href : pathname.startsWith(href)
+  const searchParams = useSearchParams()
+
+  const [hrefPath, hrefQuery] = href.split("?")
+  const pathMatches = exact ? pathname === hrefPath : pathname.startsWith(hrefPath)
+
+  let paramsMatch = true
+  if (hrefQuery) {
+    const urlParams = new URLSearchParams(hrefQuery)
+    for (const [key, value] of urlParams.entries()) {
+      if (searchParams.get(key) !== value) {
+        paramsMatch = false
+        break
+      }
+    }
+  } else {
+    if (
+      searchParams.get("filter") ||
+      searchParams.get("section") ||
+      searchParams.get("view")
+    ) {
+      paramsMatch = false
+    }
+  }
+
+  const active = pathMatches && paramsMatch
 
   return (
     <SidebarMenuItem>
