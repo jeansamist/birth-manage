@@ -53,6 +53,7 @@ interface BirthRecord {
 
 interface BirthsTableProps {
   births: BirthRecord[]
+  initialStatusFilter?: string
 }
 
 const PAGE_SIZE_OPTIONS = [8, 15, 25, 50]
@@ -99,10 +100,23 @@ const statusColors: Record<
   },
 }
 
-export function BirthsTable({ births }: BirthsTableProps) {
+export function BirthsTable({ births, initialStatusFilter }: BirthsTableProps) {
   const [searchQuery, setSearchQuery] = React.useState("")
   const [statusFilter, setStatusFilter] = React.useState<string>("all")
   const [cityHallFilter, setCityHallFilter] = React.useState<string>("all")
+
+  React.useEffect(() => {
+    if (initialStatusFilter) {
+      setStatusFilter(
+        initialStatusFilter === "draft" ? "DRAFT" :
+        initialStatusFilter === "submitted" ? "in_progress" :
+        initialStatusFilter === "approved" ? "APPROVED" :
+        initialStatusFilter === "declined" ? "DECLINED" : "all"
+      )
+    } else {
+      setStatusFilter("all")
+    }
+  }, [initialStatusFilter])
 
   const [currentPage, setCurrentPage] = React.useState(1)
   const [pageSize, setPageSize] = React.useState(8)

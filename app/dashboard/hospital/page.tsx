@@ -7,7 +7,12 @@ import { getMonthlyStats } from "@/lib/stats"
 import { DashboardChart } from "@/app/dashboard/_components/dashboard-chart"
 import { BirthsTable } from "./_components/births-table"
 
-export default async function HospitalDashboard() {
+export default async function HospitalDashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ filter?: string }>
+}) {
+  const { filter } = await searchParams
   const session = await getSession()
   if (!session || session.role !== "DOCTOR") redirect("/dashboard")
 
@@ -83,7 +88,7 @@ export default async function HospitalDashboard() {
           data={chartData}
         />
       }
-      table={<BirthsTable births={births as any} />}
+      table={<BirthsTable births={births as any} initialStatusFilter={filter} />}
     />
   )
 }
