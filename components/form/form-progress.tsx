@@ -13,75 +13,72 @@ interface FormProgressProps {
   steps: Step[]
   currentStep: number
   className?: string
+  onStepClick?: (stepIndex: number) => void
 }
 
-export function FormProgress({ steps, currentStep, className }: FormProgressProps) {
+export function FormProgress({ steps, currentStep, className, onStepClick }: FormProgressProps) {
   return (
-    <div className={cn("w-full", className)}>
-      <ol className="flex items-start w-full">
+    <div className={cn("relative w-full", className)}>
+      {/* Timeline connector line */}
+      <div className="absolute left-[22px] top-4 bottom-4 w-0.5 bg-border pointer-events-none" />
+
+      <ol className="flex flex-col gap-4 relative z-10 w-full">
         {steps.map((step, i) => {
           const done = i < currentStep
           const active = i === currentStep
           const upcoming = i > currentStep
-          const isLast = i === steps.length - 1
 
           return (
-            <li key={i} className={cn("flex items-start", !isLast && "flex-1")}>
-              {/* Step dot + connector */}
-              <div className="flex flex-col items-center">
+            <li key={i} className="flex items-center w-full">
+              <button
+                type="button"
+                onClick={() => onStepClick?.(i)}
+                disabled={!onStepClick}
+                className={cn(
+                  "flex items-center gap-4 w-full p-2.5 rounded-xl transition-all text-left outline-none group",
+                  onStepClick ? "cursor-pointer hover:bg-muted/40" : "pointer-events-none"
+                )}
+              >
                 {/* Circle */}
                 <div
                   className={cn(
-                    "relative flex size-8 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300 text-xs font-semibold",
-                    done && "border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/30",
-                    active && "border-primary bg-background text-primary ring-4 ring-primary/15",
-                    upcoming && "border-border bg-background text-muted-foreground"
+                    "flex size-[28px] shrink-0 items-center justify-center rounded-full border-2 transition-all duration-300 text-xs font-semibold z-10 bg-background",
+                    done && "border-primary bg-primary text-primary-foreground shadow-sm shadow-primary/20",
+                    active && "border-primary text-primary ring-4 ring-primary/15",
+                    upcoming && "border-border text-muted-foreground group-hover:border-muted-foreground/60"
                   )}
                 >
                   {done ? (
-                    <CheckIcon className="size-4 stroke-[2.5]" />
+                    <CheckIcon className="size-3.5 stroke-[2.5]" />
                   ) : (
                     <span>{i + 1}</span>
                   )}
                 </div>
 
-                {/* Label below dot */}
-                <div className="mt-2 text-center px-1">
-                  {step.icon && (
-                    <div className={cn(
-                      "mx-auto mb-1 text-base",
-                      active ? "opacity-100" : "opacity-40"
-                    )}>
-                      {step.icon}
-                    </div>
-                  )}
-                  <p
-                    className={cn(
-                      "text-[11px] font-medium leading-tight whitespace-nowrap transition-colors",
-                      active ? "text-primary" : done ? "text-foreground" : "text-muted-foreground"
+                {/* Step Metadata */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    {step.icon && (
+                      <span className={cn("text-xs shrink-0", active ? "text-primary" : "text-muted-foreground")}>
+                        {step.icon}
+                      </span>
                     )}
-                  >
-                    {step.label}
-                  </p>
+                    <span
+                      className={cn(
+                        "text-xs font-medium tracking-tight transition-colors truncate",
+                        active ? "text-primary font-semibold" : done ? "text-foreground" : "text-muted-foreground"
+                      )}
+                    >
+                      {step.label}
+                    </span>
+                  </div>
                   {step.sublabel && (
-                    <p className="text-[10px] text-muted-foreground mt-0.5">{step.sublabel}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 truncate pl-[18px]">
+                      {step.sublabel}
+                    </p>
                   )}
                 </div>
-              </div>
-
-              {/* Connector line */}
-              {!isLast && (
-                <div className="flex-1 mx-2 mt-4">
-                  <div className="h-0.5 w-full overflow-hidden rounded-full bg-border">
-                    <div
-                      className={cn(
-                        "h-full transition-all duration-500 ease-out rounded-full",
-                        done ? "w-full bg-primary" : "w-0 bg-primary"
-                      )}
-                    />
-                  </div>
-                </div>
-              )}
+              </button>
             </li>
           )
         })}
