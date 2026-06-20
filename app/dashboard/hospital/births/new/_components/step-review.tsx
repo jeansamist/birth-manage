@@ -1,12 +1,13 @@
 "use client"
 
+import { Controller } from "react-hook-form"
 import type { UseFormReturn } from "react-hook-form"
 import type { BirthFormInput } from "@/lib/schemas/birth"
 import { Input } from "@/components/ui/input"
 import { AnimatePresence, motion } from "framer-motion"
 import { CheckIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { FormField, SectionTitle } from "./form-primitives"
+import { FormField, SectionTitle, DatePicker } from "./form-primitives"
 
 interface CityHallOption {
   id: string
@@ -21,7 +22,7 @@ interface StepReviewProps {
 }
 
 export function StepReview({ form, cityHalls, serverError }: StepReviewProps) {
-  const { register, watch, setValue, formState: { errors } } = form
+  const { register, watch, setValue, control, formState: { errors } } = form
   const cityHallId = watch("cityHallId")
   const parentsMarried = watch("parentsMarried")
 
@@ -123,10 +124,16 @@ export function StepReview({ form, cityHalls, serverError }: StepReviewProps) {
                 />
               </FormField>
               <FormField label="Date du mariage">
-                <Input
-                  type="date"
-                  {...register("marriageDate")}
-                  className="h-10"
+                <Controller
+                  control={control}
+                  name="marriageDate"
+                  render={({ field }) => (
+                    <DatePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Date du mariage"
+                    />
+                  )}
                 />
               </FormField>
             </div>
