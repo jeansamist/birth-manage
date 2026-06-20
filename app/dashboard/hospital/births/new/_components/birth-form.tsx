@@ -23,11 +23,11 @@ import { ConfirmModal } from "@/components/form/confirm-modal"
 import type { SaveState } from "@/components/form/auto-save-indicator"
 
 import { LeftPanel } from "./left-panel"
-import { FormNavBar } from "./form-nav-bar"
 import { StepBaby } from "./step-baby"
 import { StepMother } from "./step-mother"
 import { StepFather } from "./step-father"
 import { StepReview } from "./step-review"
+import { Button } from "@/components/ui/button"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -76,21 +76,55 @@ const slideVariants = {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function BirthForm({ cityHalls }: { cityHalls: CityHallOption[] }) {
+export function BirthForm({
+  cityHalls,
+  initialData,
+  id,
+  defaultBirthPlace,
+}: {
+  cityHalls: CityHallOption[]
+  initialData?: Partial<BirthFormInput>
+  id?: string
+  defaultBirthPlace?: string
+}) {
   const [step, setStep] = useState(0)
   const [direction, setDirection] = useState(1)
-  const [savedId, setSavedId] = useState<string | undefined>()
+  const [savedId, setSavedId] = useState<string | undefined>(id)
   const [saveState, setSaveState] = useState<SaveState>("idle")
   const [savedAt, setSavedAt] = useState<Date | null>(null)
   const [serverError, setServerError] = useState<string | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const [fatherUnknown, setFatherUnknown] = useState(false)
+  const [fatherUnknown, setFatherUnknown] = useState(
+    initialData
+      ? !initialData.fatherFirstName &&
+          !initialData.fatherLastName &&
+          !initialData.parentsMarried
+      : false
+  )
   const [isPending, startTransition] = useTransition()
+
+  // Get local date/time strings for defaults
+  const localToday = new Date()
+  const year = localToday.getFullYear()
+  const month = String(localToday.getMonth() + 1).padStart(2, "0")
+  const day = String(localToday.getDate()).padStart(2, "0")
+  const todayDateStr = `${year}-${month}-${day}`
+  
+  const currentHourMin = localToday.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  }).replace("h", ":")
 
   const form = useForm<BirthFormInput>({
     resolver: zodResolver(birthFormSchema),
     mode: "onBlur",
-    defaultValues: { parentsMarried: false },
+    defaultValues: {
+      parentsMarried: false,
+      birthDate: todayDateStr,
+      birthTime: currentHourMin,
+      birthPlace: defaultBirthPlace ?? "",
+      ...initialData,
+    },
   })
 
   const w = form.watch()
@@ -141,8 +175,13 @@ export function BirthForm({ cityHalls }: { cityHalls: CityHallOption[] }) {
         setServerError(result.error ?? "Une erreur est survenue.")
         setSaveState("error")
       }
-      // On success → server action redirects
     })
+  }
+
+  function jumpToStep(targetStep: number) {
+    if (targetStep === step) return
+    setDirection(targetStep > step ? 1 : -1)
+    setStep(targetStep)
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -160,51 +199,90 @@ export function BirthForm({ cityHalls }: { cityHalls: CityHallOption[] }) {
         cityHalls={cityHalls}
         saveState={saveState}
         savedAt={savedAt}
+        onStepClick={jumpToStep}
       />
 
       {/* Right panel — step content + nav bar */}
       <main className="flex-1 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-2xl mx-auto p-6 sm:p-8">
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div
-                key={step}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.22, ease: "easeInOut" }}
-              >
-                {step === 0 && <StepBaby form={form} />}
-                {step === 1 && <StepMother form={form} />}
-                {step === 2 && (
-                  <StepFather
-                    form={form}
-                    fatherUnknown={fatherUnknown}
-                    onToggle={handleFatherToggle}
-                  />
-                )}
-                {step === 3 && (
-                  <StepReview
-                    form={form}
-                    cityHalls={cityHalls}
-                    serverError={serverError}
-                  />
-                )}
-              </motion.div>
-            </AnimatePresence>
+          <div className="max-w-2xl mx-auto p-6 sm:p-8 flex flex-col min-h-full justify-between">
+            <div className="flex-1">
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={step}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.22, ease: "easeInOut" }}
+                >
+                  {step === 0 && <StepBaby form={form} />}
+                  {step === 1 && <StepMother form={form} />}
+                  {step === 2 && (
+                    <StepFather
+                      form={form}
+                      fatherUnknown={fatherUnknown}
+                      onToggle={handleFatherToggle}
+                    />
+                  )}
+                  {step === 3 && (
+                    <StepReview
+                      form={form}
+                      cityHalls={cityHalls}
+                      serverError={serverError}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Navigation buttons inline with the form flow */}
+            <div className="mt-8 pt-6 border-t border-border flex items-center justify-between gap-4">
+              {step > 0 ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={goPrev}
+                  disabled={isPending}
+                  className="h-10 px-4 rounded-xl text-xs font-semibold cursor-pointer gap-1.5"
+                >
+                  ← {step === 1 ? "Retour à l'enfant" : step === 2 ? "Retour à la mère" : "Retour au père"}
+                </Button>
+              ) : (
+                <div />
+              )}
+
+              <span className="text-xs text-muted-foreground font-medium">
+                Étape {step + 1} sur {STEPS.length}
+              </span>
+
+              {step === STEPS.length - 1 ? (
+                <Button
+                  type="button"
+                  onClick={() => setConfirmOpen(true)}
+                  disabled={isPending}
+                  className="h-10 px-5 rounded-xl text-xs font-semibold cursor-pointer gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs"
+                >
+                  {isPending ? "Envoi..." : "Soumettre à la mairie ✓"}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={goNext}
+                  disabled={isPending}
+                  className="h-10 px-5 rounded-xl text-xs font-semibold cursor-pointer gap-1.5"
+                >
+                  {isPending ? "Enregistrement..." : (
+                    <>
+                      {step === 0 ? "Continuer : Mère" : step === 1 ? "Continuer : Père" : "Continuer : Mairie"} →
+                    </>
+                  )}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
-
-        <FormNavBar
-          step={step}
-          totalSteps={STEPS.length}
-          isPending={isPending}
-          onPrev={goPrev}
-          onNext={goNext}
-          onSubmit={() => setConfirmOpen(true)}
-        />
       </main>
 
       {/* Confirmation modal */}

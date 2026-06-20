@@ -63,6 +63,7 @@ export interface StatCard {
 interface DashboardContentProps {
   alertMessage?: string | null
   statsCards?: StatCard[]
+  chart?: React.ReactNode
   table?: React.ReactNode
   children?: React.ReactNode
 }
@@ -72,12 +73,14 @@ interface DashboardContentProps {
 export function DashboardContent({
   alertMessage,
   statsCards,
+  chart,
   table,
   children,
 }: DashboardContentProps) {
   const layoutDensity = useDashboardStore((s) => s.layoutDensity)
   const showAlertBanner = useDashboardStore((s) => s.showAlertBanner)
   const showStatsCards = useDashboardStore((s) => s.showStatsCards)
+  const showChart = useDashboardStore((s) => s.showChart)
   const showTable = useDashboardStore((s) => s.showTable)
 
   const [bannerDismissed, setBannerDismissed] = React.useState(false)
@@ -157,6 +160,13 @@ export function DashboardContent({
               </div>
             )
           })}
+        </div>
+      )}
+
+      {/* ── Chart ──────────────────────────────────────────────────── */}
+      {showChart && chart && (
+        <div className="overflow-hidden">
+          {chart}
         </div>
       )}
 

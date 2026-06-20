@@ -21,6 +21,7 @@ interface LeftPanelProps {
   cityHalls: CityHallOption[]
   saveState: SaveState
   savedAt: Date | null
+  onStepClick?: (stepIndex: number) => void
 }
 
 export function LeftPanel({
@@ -31,6 +32,7 @@ export function LeftPanel({
   cityHalls,
   saveState,
   savedAt,
+  onStepClick,
 }: LeftPanelProps) {
   const selectedCityHall = cityHalls.find((c) => c.id === w.cityHallId)
 
@@ -53,7 +55,7 @@ export function LeftPanel({
 
       {/* Stepper */}
       <div className="p-6 border-b border-border">
-        <FormProgress steps={steps} currentStep={currentStep} />
+        <FormProgress steps={steps} currentStep={currentStep} onStepClick={onStepClick} />
       </div>
 
       {/* Live summary */}

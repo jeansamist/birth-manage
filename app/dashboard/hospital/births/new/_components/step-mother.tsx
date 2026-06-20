@@ -3,14 +3,21 @@
 import type { UseFormReturn } from "react-hook-form"
 import type { BirthFormInput } from "@/lib/schemas/birth"
 import { Input } from "@/components/ui/input"
-import { FormField, SectionTitle } from "./form-primitives"
+import { Controller } from "react-hook-form"
+import { FormField, SectionTitle, DatePicker } from "./form-primitives"
 
 interface StepMotherProps {
   form: UseFormReturn<BirthFormInput>
 }
 
 export function StepMother({ form }: StepMotherProps) {
-  const { register, formState: { errors } } = form
+  const { register, control, formState: { errors } } = form
+
+  const quickNationalities = [
+    { label: "🇨🇲 Camerounaise", value: "Camerounaise" },
+    { label: "🇫🇷 Française", value: "Française" },
+    { label: "🇳G Nigériane", value: "Nigériane" },
+  ]
 
   return (
     <div className="space-y-6">
@@ -48,10 +55,16 @@ export function StepMother({ form }: StepMotherProps) {
         </p>
         <div className="grid grid-cols-2 gap-4">
           <FormField label="Date de naissance">
-            <Input
-              type="date"
-              {...register("motherBirthDate")}
-              className="h-10"
+            <Controller
+              control={control}
+              name="motherBirthDate"
+              render={({ field }) => (
+                <DatePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Date de naissance"
+                />
+              )}
             />
           </FormField>
           <FormField label="Nationalité">
@@ -60,6 +73,19 @@ export function StepMother({ form }: StepMotherProps) {
               placeholder="Camerounaise"
               className="h-10"
             />
+            {/* Quick Nationality Pills */}
+            <div className="flex gap-1.5 mt-1.5">
+              {quickNationalities.map((nat) => (
+                <button
+                  key={nat.value}
+                  type="button"
+                  onClick={() => form.setValue("motherNationality", nat.value)}
+                  className="text-[10px] border px-2 py-0.5 rounded hover:bg-muted cursor-pointer"
+                >
+                  {nat.label}
+                </button>
+              ))}
+            </div>
           </FormField>
         </div>
         <FormField label="CNI / Passeport">
