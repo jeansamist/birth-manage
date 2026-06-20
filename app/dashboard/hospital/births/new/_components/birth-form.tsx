@@ -56,6 +56,7 @@ export function BirthForm({
 
   const goNext = async () => {
     if (await form.trigger(STEPS[step].fields as (keyof BirthFormInput)[])) {
+      await triggerSave()
       setDirection(1)
       setStep((s) => s + 1)
     }
@@ -75,33 +76,38 @@ export function BirthForm({
   }
 
   return (
-    <div className="flex flex-col lg:flex-row h-full min-h-screen">
-      <LeftPanel
-        currentStep={step}
-        steps={STEPS}
-        saveState={saveState}
-        savedAt={savedAt}
-        onStepClick={async (sIdx) => {
-          if (sIdx > step && !(await form.trigger(STEPS[step].fields as (keyof BirthFormInput)[]))) return
-          setDirection(sIdx > step ? 1 : -1)
-          setStep(sIdx)
-        }}
-        onManualSave={triggerSave}
-      />
-
-      <main className="flex-1 flex flex-col overflow-hidden bg-background">
-        <FormHeader
-          step={step}
-          totalSteps={STEPS.length}
-          isPending={isPending}
-          onPrev={() => { setDirection(-1); setStep((s) => s - 1) }}
-          onNext={goNext}
-          onSubmit={() => setConfirmOpen(true)}
-          stepLabel={STEPS[step].label}
+    <div className="min-h-screen bg-muted/10 flex items-center justify-center p-4 md:p-6">
+      <div className="w-full max-w-[1000px] bg-card border border-border rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[660px] max-h-[90vh]">
+        {/* Center aligned sidebar panel */}
+        <LeftPanel
+          currentStep={step}
+          steps={STEPS}
+          saveState={saveState}
+          savedAt={savedAt}
+          onStepClick={async (sIdx) => {
+            if (sIdx > step) {
+              if (!(await form.trigger(STEPS[step].fields as (keyof BirthFormInput)[]))) return
+              await triggerSave()
+            }
+            setDirection(sIdx > step ? 1 : -1)
+            setStep(sIdx)
+          }}
+          onManualSave={triggerSave}
         />
 
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-2xl mx-auto p-6 sm:p-8">
+        {/* Unified center form panel */}
+        <main className="flex-1 flex flex-col min-w-0 bg-background">
+          <FormHeader
+            step={step}
+            totalSteps={STEPS.length}
+            isPending={isPending}
+            onPrev={() => { setDirection(-1); setStep((s) => s - 1) }}
+            onNext={goNext}
+            onSubmit={() => setConfirmOpen(true)}
+            stepLabel={STEPS[step].label}
+          />
+
+          <div className="flex-1 p-6 md:p-8 overflow-y-auto">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={step}
@@ -132,8 +138,8 @@ export function BirthForm({
               </motion.div>
             </AnimatePresence>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
 
       <ConfirmModal
         open={confirmOpen}
