@@ -40,7 +40,7 @@ export function LeftPanel({
     : null
 
   return (
-    <aside className="w-full md:w-[260px] shrink-0 border-b md:border-b-0 md:border-r border-border bg-muted/20 flex flex-col p-5 gap-5">
+    <aside className="w-full md:w-[320px] shrink-0 border-b md:border-b-0 md:border-r border-border bg-muted/20 flex flex-col p-6 gap-6">
       {/* State / Official Header */}
       <div className="space-y-4">
         <Link

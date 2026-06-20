@@ -77,7 +77,7 @@ export function BirthForm({
 
   return (
     <div className="min-h-screen bg-muted/10 flex items-center justify-center p-4 md:p-6">
-      <div className="w-full max-w-[1000px] bg-card border border-border rounded-2xl shadow-xl flex flex-col md:flex-row min-h-[660px]">
+      <div className="w-full max-w-[1260px] bg-card border border-border rounded-[24px] shadow-xl flex flex-col md:flex-row min-h-[750px]">
         {/* Center aligned sidebar panel */}
         <LeftPanel
           currentStep={step}
@@ -107,7 +107,7 @@ export function BirthForm({
             stepLabel={STEPS[step].label}
           />
 
-          <div className="flex-1 p-6 md:p-8">
+          <div className="flex-1 p-8 md:p-12">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={step}

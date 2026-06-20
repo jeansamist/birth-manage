@@ -38,7 +38,7 @@ export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEdit
         <FormField label="Mairie de destination" required error={errors.cityHallId?.message}>
           <select
             {...register("cityHallId")}
-            className="w-full h-11 px-4 border border-border rounded-xl bg-background text-sm cursor-pointer outline-none focus:ring-2 focus:ring-primary/20"
+            className="w-full h-12 px-4 border border-border rounded-xl bg-background text-base cursor-pointer outline-none focus:ring-2 focus:ring-primary/10"
           >
             <option value="">Sélectionner une mairie</option>
             {cityHalls.map((c) => (
@@ -51,12 +51,12 @@ export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEdit
 
         {/* Marriage Toggle status */}
         <FormField label="Parents mariés ?">
-          <div className="flex rounded-xl border border-border overflow-hidden h-11">
+          <div className="flex rounded-xl border border-border overflow-hidden h-12">
             <button
               type="button"
               onClick={() => setValue("parentsMarried", false)}
               className={cn(
-                "flex-1 text-xs font-medium transition-colors cursor-pointer",
+                "flex-1 text-sm font-semibold transition-colors cursor-pointer",
                 !parentsMarried ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
               )}
             >
@@ -66,7 +66,7 @@ export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEdit
               type="button"
               onClick={() => setValue("parentsMarried", true)}
               className={cn(
-                "flex-1 text-xs font-medium transition-colors cursor-pointer",
+                "flex-1 text-sm font-semibold transition-colors cursor-pointer",
                 parentsMarried ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
               )}
             >
