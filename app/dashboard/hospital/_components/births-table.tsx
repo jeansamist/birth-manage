@@ -322,7 +322,7 @@ export function BirthsTable({ births, initialStatusFilter }: BirthsTableProps) {
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">
-              <TableHead className="w-[50px]">
+              <TableHead className="w-[50px] hidden sm:table-cell">
                 <Checkbox
                   checked={
                     selectedRows.size === paginatedBirths.length &&
@@ -331,25 +331,25 @@ export function BirthsTable({ births, initialStatusFilter }: BirthsTableProps) {
                   onCheckedChange={toggleSelectAll}
                 />
               </TableHead>
-              <TableHead className="min-w-[100px] text-muted-foreground font-medium">
+              <TableHead className="w-[100px] text-muted-foreground font-medium hidden sm:table-cell">
                 ID Dossier
               </TableHead>
-              <TableHead className="min-w-[180px] text-muted-foreground font-medium">
+              <TableHead className="min-w-[140px] text-muted-foreground font-medium">
                 Enfant
               </TableHead>
-              <TableHead className="min-w-[180px] text-muted-foreground font-medium">
+              <TableHead className="min-w-[140px] text-muted-foreground font-medium hidden md:table-cell">
                 Mère
               </TableHead>
-              <TableHead className="min-w-[150px] text-muted-foreground font-medium">
+              <TableHead className="min-w-[130px] text-muted-foreground font-medium hidden lg:table-cell">
                 Mairie de destination
               </TableHead>
-              <TableHead className="min-w-[120px] text-muted-foreground font-medium">
+              <TableHead className="min-w-[110px] text-muted-foreground font-medium">
                 Date de naissance
               </TableHead>
-              <TableHead className="min-w-[120px] text-muted-foreground font-medium">
+              <TableHead className="min-w-[110px] text-muted-foreground font-medium hidden lg:table-cell">
                 Dernière modification
               </TableHead>
-              <TableHead className="min-w-[120px] text-muted-foreground font-medium">
+              <TableHead className="min-w-[100px] text-muted-foreground font-medium">
                 Statut
               </TableHead>
               <TableHead className="w-[80px]" />
@@ -377,13 +377,13 @@ export function BirthsTable({ births, initialStatusFilter }: BirthsTableProps) {
 
                 return (
                   <TableRow key={birth.id}>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                       <Checkbox
                         checked={selectedRows.has(birth.id)}
                         onCheckedChange={() => toggleSelectRow(birth.id)}
                       />
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground font-medium">
+                    <TableCell className="font-mono text-xs text-muted-foreground font-medium hidden sm:table-cell">
                       #{birth.id.slice(-8)}
                     </TableCell>
                     <TableCell>
@@ -402,10 +402,10 @@ export function BirthsTable({ births, initialStatusFilter }: BirthsTableProps) {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
                       {motherFullName || "—"}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden lg:table-cell">
                       <span className="px-2 py-0.5 rounded-md bg-muted text-xs font-medium text-muted-foreground">
                         {birth.cityHall?.name ?? "Non assignée"}
                       </span>
@@ -413,7 +413,7 @@ export function BirthsTable({ births, initialStatusFilter }: BirthsTableProps) {
                     <TableCell className="text-muted-foreground text-xs">
                       {formatDate(birth.birthDate)}
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-xs">
+                    <TableCell className="hidden lg:table-cell text-muted-foreground text-xs">
                       {formatDate(birth.updatedAt)}
                     </TableCell>
                     <TableCell>
