@@ -27,11 +27,21 @@ export default async function EditBirthPage({ params }: EditBirthPageProps) {
     redirect("/dashboard/hospital")
   }
 
-  const cityHalls = await prisma.cityHall.findMany({
-    where: { isActive: true },
-    select: { id: true, name: true, city: true },
-    orderBy: { name: "asc" },
-  })
+  const [cityHalls, assignment] = await Promise.all([
+    prisma.cityHall.findMany({
+      where: { isActive: true },
+      select: { id: true, name: true, city: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.doctorHospitalAssignment.findFirst({
+      where: { userId: session.userId, isApproved: true },
+      include: { hospital: { select: { name: true, city: true } } },
+    }),
+  ])
+
+  const defaultBirthPlace = assignment?.hospital
+    ? `${assignment.hospital.name}, ${assignment.hospital.city}`
+    : ""
 
   // Format and safely map the Prisma record fields to BirthFormInput type
   const initialData: Partial<BirthFormInput> = {
@@ -77,7 +87,7 @@ export default async function EditBirthPage({ params }: EditBirthPageProps) {
 
   return (
     <div className="h-full min-h-0 flex flex-col">
-      <BirthForm cityHalls={cityHalls} initialData={initialData} id={id} />
+      <BirthForm cityHalls={cityHalls} initialData={initialData} id={id} defaultBirthPlace={defaultBirthPlace} />
     </div>
   )
 }
