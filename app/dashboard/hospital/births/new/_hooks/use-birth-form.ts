@@ -4,7 +4,7 @@ import { useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { birthFormSchema, type BirthFormInput } from "@/lib/schemas/birth"
-import { saveBirthDraft } from "@/app/actions/birth"
+import { saveBirthDraft, submitBirthToCityHall } from "@/app/actions/birth"
 import type { SaveState } from "@/components/form/auto-save-indicator"
 
 export function useBirthForm(initialData?: Partial<BirthFormInput>, id?: string, defaultBirthPlace?: string) {
@@ -51,6 +51,19 @@ export function useBirthForm(initialData?: Partial<BirthFormInput>, id?: string,
     }
   }
 
+  const handleFinalSubmit = () => {
+    setConfirmOpen(false)
+    setServerError(null)
+    setSaveState("saving")
+    startTransition(async () => {
+      const result = await submitBirthToCityHall(form.getValues(), savedId)
+      if (result && !result.success) {
+        setServerError(result.error ?? "Une erreur est survenue.")
+        setSaveState("error")
+      }
+    })
+  }
+
   return {
     step,
     setStep,
@@ -70,5 +83,6 @@ export function useBirthForm(initialData?: Partial<BirthFormInput>, id?: string,
     startTransition,
     form,
     triggerSave,
+    handleFinalSubmit,
   }
 }

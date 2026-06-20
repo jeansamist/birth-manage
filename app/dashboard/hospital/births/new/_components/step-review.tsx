@@ -14,7 +14,6 @@ interface CityHallOption {
   name: string
   city: string
 }
-
 interface StepReviewProps {
   form: UseFormReturn<BirthFormInput>
   cityHalls: CityHallOption[]
@@ -22,10 +21,8 @@ interface StepReviewProps {
   fatherUnknown: boolean
   onEditStep: (stepIndex: number) => void
 }
-
 export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEditStep }: StepReviewProps) {
   const { register, watch, setValue, control, formState: { errors } } = form
-  const cityHallId = watch("cityHallId")
   const parentsMarried = watch("parentsMarried")
   const values = form.getValues()
 
@@ -34,7 +31,6 @@ export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEdit
       <SectionTitle>🏛️ Mairie & Situation matrimoniale</SectionTitle>
 
       <div className="grid sm:grid-cols-2 gap-4">
-        {/* City Hall select */}
         <FormField label="Mairie de destination" required error={errors.cityHallId?.message}>
           <select
             {...register("cityHallId")}
@@ -49,29 +45,21 @@ export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEdit
           </select>
         </FormField>
 
-        {/* Marriage Toggle status */}
         <FormField label="Parents mariés ?">
           <div className="flex rounded-xl border border-border overflow-hidden h-12">
-            <button
-              type="button"
-              onClick={() => setValue("parentsMarried", false)}
-              className={cn(
-                "flex-1 text-sm font-semibold transition-colors cursor-pointer",
-                !parentsMarried ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
-              )}
-            >
-              Non mariés
-            </button>
-            <button
-              type="button"
-              onClick={() => setValue("parentsMarried", true)}
-              className={cn(
-                "flex-1 text-sm font-semibold transition-colors cursor-pointer",
-                parentsMarried ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
-              )}
-            >
-              💍 Mariés
-            </button>
+            {([false, true] as const).map((isMarried) => (
+              <button
+                key={String(isMarried)}
+                type="button"
+                onClick={() => setValue("parentsMarried", isMarried)}
+                className={cn(
+                  "flex-1 text-sm font-semibold transition-colors cursor-pointer",
+                  parentsMarried === isMarried ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
+                )}
+              >
+                {isMarried ? "💍 Mariés" : "Non mariés"}
+              </button>
+            ))}
           </div>
         </FormField>
       </div>

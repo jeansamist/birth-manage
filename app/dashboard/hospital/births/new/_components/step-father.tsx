@@ -25,28 +25,20 @@ export function StepFather({ form, fatherUnknown, onToggle }: StepFatherProps) {
     <div className="space-y-6">
       <SectionTitle>👨 Informations sur le père</SectionTitle>
 
-      {/* Known / Unknown toggles */}
       <div className="flex rounded-xl border border-border overflow-hidden">
-        <button
-          type="button"
-          onClick={() => onToggle(false)}
-          className={cn(
-            "flex-1 py-2.5 text-xs font-medium transition-colors cursor-pointer",
-            !fatherUnknown ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
-          )}
-        >
-          👨 Père connu
-        </button>
-        <button
-          type="button"
-          onClick={() => onToggle(true)}
-          className={cn(
-            "flex-1 py-2.5 text-xs font-medium transition-colors cursor-pointer",
-            fatherUnknown ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
-          )}
-        >
-          ❓ Père inconnu
-        </button>
+        {([false, true] as const).map((isUnknown) => (
+          <button
+            key={String(isUnknown)}
+            type="button"
+            onClick={() => onToggle(isUnknown)}
+            className={cn(
+              "flex-1 py-2.5 text-xs font-medium transition-colors cursor-pointer",
+              fatherUnknown === isUnknown ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
+            )}
+          >
+            {isUnknown ? "❓ Père inconnu" : "👨 Père connu"}
+          </button>
+        ))}
       </div>
 
       {fatherUnknown ? (

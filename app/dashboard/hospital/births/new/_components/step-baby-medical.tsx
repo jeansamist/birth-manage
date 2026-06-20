@@ -15,29 +15,17 @@ import { FormField } from "./form-primitives"
 interface StepBabyMedicalProps {
   form: UseFormReturn<BirthFormInput>
 }
-
 const DELIVERY_OPTIONS = [
   { value: "NATURAL" as const, label: "Naturel", description: "Voie basse" },
   { value: "CAESAREAN" as const, label: "Césarienne", description: "Intervention" },
 ]
-
 export function StepBabyMedical({ form }: StepBabyMedicalProps) {
   const { register, control, watch, setValue } = form
   const [medicalExpanded, setMedicalExpanded] = useState(false)
-
   const weightGrams = watch("weightGrams")
   const heightCm = watch("heightCm")
-
-  const changeWeight = (diff: number) => {
-    const wVal = Number(weightGrams || 3200)
-    setValue("weightGrams", Math.max(0, wVal + diff))
-  }
-
-  const changeHeight = (diff: number) => {
-    const hVal = Number(heightCm || 50)
-    setValue("heightCm", Math.max(0, hVal + diff))
-  }
-
+  const weight = Number(weightGrams || 3200)
+  const height = Number(heightCm || 50)
   return (
     <div className="rounded-xl border border-border overflow-hidden bg-muted/5">
       <button
@@ -59,25 +47,22 @@ export function StepBabyMedical({ form }: StepBabyMedicalProps) {
           >
             <div className="p-4 space-y-4 border-t">
               <div className="grid grid-cols-3 gap-3">
-                {/* Weight */}
                 <FormField label="Poids (g)">
                   <Input type="number" {...register("weightGrams")} placeholder="3200" className="h-10" />
                   <div className="flex gap-1 mt-1">
-                    <button type="button" onClick={() => changeWeight(-100)} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">-100g</button>
-                    <button type="button" onClick={() => changeWeight(100)} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">+100g</button>
+                    <button type="button" onClick={() => setValue("weightGrams", Math.max(0, weight - 100))} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">-100g</button>
+                    <button type="button" onClick={() => setValue("weightGrams", Math.max(0, weight + 100))} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">+100g</button>
                   </div>
                 </FormField>
 
-                {/* Height */}
                 <FormField label="Taille (cm)">
                   <Input type="number" step="0.1" {...register("heightCm")} placeholder="50" className="h-10" />
                   <div className="flex gap-1 mt-1">
-                    <button type="button" onClick={() => changeHeight(-1)} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">-1</button>
-                    <button type="button" onClick={() => changeHeight(1)} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">+1</button>
+                    <button type="button" onClick={() => setValue("heightCm", Math.max(0, height - 1))} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">-1</button>
+                    <button type="button" onClick={() => setValue("heightCm", Math.max(0, height + 1))} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">+1</button>
                   </div>
                 </FormField>
 
-                {/* Apgar */}
                 <FormField label="Score Apgar">
                   <Input type="number" min="0" max="10" {...register("apgarScore")} placeholder="9" className="h-10" />
                   <div className="flex gap-1 mt-1">

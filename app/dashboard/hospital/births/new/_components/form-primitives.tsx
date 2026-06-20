@@ -1,7 +1,12 @@
-// Shared primitive form components reused across all steps
 "use client"
 
 import { motion } from "framer-motion"
+import { format } from "date-fns"
+import { CalendarIcon } from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 export function FieldError({ message }: { message?: string }) {
   if (!message) return null
@@ -19,17 +24,14 @@ export function FieldError({ message }: { message?: string }) {
   )
 }
 
-export function FormField({
-  label,
-  required,
-  error,
-  children,
-}: {
+interface FormFieldProps {
   label: string
   required?: boolean
   error?: string
   children: React.ReactNode
-}) {
+}
+
+export function FormField({ label, required, error, children }: FormFieldProps) {
   return (
     <div className="space-y-1.5">
       <label className="block text-xs font-medium text-foreground">
@@ -51,22 +53,13 @@ export function SectionTitle({ children }: { children: React.ReactNode }) {
   )
 }
 
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-
-export function DatePicker({
-  value,
-  onChange,
-  placeholder = "Sélectionner une date",
-}: {
+interface DatePickerProps {
   value?: string
   onChange: (val: string) => void
   placeholder?: string
-}) {
+}
+
+export function DatePicker({ value, onChange, placeholder = "Sélectionner une date" }: DatePickerProps) {
   const dateValue = value ? new Date(value) : undefined
 
   return (
@@ -88,14 +81,11 @@ export function DatePicker({
           mode="single"
           selected={dateValue}
           onSelect={(date) => {
-            if (date) {
-              const yyyy = date.getFullYear()
-              const mm = String(date.getMonth() + 1).padStart(2, "0")
-              const dd = String(date.getDate()).padStart(2, "0")
-              onChange(`${yyyy}-${mm}-${dd}`)
-            } else {
-              onChange("")
-            }
+            if (!date) return onChange("")
+            const yyyy = date.getFullYear()
+            const mm = String(date.getMonth() + 1).padStart(2, "0")
+            const dd = String(date.getDate()).padStart(2, "0")
+            onChange(`${yyyy}-${mm}-${dd}`)
           }}
         />
       </PopoverContent>
