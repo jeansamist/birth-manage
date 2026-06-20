@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { getSession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import type { BirthFormInput } from "@/lib/schemas/birth"
 import { BirthForm } from "../../new/_components/birth-form"
 
 interface EditBirthPageProps {
@@ -32,23 +33,45 @@ export default async function EditBirthPage({ params }: EditBirthPageProps) {
     orderBy: { name: "asc" },
   })
 
-  // Format Date objects to YYYY-MM-DD strings for date inputs
-  const initialData = {
-    ...record,
+  // Format and safely map the Prisma record fields to BirthFormInput type
+  const initialData: Partial<BirthFormInput> = {
+    babyFirstName: record.babyFirstName ?? "",
+    babyLastName: record.babyLastName ?? "",
+    babyGender: (record.babyGender as "MALE" | "FEMALE") ?? undefined,
     birthDate: record.birthDate ? record.birthDate.toISOString().split("T")[0] : "",
-    motherBirthDate: record.motherBirthDate
-      ? record.motherBirthDate.toISOString().split("T")[0]
-      : "",
-    fatherBirthDate: record.fatherBirthDate
-      ? record.fatherBirthDate.toISOString().split("T")[0]
-      : "",
-    marriageDate: record.marriageDate
-      ? record.marriageDate.toISOString().split("T")[0]
-      : "",
+    birthTime: record.birthTime ?? undefined,
+    birthPlace: record.birthPlace ?? undefined,
     weightGrams: record.weightGrams ?? undefined,
     heightCm: record.heightCm ?? undefined,
     apgarScore: record.apgarScore ?? undefined,
     deliveryType: record.deliveryType ?? undefined,
+    medicalNotes: record.medicalNotes ?? undefined,
+    motherFirstName: record.motherFirstName ?? "",
+    motherLastName: record.motherLastName ?? "",
+    motherBirthDate: record.motherBirthDate
+      ? record.motherBirthDate.toISOString().split("T")[0]
+      : undefined,
+    motherNationality: record.motherNationality ?? undefined,
+    motherCni: record.motherCni ?? undefined,
+    motherProfession: record.motherProfession ?? undefined,
+    motherAddress: record.motherAddress ?? undefined,
+    motherPhone: record.motherPhone ?? undefined,
+    motherEmail: record.motherEmail ?? undefined,
+    fatherFirstName: record.fatherFirstName ?? undefined,
+    fatherLastName: record.fatherLastName ?? undefined,
+    fatherBirthDate: record.fatherBirthDate
+      ? record.fatherBirthDate.toISOString().split("T")[0]
+      : undefined,
+    fatherNationality: record.fatherNationality ?? undefined,
+    fatherCni: record.fatherCni ?? undefined,
+    fatherProfession: record.fatherProfession ?? undefined,
+    fatherAddress: record.fatherAddress ?? undefined,
+    fatherPhone: record.fatherPhone ?? undefined,
+    parentsMarried: record.parentsMarried,
+    marriageCertNumber: record.marriageCertNumber ?? undefined,
+    marriageDate: record.marriageDate
+      ? record.marriageDate.toISOString().split("T")[0]
+      : undefined,
     cityHallId: record.cityHallId ?? "",
   }
 
