@@ -148,14 +148,7 @@ export default async function HospitalDashboard() {
                         </Link>
                       )}
                       {b.status === "APPROVED" && b.certificateNumber && (
-                        <a
-                          href={`/api/certificate/${b.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline"
-                        >
-                          Certificat
-                        </a>
+                        <span className="text-muted-foreground">Certificat</span>
                       )}
                     </td>
                   </tr>

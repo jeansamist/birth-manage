@@ -9,10 +9,18 @@ import {
 import { getSession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import {
+  getCityHallInboxCounts,
+  getSubmittedBirths,
+} from "@/lib/city-hall-inbox"
+import {
   approveTransferRequest,
   declineTransferRequest,
 } from "@/app/actions/birth"
 import { StatusBadge } from "@/app/dashboard/_components/status-badge"
+import {
+  IncomingSubmissionsAlert,
+  PendingApprovalAlert,
+} from "@/app/dashboard/_components/incoming-submissions-alert"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 function formatDate(date: Date | null) {
@@ -29,7 +37,8 @@ export default async function MaireDashboard() {
   const cityHallId = session.institutionId
   if (!cityHallId) redirect("/dashboard")
 
-  const [pending, recent, transferRequests] = await Promise.all([
+  const [pending, recent, transferRequests, submittedFromHospitals, inboxCounts] =
+    await Promise.all([
     prisma.birthRecord.findMany({
       where: { cityHallId, status: "PENDING_APPROVAL" },
       orderBy: { updatedAt: "asc" },
@@ -61,6 +70,8 @@ export default async function MaireDashboard() {
         },
       },
     }),
+    getSubmittedBirths(cityHallId),
+    getCityHallInboxCounts(cityHallId),
   ])
 
   const approved = recent.filter((b) => b.status === "APPROVED").length
@@ -74,6 +85,12 @@ export default async function MaireDashboard() {
           {session.username}
         </p>
       </div>
+
+      <IncomingSubmissionsAlert
+        count={inboxCounts.submitted}
+        role="MAIRE"
+      />
+      <PendingApprovalAlert count={inboxCounts.pendingApproval} />
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
@@ -108,6 +125,68 @@ export default async function MaireDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Hospital submissions received */}
+      {submittedFromHospitals.length > 0 && (
+        <Card>
+          <CardHeader className="border-b border-border px-4 py-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
+              Dossiers reçus des hôpitaux
+              <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-semibold text-white">
+                {submittedFromHospitals.length}
+              </span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-border bg-muted/40">
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Enfant
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Hôpital
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Date naissance
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Reçu le
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Statut
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {submittedFromHospitals.map((b) => (
+                  <tr
+                    key={b.id}
+                    className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
+                  >
+                    <td className="px-4 py-3 font-medium">
+                      {`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() ||
+                        "—"}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {b.hospital.name}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {formatDate(b.birthDate)}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {formatDate(b.updatedAt)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <StatusBadge status={b.status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Pending approvals */}
       <Card>

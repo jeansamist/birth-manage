@@ -10,12 +10,17 @@ import {
   LogOutIcon,
   PlusIcon,
   ShieldCheckIcon,
+  StethoscopeIcon,
+  UsersIcon,
+  ArrowRightLeftIcon,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 import type { SessionPayload } from "@/types/auth"
 
 interface NavProps {
   session: SessionPayload
+  inboxBadge?: number
 }
 
 function NavLink({
@@ -23,11 +28,13 @@ function NavLink({
   icon: Icon,
   label,
   exact = false,
+  badge,
 }: {
   href: string
   icon: React.ElementType
   label: string
   exact?: boolean
+  badge?: number
 }) {
   const pathname = usePathname()
   const active = exact ? pathname === href : pathname.startsWith(href)
@@ -43,12 +50,17 @@ function NavLink({
       )}
     >
       <Icon className="size-3.5 shrink-0" />
-      {label}
+      <span className="flex-1">{label}</span>
+      {badge != null && badge > 0 ? (
+        <Badge className="h-4 min-w-4 justify-center rounded-full px-1 text-[10px]">
+          {badge > 9 ? "9+" : badge}
+        </Badge>
+      ) : null}
     </Link>
   )
 }
 
-export function DashboardNav({ session }: NavProps) {
+export function DashboardNav({ session, inboxBadge = 0 }: NavProps) {
   const institutionLabel =
     session.institutionType === "hospital" ? "Hôpital" : "Mairie"
 
@@ -108,6 +120,7 @@ export function DashboardNav({ session }: NavProps) {
               icon={HomeIcon}
               label="Tableau de bord"
               exact
+              badge={inboxBadge}
             />
           </>
         )}
@@ -120,18 +133,33 @@ export function DashboardNav({ session }: NavProps) {
               icon={HomeIcon}
               label="Approbations"
               exact
+              badge={inboxBadge}
             />
           </>
         )}
 
+        {/* Maintainer */}
+        {session.role === "MAINTAINER" && (
+          <NavLink
+            href="/dashboard/city-hall"
+            icon={HomeIcon}
+            label="Tableau de bord"
+            exact
+            badge={inboxBadge}
+          />
+        )}
+
         {/* Admin */}
         {session.role === "ADMIN" && (
-          <NavLink
-            href="/dashboard"
-            icon={HomeIcon}
-            label="Administration"
-            exact
-          />
+          <>
+            <NavLink href="/dashboard/admin" icon={HomeIcon} label="Vue d'ensemble" exact />
+            <NavLink href="/dashboard/admin/hospitals" icon={Building2Icon} label="Hôpitaux" />
+            <NavLink href="/dashboard/admin/city-halls" icon={LandmarkIcon} label="Mairies" />
+            <NavLink href="/dashboard/admin/users" icon={UsersIcon} label="Utilisateurs" />
+            <NavLink href="/dashboard/admin/doctors" icon={StethoscopeIcon} label="Médecins" />
+            <NavLink href="/dashboard/admin/births" icon={FileTextIcon} label="Actes" />
+            <NavLink href="/dashboard/admin/transfers" icon={ArrowRightLeftIcon} label="Transferts" />
+          </>
         )}
       </nav>
 

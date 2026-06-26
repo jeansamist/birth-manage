@@ -8,7 +8,9 @@ import {
 } from "lucide-react"
 import { getSession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { getCityHallInboxCounts } from "@/lib/city-hall-inbox"
 import { StatusBadge } from "@/app/dashboard/_components/status-badge"
+import { IncomingSubmissionsAlert } from "@/app/dashboard/_components/incoming-submissions-alert"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ClaimButton } from "./_components/claim-button"
 
@@ -27,7 +29,8 @@ export default async function CityHallDashboard() {
   const cityHallId = session.institutionId
   if (!cityHallId) redirect("/dashboard")
 
-  const [submitted, mine, transferredCopies] = await Promise.all([
+  const [submitted, mine, transferredCopies, approvedBirths, inboxCounts] =
+    await Promise.all([
     // Unclaimed submitted births for this city hall
     prisma.birthRecord.findMany({
       where: { cityHallId, status: "SUBMITTED" },
@@ -50,6 +53,7 @@ export default async function CityHallDashboard() {
       include: {
         birthRecord: {
           select: {
+            id: true,
             babyFirstName: true,
             babyLastName: true,
             birthDate: true,
@@ -59,6 +63,20 @@ export default async function CityHallDashboard() {
         },
       },
     }),
+    prisma.birthRecord.findMany({
+      where: { cityHallId, status: "APPROVED" },
+      orderBy: { approvedAt: "desc" },
+      take: 20,
+      select: {
+        id: true,
+        babyFirstName: true,
+        babyLastName: true,
+        birthDate: true,
+        certificateNumber: true,
+        approvedAt: true,
+      },
+    }),
+    getCityHallInboxCounts(cityHallId),
   ])
 
   const approved = await prisma.birthRecord.count({
@@ -73,6 +91,11 @@ export default async function CityHallDashboard() {
           {session.username}
         </p>
       </div>
+
+      <IncomingSubmissionsAlert
+        count={inboxCounts.submitted}
+        role={session.role}
+      />
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
@@ -109,10 +132,15 @@ export default async function CityHallDashboard() {
       </div>
 
       {/* Submitted (unclaimed) */}
-      <Card>
+      <Card id="dossiers-hopitaux">
         <CardHeader className="border-b border-border px-4 py-3">
-          <CardTitle className="text-sm font-medium">
+          <CardTitle className="flex items-center gap-2 text-sm font-medium">
             Dossiers soumis par les hôpitaux
+            {submitted.length > 0 && (
+              <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-semibold text-white">
+                {submitted.length} nouveau{submitted.length > 1 ? "x" : ""}
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
@@ -167,7 +195,13 @@ export default async function CityHallDashboard() {
                       {formatDate(b.updatedAt)}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <ClaimButton birthId={b.id} />
+                      {session.role === "SECRETAIRE" ? (
+                        <ClaimButton birthId={b.id} />
+                      ) : (
+                        <span className="text-muted-foreground">
+                          En attente secrétariat
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -176,6 +210,67 @@ export default async function CityHallDashboard() {
           )}
         </CardContent>
       </Card>
+
+      {/* Approved acts */}
+      {approvedBirths.length > 0 && (
+        <Card>
+          <CardHeader className="border-b border-border px-4 py-3">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
+              <FileTextIcon className="size-4" /> Actes de naissance approuvés
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-border bg-muted/40">
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Enfant
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    N° acte
+                  </th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
+                    Approuvé le
+                  </th>
+                  <th className="px-4 py-2.5" />
+                </tr>
+              </thead>
+              <tbody>
+                {approvedBirths.map((birth) => (
+                  <tr
+                    key={birth.id}
+                    className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
+                  >
+                    <td className="px-4 py-3 font-medium">
+                      {`${birth.babyFirstName ?? ""} ${birth.babyLastName ?? ""}`.trim() ||
+                        "—"}
+                      <span className="block font-normal text-muted-foreground">
+                        Né(e) le {formatDate(birth.birthDate)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-muted-foreground">
+                      {birth.certificateNumber ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {formatDate(birth.approvedAt)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {session.role === "SECRETAIRE" && birth.certificateNumber ? (
+                        <a
+                          href={`/api/certificate/${birth.id}`}
+                          className="text-primary hover:underline"
+                        >
+                          Télécharger PDF
+                        </a>
+                      ) : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Transferred copies */}
       {transferredCopies.length > 0 && (
@@ -202,6 +297,7 @@ export default async function CityHallDashboard() {
                   <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
                     Disponible depuis
                   </th>
+                  <th className="px-4 py-2.5" />
                 </tr>
               </thead>
               <tbody>
@@ -227,6 +323,16 @@ export default async function CityHallDashboard() {
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {formatDate(copy.createdAt)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {session.role === "SECRETAIRE" && copy.birthRecord.certificateNumber ? (
+                        <a
+                          href={`/api/certificate/${copy.birthRecord.id}`}
+                          className="text-primary hover:underline"
+                        >
+                          Télécharger PDF
+                        </a>
+                      ) : null}
                     </td>
                   </tr>
                 ))}

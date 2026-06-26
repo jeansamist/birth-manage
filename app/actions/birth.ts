@@ -135,6 +135,14 @@ export async function submitBirthToCityHall(
 
   const { cityHallId, ...rest } = parsed.data
 
+  const cityHall = await prisma.cityHall.findFirst({
+    where: { id: cityHallId, isActive: true },
+    select: { id: true },
+  })
+  if (!cityHall) {
+    return { success: false, error: "Mairie invalide ou inactive." }
+  }
+
   const payload = {
     babyFirstName: rest.babyFirstName,
     babyLastName: rest.babyLastName,
@@ -174,6 +182,19 @@ export async function submitBirthToCityHall(
   }
 
   if (existingId) {
+    const existing = await prisma.birthRecord.findFirst({
+      where: { id: existingId, doctorId: session.userId },
+    })
+    if (!existing) {
+      return { success: false, error: "Dossier introuvable." }
+    }
+    if (!["DRAFT", "SUBMITTED"].includes(existing.status)) {
+      return {
+        success: false,
+        error: "Ce dossier ne peut plus être soumis à la mairie.",
+      }
+    }
+
     await prisma.birthRecord.update({
       where: { id: existingId },
       data: payload,
@@ -201,8 +222,24 @@ export async function submitBirthToCityHall(
 
 export async function claimBirth(birthId: string): Promise<ActionResult> {
   const session = await getSession()
-  if (!session || session.role !== "SECRETAIRE") {
+  if (!session || session.role !== "SECRETAIRE" || !session.institutionId) {
     return { success: false, error: "Non autorisé." }
+  }
+
+  const birth = await prisma.birthRecord.findUnique({
+    where: { id: birthId },
+    select: { status: true, cityHallId: true },
+  })
+
+  if (
+    !birth ||
+    birth.status !== "SUBMITTED" ||
+    birth.cityHallId !== session.institutionId
+  ) {
+    return {
+      success: false,
+      error: "Dossier introuvable ou déjà pris en charge.",
+    }
   }
 
   await prisma.birthRecord.update({
