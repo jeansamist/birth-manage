@@ -17,6 +17,7 @@ export interface SessionPayload {
   role: UserRole
   institutionId?: string
   institutionType?: "hospital" | "city-hall"
+  institutionName?: string
 }
 
 // ─── Institution options (for select dropdowns) ───────────────────────────────

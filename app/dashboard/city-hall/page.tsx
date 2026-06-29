@@ -1,16 +1,14 @@
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import {
-  FileTextIcon,
-  InboxIcon,
-  ClockIcon,
-  CheckCircleIcon,
-} from "lucide-react"
 import { getSession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { StatusBadge } from "@/app/dashboard/_components/status-badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ClaimButton } from "./_components/claim-button"
+import { StatusBadge } from "@/app/dashboard/_components/status-badge"
+import { DashboardContent } from "@/app/dashboard/_components/content"
+import type { StatCard } from "@/app/dashboard/_components/content"
+import { getMonthlyStats } from "@/lib/stats"
+import { DashboardChart } from "@/app/dashboard/_components/dashboard-chart"
+import { FileTextIcon, InboxIcon, ClockIcon, CheckCircleIcon, ArrowRightLeftIcon } from "lucide-react"
 
 function formatDate(date: Date | null) {
   if (!date) return "—"
@@ -27,7 +25,7 @@ export default async function CityHallDashboard() {
   const cityHallId = session.institutionId
   if (!cityHallId) redirect("/dashboard")
 
-  const [submitted, mine, transferredCopies] = await Promise.all([
+  const [submitted, mine, transferredCopies, allCityHallBirths] = await Promise.all([
     // Unclaimed submitted births for this city hall
     prisma.birthRecord.findMany({
       where: { cityHallId, status: "SUBMITTED" },
@@ -59,240 +57,222 @@ export default async function CityHallDashboard() {
         },
       },
     }),
+    prisma.birthRecord.findMany({
+      where: { cityHallId },
+      select: { createdAt: true, status: true },
+    }),
   ])
 
-  const approved = await prisma.birthRecord.count({
-    where: { cityHallId, status: "APPROVED" },
-  })
+  const approved = allCityHallBirths.filter((b) => b.status === "APPROVED").length
+
+  const statsCards: StatCard[] = [
+    {
+      title: "En attente",
+      value: String(submitted.length),
+      subtitle: "Dossiers à réclamer",
+      icon: "inbox",
+      subtitleIcon: "clock",
+    },
+    {
+      title: "En traitement",
+      value: String(mine.length),
+      subtitle: "Mes dossiers en cours",
+      icon: "clock",
+      subtitleIcon: "filetext",
+    },
+    {
+      title: "Approuvés",
+      value: String(approved),
+      subtitle: "Actes signés par le Maire",
+      icon: "check",
+      subtitleIcon: "file",
+    },
+    {
+      title: "Copies physiques",
+      value: String(transferredCopies.length),
+      subtitle: "Prêtes au retrait",
+      icon: "file",
+      subtitleIcon: "transfer",
+    },
+  ]
+
+  const chartData = getMonthlyStats(
+    allCityHallBirths,
+    (b) => b.status !== "DRAFT",
+    (b) => b.status === "APPROVED"
+  )
+
+  const alertMessage =
+    submitted.length > 0
+      ? `Il y a ${submitted.length} déclaration${submitted.length > 1 ? "s" : ""} en attente de réclamation par le secrétariat.`
+      : mine.length > 0
+      ? `Vous traitez actuellement ${mine.length} déclaration${mine.length > 1 ? "s" : ""}.`
+      : null
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-lg font-semibold">Tableau de bord — Secrétariat</h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          {session.username}
-        </p>
-      </div>
+    <DashboardContent
+      alertMessage={alertMessage}
+      statsCards={statsCards}
+      chart={
+        <DashboardChart
+          title="Activité du secrétariat"
+          series1Label="Dossiers reçus"
+          series2Label="Actes signés"
+          data={chartData}
+        />
+      }
+    >
+      <div className="space-y-6">
+        {/* Submitted (unclaimed) */}
+        <div className="rounded-xl border bg-card overflow-hidden">
+          <div className="flex items-center gap-2 px-5 py-4 border-b">
+            <InboxIcon className="size-5 text-muted-foreground" />
+            <span className="font-medium text-muted-foreground">
+              Dossiers soumis par les hôpitaux (en attente)
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            {submitted.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <InboxIcon className="mb-2 size-7 text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">Aucun dossier en attente.</p>
+              </div>
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-muted/40">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Enfant</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Hôpital</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Date naissance</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Soumis le</th>
+                    <th className="px-4 py-3" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {submitted.map((b) => (
+                    <tr
+                      key={b.id}
+                      className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
+                    >
+                      <td className="px-4 py-3 font-medium">
+                        {b.babyFirstName || b.babyLastName ? (
+                          `${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim()
+                        ) : (
+                          <span className="text-muted-foreground italic text-xs">Sans nom</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">{b.hospital.name}</td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">{formatDate(b.birthDate)}</td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">{formatDate(b.updatedAt)}</td>
+                      <td className="px-4 py-3 text-right">
+                        <ClaimButton birthId={b.id} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        <Card>
-          <CardHeader className="px-4 pt-4 pb-1">
-            <CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-              <InboxIcon className="size-3.5" /> En attente
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-2xl font-bold">{submitted.length}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="px-4 pt-4 pb-1">
-            <CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-              <ClockIcon className="size-3.5" /> En traitement
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-2xl font-bold">{mine.length}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="px-4 pt-4 pb-1">
-            <CardTitle className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-              <CheckCircleIcon className="size-3.5 text-green-500" /> Approuvés
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-2xl font-bold text-green-600">{approved}</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Submitted (unclaimed) */}
-      <Card>
-        <CardHeader className="border-b border-border px-4 py-3">
-          <CardTitle className="text-sm font-medium">
-            Dossiers soumis par les hôpitaux
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          {submitted.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <InboxIcon className="mb-2 size-7 text-muted-foreground/40" />
-              <p className="text-sm text-muted-foreground">
-                Aucun dossier en attente.
-              </p>
+        {/* Transferred copies */}
+        {transferredCopies.length > 0 && (
+          <div className="rounded-xl border bg-card overflow-hidden">
+            <div className="flex items-center gap-2 px-5 py-4 border-b">
+              <ArrowRightLeftIcon className="size-5 text-muted-foreground" />
+              <span className="font-medium text-muted-foreground">
+                Copies transférées disponibles au retrait
+              </span>
             </div>
-          ) : (
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-border bg-muted/40">
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Enfant
-                  </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Hôpital
-                  </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Date naissance
-                  </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Soumis le
-                  </th>
-                  <th className="px-4 py-2.5" />
-                </tr>
-              </thead>
-              <tbody>
-                {submitted.map((b) => (
-                  <tr
-                    key={b.id}
-                    className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
-                  >
-                    <td className="px-4 py-3 font-medium">
-                      {b.babyFirstName || b.babyLastName ? (
-                        `${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim()
-                      ) : (
-                        <span className="text-muted-foreground italic">
-                          Sans nom
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-muted/40">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Enfant</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Mairie d’origine</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">N° acte</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Disponible depuis</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transferredCopies.map((copy) => (
+                    <tr
+                      key={copy.id}
+                      className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
+                    >
+                      <td className="px-4 py-3 font-medium">
+                        {`${copy.birthRecord.babyFirstName ?? ""} ${copy.birthRecord.babyLastName ?? ""}`.trim() || "—"}
+                        <span className="block font-normal text-muted-foreground text-[10px] mt-0.5">
+                          Né(e) le {formatDate(copy.birthRecord.birthDate)}
                         </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {b.hospital.name}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {formatDate(b.birthDate)}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {formatDate(b.updatedAt)}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <ClaimButton birthId={b.id} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </CardContent>
-      </Card>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">
+                        {copy.birthRecord.cityHall
+                          ? `${copy.birthRecord.cityHall.name} · ${copy.birthRecord.cityHall.city}`
+                          : "—"}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-muted-foreground text-xs">
+                        {copy.birthRecord.certificateNumber ?? "—"}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">{formatDate(copy.createdAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
-      {/* Transferred copies */}
-      {transferredCopies.length > 0 && (
-        <Card>
-          <CardHeader className="border-b border-border px-4 py-3">
-            <CardTitle className="flex items-center gap-2 text-sm font-medium">
-              <FileTextIcon className="size-4" /> Copies transférées disponibles
-              au retrait
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-border bg-muted/40">
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Enfant
-                  </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Mairie d’origine
-                  </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    N° acte
-                  </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Disponible depuis
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {transferredCopies.map((copy) => (
-                  <tr
-                    key={copy.id}
-                    className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
-                  >
-                    <td className="px-4 py-3 font-medium">
-                      {`${copy.birthRecord.babyFirstName ?? ""} ${copy.birthRecord.babyLastName ?? ""}`.trim() ||
-                        "—"}
-                      <span className="block font-normal text-muted-foreground">
-                        Né(e) le {formatDate(copy.birthRecord.birthDate)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {copy.birthRecord.cityHall
-                        ? `${copy.birthRecord.cityHall.name} · ${copy.birthRecord.cityHall.city}`
-                        : "—"}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-muted-foreground">
-                      {copy.birthRecord.certificateNumber ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {formatDate(copy.createdAt)}
-                    </td>
+        {/* My processing */}
+        {mine.length > 0 && (
+          <div className="rounded-xl border bg-card overflow-hidden">
+            <div className="flex items-center gap-2 px-5 py-4 border-b">
+              <FileTextIcon className="size-5 text-muted-foreground" />
+              <span className="font-medium text-muted-foreground">
+                Mes dossiers en cours de traitement
+              </span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-muted/40">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Enfant</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Hôpital</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Statut</th>
+                    <th className="px-4 py-3" />
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* My processing */}
-      {mine.length > 0 && (
-        <Card>
-          <CardHeader className="border-b border-border px-4 py-3">
-            <CardTitle className="text-sm font-medium">
-              Mes dossiers en cours
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-border bg-muted/40">
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Enfant
-                  </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Hôpital
-                  </th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">
-                    Statut
-                  </th>
-                  <th className="px-4 py-2.5" />
-                </tr>
-              </thead>
-              <tbody>
-                {mine.map((b) => (
-                  <tr
-                    key={b.id}
-                    className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
-                  >
-                    <td className="px-4 py-3 font-medium">
-                      {`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() ||
-                        "—"}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {b.hospital.name}
-                    </td>
-                    <td className="px-4 py-3">
-                      <StatusBadge status={b.status} />
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {b.status === "PROCESSING" && (
-                        <Link
-                          href={`/dashboard/city-hall/births/${b.id}`}
-                          className="text-primary hover:underline"
-                        >
-                          Compléter
-                        </Link>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+                </thead>
+                <tbody>
+                  {mine.map((b) => (
+                    <tr
+                      key={b.id}
+                      className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
+                    >
+                      <td className="px-4 py-3 font-medium">
+                        {`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground text-xs">{b.hospital.name}</td>
+                      <td className="px-4 py-3">
+                        <StatusBadge status={b.status} />
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {b.status === "PROCESSING" && (
+                          <Link
+                            href={`/dashboard/city-hall/births/${b.id}`}
+                            className="text-xs font-semibold text-primary hover:underline"
+                          >
+                            Compléter
+                          </Link>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    </DashboardContent>
   )
 }
