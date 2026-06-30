@@ -11,45 +11,45 @@ export function FatherFields({ form }: { form: UseFormReturn<any> }) {
   const profession = watch("fatherProfession") || ""
 
   return (
-    <div className="rounded-2xl border border-border p-5 space-y-4 bg-card shadow-xs">
-      <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        👨 Informations complémentaires — Père
+    <div className="rounded-md border border-border p-4 space-y-4 bg-card shadow-xs">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+        Informations complémentaires — Père / Father's details
       </h3>
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Prénom">
-          <Input {...register("fatherFirstName")} placeholder="Prénom du père" />
+        <FormField label="Prénom / First Name">
+          <Input {...register("fatherFirstName")} placeholder="Serge" className="h-10" />
         </FormField>
-        <FormField label="Nom">
-          <Input {...register("fatherLastName")} placeholder="Nom du père" />
+        <FormField label="Nom de famille / Family Name">
+          <Input {...register("fatherLastName")} placeholder="Mballa" className="h-10" />
         </FormField>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="CNI / Passeport">
-          <Input {...register("fatherCni")} placeholder="987654321" />
+        <FormField label="N° CNI ou Passeport / NIC No. or passport">
+          <Input {...register("fatherCni")} placeholder="987654321" className="h-10" />
         </FormField>
-        <FormField label="Profession">
+        <FormField label="Profession / Occupation">
           <AutocompleteInput
             value={profession}
             onChangeValue={(val) => setValue("fatherProfession", val)}
             suggestions={PROFESSIONS}
-            placeholder="Profession du père"
+            placeholder="Ingénieur"
           />
         </FormField>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Adresse">
-          <Input {...register("fatherAddress")} placeholder="Quartier, Ville" />
+        <FormField label="Adresse de Domicile / Domicile Address">
+          <Input {...register("fatherAddress")} placeholder="Quartier, Ville" className="h-10" />
         </FormField>
-        <FormField label="Téléphone">
+        <FormField label="Téléphone / Phone">
           <div className="flex">
-            <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-input bg-muted text-muted-foreground text-xs">
+            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-neutral-300 bg-muted text-neutral-600 text-xs">
               +237
             </span>
             <Input
               type="tel"
               {...register("fatherPhone")}
               placeholder="6XX XXX XXX"
-              className="rounded-l-none"
+              className="h-10 rounded-l-none"
             />
           </div>
         </FormField>
