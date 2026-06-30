@@ -37,10 +37,10 @@ export function ApproveDeclinePanel({ birthId }: { birthId: string }) {
       <Separator />
       
       <div className="space-y-4">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Décision de signature</h2>
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">Décision de signature / Signature Decision</h3>
 
         {serverError && (
-          <p className="text-xs text-destructive bg-destructive/10 rounded-xl px-4 py-2.5 font-semibold">
+          <p className="text-xs text-destructive bg-destructive/10 rounded-md px-4 py-2.5 font-semibold">
             {serverError}
           </p>
         )}
@@ -48,14 +48,14 @@ export function ApproveDeclinePanel({ birthId }: { birthId: string }) {
         {!showDeclineForm ? (
           <div className="flex items-center gap-3">
             <Button
-              className="h-12 px-6 rounded-xl text-base font-semibold bg-primary hover:bg-primary/95 text-primary-foreground shadow-sm transition-all cursor-pointer"
+              className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider bg-neutral-800 hover:bg-neutral-900 text-white shadow-sm transition-all cursor-pointer"
               onClick={onApprove}
               disabled={isPending}
             >
-              {isPending ? "Traitement…" : "✍️ Approuver et signer"}
+              {isPending ? "Signature…" : "Approuver et signer"}
             </Button>
             <Button
-              className="h-12 px-6 rounded-xl text-base font-semibold cursor-pointer"
+              className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer"
               variant="destructive"
               onClick={() => setShowDeclineForm(true)}
               disabled={isPending}

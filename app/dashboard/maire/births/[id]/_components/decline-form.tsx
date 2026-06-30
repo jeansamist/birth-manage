@@ -22,29 +22,29 @@ export function DeclineForm({ onSubmit, onCancel, isPending }: DeclineFormProps)
   })
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-muted/10 p-5 rounded-2xl border border-border">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-muted/10 p-4 rounded-md border border-border">
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Motif du refus <span className="text-destructive">*</span>
+        <Label className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+          Motif du refus / Reason for rejection <span className="text-destructive">*</span>
         </Label>
         <textarea
           {...register("reason")}
-          rows={4}
+          rows={3}
           placeholder="Veuillez préciser la raison détaillée du refus (min. 10 caractères)…"
-          className="w-full rounded-xl border border-border bg-background px-4 py-3 text-base shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none resize-none"
+          className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-all outline-none resize-none"
         />
         {errors.reason && (
           <p className="text-xs text-destructive mt-1 font-semibold">{errors.reason.message}</p>
         )}
       </div>
       <div className="flex items-center gap-3">
-        <Button type="submit" variant="destructive" className="h-12 px-6 rounded-xl text-base font-semibold cursor-pointer" disabled={isPending}>
-          {isPending ? "Envoi…" : "Confirmer le refus"}
+        <Button type="submit" variant="destructive" className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer" disabled={isPending}>
+          {isPending ? "Refus…" : "Confirmer le refus"}
         </Button>
         <Button
           type="button"
           variant="outline"
-          className="h-12 px-6 rounded-xl text-base font-semibold cursor-pointer"
+          className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer"
           onClick={onCancel}
           disabled={isPending}
         >
