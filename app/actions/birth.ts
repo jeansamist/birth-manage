@@ -234,11 +234,15 @@ export async function submitBirthToCityHall(
     if (!assignment) {
       return { success: false, error: "Aucun hôpital approuvé trouvé." }
     }
+    const declarationRef = await generateUniqueDeclarationRef(assignment.hospitalId)
+    const citizenTrackingCode = await generateUniqueCitizenTrackingCode()
     await prisma.birthRecord.create({
       data: {
         ...payload,
         doctorId: session.userId,
         hospitalId: assignment.hospitalId,
+        declarationRef,
+        citizenTrackingCode,
       },
     })
   }
