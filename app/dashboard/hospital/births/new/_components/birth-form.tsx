@@ -146,7 +146,7 @@ export function BirthForm({
 
         {/* Panneau de droite : Rendu Pixel-Perfect à 50% de largeur */}
         <div className="hidden xl:flex xl:w-1/2 shrink-0 bg-muted/10 p-8 overflow-y-auto border-l border-border select-none items-start justify-center">
-          <div className="w-full max-w-[780px] sticky top-0">
+          <div className="w-full max-w-[780px]">
             <p className="mb-4 text-[9px] font-bold tracking-wider text-neutral-400 uppercase text-center">
               Récépissé de Déclaration Officiel (Rendu en temps réel)
             </p>

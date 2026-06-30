@@ -12,9 +12,9 @@ export const babyStepSchema = z.object({
   birthDate: z.string().min(1, "Date de naissance requise"),
   birthTime: optionalString,
   birthPlace: optionalString,
-  weightGrams: z.coerce.number().positive().optional(),
-  heightCm: z.coerce.number().positive().optional(),
-  apgarScore: z.coerce.number().min(0).max(10).optional(),
+  weightGrams: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : Number(val)), z.number().positive().optional()),
+  heightCm: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : Number(val)), z.number().positive().optional()),
+  apgarScore: z.preprocess((val) => (val === "" || val === null || val === undefined ? undefined : Number(val)), z.number().min(0).max(10).optional()),
   deliveryType: z.enum(["NATURAL", "CAESAREAN", "FORCEPS", "VACUUM"]).optional(),
   medicalNotes: optionalString,
 })
