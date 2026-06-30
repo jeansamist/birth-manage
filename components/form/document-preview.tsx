@@ -67,6 +67,7 @@ export interface PreviewData {
   maireName?: string | null
   secretaireName?: string | null
   qrCodeUrl?: string | null
+  citizenTrackingCode?: string | null
 }
 
 interface DocumentPreviewProps {

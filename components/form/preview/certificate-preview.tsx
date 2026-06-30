@@ -3,54 +3,10 @@ import Image from "next/image"
 import { CertificateHeader } from "./certificate-header"
 import { CertificateBody } from "./certificate-body"
 import { CertificateSignatures } from "./certificate-signatures"
+import type { PreviewData } from "../document-preview"
 
 interface CertificatePreviewProps {
-  data: {
-    babyFirstName?: string | null
-    babyLastName?: string | null
-    babyGender?: "MALE" | "FEMALE" | null
-    birthDate?: string | Date | null
-    birthPlace?: string | null
-    
-    motherFirstName?: string | null
-    motherLastName?: string | null
-    motherBirthDate?: string | Date | null
-    motherNationality?: string | null
-    motherCni?: string | null
-    motherProfession?: string | null
-    motherAddress?: string | null
-    motherPhone?: string | null
-    
-    fatherFirstName?: string | null
-    fatherLastName?: string | null
-    fatherBirthDate?: string | Date | null
-    fatherNationality?: string | null
-    fatherCni?: string | null
-    fatherProfession?: string | null
-    fatherAddress?: string | null
-    fatherPhone?: string | null
-    
-    parentsMarried?: boolean
-    marriageCertNumber?: string | null
-    marriageDate?: string | Date | null
-    
-    certificateNumber?: string | null
-    cityHallName?: string | null
-    cityHallCity?: string | null
-    approvedAt?: string | Date | null
-    maireName?: string | null
-    secretaireName?: string | null
-    qrCodeUrl?: string | null
-    
-    declarantFirstName?: string | null
-    declarantLastName?: string | null
-    declarantRole?: string | null
-    declarantCni?: string | null
-    
-    hospitalName?: string | null
-    declarationRef?: string | null
-    citizenTrackingCode?: string | null
-  }
+  data: PreviewData
 }
 
 export function CertificatePreview({ data }: CertificatePreviewProps) {

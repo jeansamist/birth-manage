@@ -126,7 +126,7 @@ export function CompletionForm({ birth }: { birth: any }) {
     cityHallCity: birth.cityHall?.city || "Yaoundé",
     maireName: birth.maireName || "SIMON BIYA",
     secretaireName: birth.secretaireName || "MBUYI CECILE",
-    qrCodeUrl: birth.qrCodeUrl,
+    qrCodeUrl: birth.citizenAccessId ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`/verify/${birth.citizenAccessId}`)}` : null,
     declarationRef: birth.declarationRef,
     citizenTrackingCode: birth.citizenTrackingCode,
   }
