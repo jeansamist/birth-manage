@@ -83,7 +83,7 @@ export function DocumentPreview({ type, data, className }: DocumentPreviewProps)
   return (
     <div className={cn("w-full flex items-center justify-center p-2", className)}>
       <div 
-        className="w-full aspect-[1/1.414] bg-white text-black p-6 md:p-8 flex flex-col relative overflow-hidden shadow-2xl select-none border border-neutral-300 rounded-sm font-sans"
+        className="w-full min-h-[1120px] bg-white text-black p-6 md:p-8 flex flex-col relative shadow-2xl select-none border border-neutral-300 rounded-sm font-sans"
         style={{ color: "#000000" }}
       >
         <DeclarationHeader 

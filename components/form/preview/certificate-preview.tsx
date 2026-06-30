@@ -42,7 +42,7 @@ export function CertificatePreview({ data }: CertificatePreviewProps) {
   const fatherFullName = [data.fatherFirstName, data.fatherLastName].filter(Boolean).join(" ") || ""
 
   return (
-    <div className="w-full aspect-[1/1.414] bg-white text-black p-6 md:p-8 flex flex-col relative overflow-hidden shadow-2xl select-none text-[8px] font-sans text-left border border-neutral-300 rounded-sm">
+    <div className="w-full min-h-[1120px] bg-white text-black p-6 md:p-8 flex flex-col relative shadow-2xl select-none text-[8px] font-sans text-left border border-neutral-300 rounded-sm">
       {/* Armoiries et filigrane */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.06] select-none">
         <div className="relative w-80 h-80">
