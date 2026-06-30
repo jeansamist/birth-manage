@@ -44,7 +44,7 @@ function RadioCardGroup<T extends string>({
           <label
             key={option.value}
             className={cn(
-              "relative flex cursor-pointer flex-col gap-2 rounded-xl border-2 p-4 transition-all duration-200 select-none",
+              "relative flex cursor-pointer flex-col gap-2 rounded-md border-2 p-4 transition-all duration-200 select-none",
               "hover:bg-muted/50",
               selected
                 ? "border-primary bg-primary/5 shadow-sm"

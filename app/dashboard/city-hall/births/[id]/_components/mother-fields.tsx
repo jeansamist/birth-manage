@@ -11,37 +11,37 @@ export function MotherFields({ form }: { form: UseFormReturn<any> }) {
   const profession = watch("motherProfession") || ""
 
   return (
-    <div className="rounded-2xl border border-border p-5 space-y-4 bg-card shadow-xs">
-      <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        👩 Informations complémentaires — Mère
+    <div className="rounded-md border border-border p-4 space-y-4 bg-card shadow-xs">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+        Informations complémentaires — Mère / Mother's details
       </h3>
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="CNI / Passeport">
-          <Input {...register("motherCni")} placeholder="123456789" />
+        <FormField label="N° CNI ou Passeport / NIC No. or passport">
+          <Input {...register("motherCni")} placeholder="123456789" className="h-10" />
         </FormField>
-        <FormField label="Profession">
+        <FormField label="Profession / Occupation">
           <AutocompleteInput
             value={profession}
             onChangeValue={(val) => setValue("motherProfession", val)}
             suggestions={PROFESSIONS}
-            placeholder="Profession de la mère"
+            placeholder="Enseignante"
           />
         </FormField>
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Adresse">
-          <Input {...register("motherAddress")} placeholder="Quartier, Ville" />
+        <FormField label="Adresse de Domicile / Domicile Address">
+          <Input {...register("motherAddress")} placeholder="Quartier, Ville" className="h-10" />
         </FormField>
-        <FormField label="Téléphone">
+        <FormField label="Téléphone / Phone">
           <div className="flex">
-            <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-input bg-muted text-muted-foreground text-xs">
+            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-neutral-300 bg-muted text-neutral-600 text-xs">
               +237
             </span>
             <Input
               type="tel"
               {...register("motherPhone")}
               placeholder="6XX XXX XXX"
-              className="rounded-l-none"
+              className="h-10 rounded-l-none"
             />
           </div>
         </FormField>

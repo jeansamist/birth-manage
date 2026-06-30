@@ -43,6 +43,50 @@ async function generateUniqueCitizenAccessId(
   throw new Error("Impossible de générer un identifiant citoyen unique.")
 }
 
+function generateDeclarationRef(hospitalId: string): string {
+  const year = new Date().getFullYear()
+  const seq = Math.floor(1000 + Math.random() * 9000)
+  const code = hospitalId.slice(-4).toUpperCase()
+  return `DCL-${year}-${code}-${seq}`
+}
+
+async function generateUniqueDeclarationRef(hospitalId: string): Promise<string> {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const declarationRef = generateDeclarationRef(hospitalId)
+    const existing = await prisma.birthRecord.findUnique({
+      where: { declarationRef },
+      select: { id: true },
+    })
+    if (!existing) return declarationRef
+  }
+  throw new Error("Impossible de générer une référence de déclaration unique.")
+}
+
+function generateCitizenTrackingCode(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+  let code = "TRK-"
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  code += "-"
+  for (let i = 0; i < 4; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return code
+}
+
+async function generateUniqueCitizenTrackingCode(): Promise<string> {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = generateCitizenTrackingCode()
+    const existing = await prisma.birthRecord.findUnique({
+      where: { citizenTrackingCode: code },
+      select: { id: true },
+    })
+    if (!existing) return code
+  }
+  throw new Error("Impossible de générer un code de suivi unique.")
+}
+
 // ─── Doctor actions ───────────────────────────────────────────────────────────
 
 export async function saveBirthDraft(
@@ -108,12 +152,17 @@ export async function saveBirthDraft(
     }
   }
 
+  const declarationRef = await generateUniqueDeclarationRef(assignment.hospitalId)
+  const citizenTrackingCode = await generateUniqueCitizenTrackingCode()
+
   const record = await prisma.birthRecord.create({
     data: {
       ...payload,
       status: "DRAFT",
       doctorId: session.userId,
       hospitalId: assignment.hospitalId,
+      declarationRef,
+      citizenTrackingCode,
     },
   })
   return { success: true, id: record.id }
@@ -185,11 +234,15 @@ export async function submitBirthToCityHall(
     if (!assignment) {
       return { success: false, error: "Aucun hôpital approuvé trouvé." }
     }
+    const declarationRef = await generateUniqueDeclarationRef(assignment.hospitalId)
+    const citizenTrackingCode = await generateUniqueCitizenTrackingCode()
     await prisma.birthRecord.create({
       data: {
         ...payload,
         doctorId: session.userId,
         hospitalId: assignment.hospitalId,
+        declarationRef,
+        citizenTrackingCode,
       },
     })
   }

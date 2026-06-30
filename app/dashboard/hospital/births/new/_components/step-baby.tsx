@@ -9,8 +9,8 @@ import { FormField, SectionTitle, DatePicker } from "./form-primitives"
 import { StepBabyMedical } from "./step-baby-medical"
 
 const GENDER_OPTIONS = [
-  { value: "MALE" as const, label: "Masculin", icon: "👦" },
-  { value: "FEMALE" as const, label: "Féminin", icon: "👧" },
+  { value: "MALE" as const, label: "Masculin / Male" },
+  { value: "FEMALE" as const, label: "Féminin / Female" },
 ]
 
 interface StepBabyProps {
@@ -22,18 +22,18 @@ export function StepBaby({ form }: StepBabyProps) {
 
   return (
     <div className="space-y-6">
-      <SectionTitle>👶 Informations sur l'enfant</SectionTitle>
+      <SectionTitle>Renseignements sur l'enfant</SectionTitle>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Prénom" required error={errors.babyFirstName?.message}>
-          <Input {...register("babyFirstName")} placeholder="Jean-Paul" className="h-10" />
-        </FormField>
-        <FormField label="Nom" required error={errors.babyLastName?.message}>
+        <FormField label="Nom de famille / Family Name" required error={errors.babyLastName?.message}>
           <Input {...register("babyLastName")} placeholder="Mballa" className="h-10" />
+        </FormField>
+        <FormField label="Prénom / First Name" required error={errors.babyFirstName?.message}>
+          <Input {...register("babyFirstName")} placeholder="Jean-Paul" className="h-10" />
         </FormField>
       </div>
 
-      <FormField label="Sexe" required error={errors.babyGender?.message}>
+      <FormField label="Sexe / Gender" required error={errors.babyGender?.message}>
         <Controller
           control={control}
           name="babyGender"
@@ -49,22 +49,22 @@ export function StepBaby({ form }: StepBabyProps) {
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Date de naissance" required error={errors.birthDate?.message}>
+        <FormField label="Date de naissance / Date of Birth" required error={errors.birthDate?.message}>
           <Controller
             control={control}
             name="birthDate"
             render={({ field }) => (
-              <DatePicker value={field.value} onChange={field.onChange} placeholder="Date de naissance" />
+              <DatePicker value={field.value} onChange={field.onChange} />
             )}
           />
         </FormField>
-        <FormField label="Heure de naissance">
+        <FormField label="Heure de naissance / Time of Birth">
           <Input type="time" {...register("birthTime")} className="h-10" />
         </FormField>
       </div>
 
-      <FormField label="Lieu (salle / service)">
-        <Input {...register("birthPlace")} placeholder="Ex: Salle B — Maternité" className="h-10" />
+      <FormField label="Lieu de naissance / Place of Birth (salle / service)">
+        <Input {...register("birthPlace")} placeholder="Ex: Maternité - Salle de travail A" className="h-10" />
       </FormField>
 
       <StepBabyMedical form={form} />

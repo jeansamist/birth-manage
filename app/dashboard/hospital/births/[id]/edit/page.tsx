@@ -27,7 +27,7 @@ export default async function EditBirthPage({ params }: EditBirthPageProps) {
     redirect("/dashboard/hospital")
   }
 
-  const [cityHalls, assignment] = await Promise.all([
+  const [cityHalls, assignment, user] = await Promise.all([
     prisma.cityHall.findMany({
       where: { isActive: true },
       select: { id: true, name: true, city: true },
@@ -37,6 +37,10 @@ export default async function EditBirthPage({ params }: EditBirthPageProps) {
       where: { userId: session.userId, isApproved: true },
       include: { hospital: { select: { name: true, city: true } } },
     }),
+    prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { firstName: true, lastName: true },
+    })
   ])
 
   const defaultBirthPlace = assignment?.hospital
@@ -85,9 +89,20 @@ export default async function EditBirthPage({ params }: EditBirthPageProps) {
     cityHallId: record.cityHallId ?? "",
   }
 
+  // Inject tracking codes into initialData if present on the record
+  initialData.declarationRef = record.declarationRef ?? undefined
+  initialData.citizenTrackingCode = record.citizenTrackingCode ?? undefined
+
   return (
     <div className="h-full min-h-0 flex flex-col">
-      <BirthForm cityHalls={cityHalls} initialData={initialData} id={id} defaultBirthPlace={defaultBirthPlace} />
+      <BirthForm 
+        cityHalls={cityHalls} 
+        initialData={initialData} 
+        id={id} 
+        defaultBirthPlace={defaultBirthPlace}
+        doctorName={user ? `${user.firstName} ${user.lastName}` : ""}
+        hospitalName={assignment?.hospital?.name || ""}
+      />
     </div>
   )
 }

@@ -11,45 +11,45 @@ export function MarriageFields({ form }: { form: UseFormReturn<any> }) {
   const parentsMarried = watch("parentsMarried")
 
   return (
-    <div className="rounded-2xl border border-border p-5 space-y-4 bg-card shadow-xs">
-      <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        💍 Situation matrimoniale
+    <div className="rounded-md border border-border p-4 space-y-4 bg-card shadow-xs">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+        Situation matrimoniale / Marital Status
       </h3>
 
-      <div className="flex rounded-xl border border-border overflow-hidden h-12">
+      <div className="flex rounded-md border border-border overflow-hidden h-10">
         <button
           type="button"
           onClick={() => setValue("parentsMarried", false)}
           className={cn(
-            "flex-1 text-sm font-semibold transition-colors cursor-pointer",
-            !parentsMarried ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
+            "flex-1 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer",
+            !parentsMarried ? "bg-neutral-800 text-white" : "bg-muted/40 text-neutral-600 hover:bg-muted/60"
           )}
         >
-          Non mariés
+          Non mariés / Unmarried
         </button>
         <button
           type="button"
           onClick={() => setValue("parentsMarried", true)}
           className={cn(
-            "flex-1 text-sm font-semibold transition-colors cursor-pointer",
-            parentsMarried ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
+            "flex-1 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer",
+            parentsMarried ? "bg-neutral-800 text-white" : "bg-muted/40 text-neutral-600 hover:bg-muted/60"
           )}
         >
-          💍 Mariés
+          Mariés / Married
         </button>
       </div>
 
       {parentsMarried && (
         <div className="grid grid-cols-2 gap-4">
-          <FormField label="N° acte de mariage">
-            <Input {...register("marriageCertNumber")} placeholder="ACT-2023-001" />
+          <FormField label="N° acte de mariage / Marriage certificate No.">
+            <Input {...register("marriageCertNumber")} placeholder="ACT-2023-001" className="h-10" />
           </FormField>
-          <FormField label="Date du mariage">
+          <FormField label="Date du mariage / Marriage Date">
             <Controller
               control={control}
               name="marriageDate"
               render={({ field }) => (
-                <DatePicker value={field.value} onChange={field.onChange} placeholder="Date du mariage" />
+                <DatePicker value={field.value} onChange={field.onChange} />
               )}
             />
           </FormField>

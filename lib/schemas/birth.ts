@@ -12,9 +12,9 @@ export const babyStepSchema = z.object({
   birthDate: z.string().min(1, "Date de naissance requise"),
   birthTime: optionalString,
   birthPlace: optionalString,
-  weightGrams: z.coerce.number().positive().optional(),
-  heightCm: z.coerce.number().positive().optional(),
-  apgarScore: z.coerce.number().min(0).max(10).optional(),
+  weightGrams: z.union([z.coerce.number().positive(), z.literal("").transform(() => undefined)]).optional(),
+  heightCm: z.union([z.coerce.number().positive(), z.literal("").transform(() => undefined)]).optional(),
+  apgarScore: z.union([z.coerce.number().min(0).max(10), z.literal("").transform(() => undefined)]).optional(),
   deliveryType: z.enum(["NATURAL", "CAESAREAN", "FORCEPS", "VACUUM"]).optional(),
   medicalNotes: optionalString,
 })
@@ -53,6 +53,8 @@ export const reviewStepSchema = z.object({
   marriageCertNumber: optionalString,
   marriageDate: optionalDate,
   cityHallId: z.string().min(1, "Veuillez sélectionner une mairie"),
+  declarationRef: optionalString,
+  citizenTrackingCode: optionalString,
 })
 
 // ─── Combined ─────────────────────────────────────────────────────────────────

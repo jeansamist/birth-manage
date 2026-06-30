@@ -25,29 +25,29 @@ export function FatherSummary({ birth }: FatherSummaryProps) {
 
   if (!hasFather) {
     return (
-      <div className="rounded-2xl border border-border p-6 bg-card shadow-xs">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-          👨 Informations du père
+      <div className="rounded-md border border-border p-4 bg-card shadow-xs">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700 mb-2">
+          Informations du père / Father's details
         </h3>
-        <p className="text-xs text-muted-foreground italic">Non déclaré (Père inconnu)</p>
+        <p className="text-xs text-neutral-500 italic">Non déclaré / Father unknown</p>
       </div>
     )
   }
 
   return (
-    <div className="rounded-2xl border border-border p-6 space-y-4 bg-card shadow-xs">
-      <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        👨 Informations du père
+    <div className="rounded-md border border-border p-4 space-y-4 bg-card shadow-xs">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+        Informations du père / Father's details
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <SummaryField label="Prénom" value={birth.fatherFirstName} />
-        <SummaryField label="Nom" value={birth.fatherLastName} />
-        <SummaryField label="Date de naissance" value={fmt(birth.fatherBirthDate)} />
-        <SummaryField label="Nationalité" value={birth.fatherNationality} />
-        <SummaryField label="CNI / Passeport" value={birth.fatherCni} />
-        <SummaryField label="Profession" value={birth.fatherProfession} />
-        <SummaryField label="Adresse de résidence" value={birth.fatherAddress} />
-        <SummaryField label="Téléphone" value={birth.fatherPhone ? `+237 ${birth.fatherPhone}` : undefined} />
+        <SummaryField label="Prénom / First name" value={birth.fatherFirstName} />
+        <SummaryField label="Nom / Family name" value={birth.fatherLastName} />
+        <SummaryField label="Date de naissance / Date of birth" value={fmt(birth.fatherBirthDate)} />
+        <SummaryField label="Nationalité / Nationality" value={birth.fatherNationality} />
+        <SummaryField label="N° CNI ou Passeport / NIC No. or passport" value={birth.fatherCni} />
+        <SummaryField label="Profession / Occupation" value={birth.fatherProfession} />
+        <SummaryField label="Adresse de résidence / Domicile Address" value={birth.fatherAddress} />
+        <SummaryField label="Téléphone / Phone" value={birth.fatherPhone ? `+237 ${birth.fatherPhone}` : undefined} />
       </div>
     </div>
   )
