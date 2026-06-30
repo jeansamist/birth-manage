@@ -177,6 +177,9 @@ model BirthRecord {
   declinedAt        DateTime?
   certificateNumber String?   @unique
   citizenAccessId   String?   @unique
+  declarationRef     String?   @unique
+  citizenTrackingCode String?  @unique
+  isCompletedByCitizen Boolean @default(false)
 
   // ── Relations ─────────────────────────────────────
   hospitalId String
