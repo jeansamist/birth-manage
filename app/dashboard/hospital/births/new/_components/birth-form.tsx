@@ -81,9 +81,9 @@ export function BirthForm({
   }
 
   return (
-    <div className="min-h-screen bg-muted/10 flex items-center justify-center p-4 md:p-6">
-      <div className="w-full max-w-[1700px] bg-card border border-border rounded-[24px] shadow-xl flex flex-col xl:flex-row min-h-[780px] overflow-hidden">
-        <div className="flex flex-col md:flex-row flex-1 min-w-0">
+    <div className="h-full w-full min-h-0 flex flex-col bg-background">
+      <div className="w-full flex-1 flex flex-col xl:flex-row min-h-0 overflow-hidden bg-background">
+        <div className="flex flex-col md:flex-row flex-1 min-w-0 xl:w-1/2">
           <LeftPanel
             currentStep={step}
             steps={STEPS}
@@ -126,13 +126,13 @@ export function BirthForm({
           </main>
         </div>
 
-        {/* Panneau de droite : Rendu Pixel-Perfect du document réel */}
-        <div className="hidden xl:block w-[460px] shrink-0 bg-muted/5 p-6 overflow-y-auto border-t xl:border-t-0 xl:border-l border-border select-none">
-          <div className="sticky top-0">
-            <p className="mb-4 text-[9px] font-bold tracking-wider text-neutral-400 uppercase">
-              Récépissé médical en temps réel
+        {/* Panneau de droite : Rendu Pixel-Perfect à 50% de largeur */}
+        <div className="hidden xl:flex xl:w-1/2 shrink-0 bg-muted/10 p-8 overflow-y-auto border-l border-border select-none items-start justify-center">
+          <div className="w-full max-w-[620px] sticky top-0">
+            <p className="mb-4 text-[9px] font-bold tracking-wider text-neutral-400 uppercase text-center">
+              Récépissé de Déclaration Officiel (Rendu en temps réel)
             </p>
-            <div className="scale-[0.82] origin-top border shadow-md rounded-sm overflow-hidden bg-white">
+            <div className="border shadow-lg rounded-sm overflow-hidden bg-white">
               <DocumentPreview type="declaration" data={previewData} />
             </div>
           </div>
