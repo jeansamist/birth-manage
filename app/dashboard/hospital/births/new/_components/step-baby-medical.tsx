@@ -15,10 +15,12 @@ import { FormField } from "./form-primitives"
 interface StepBabyMedicalProps {
   form: UseFormReturn<BirthFormInput>
 }
+
 const DELIVERY_OPTIONS = [
-  { value: "NATURAL" as const, label: "Naturel", description: "Voie basse" },
-  { value: "CAESAREAN" as const, label: "Césarienne", description: "Intervention" },
+  { value: "NATURAL" as const, label: "Naturel / Natural", description: "Accouchement par voie basse" },
+  { value: "CAESAREAN" as const, label: "Césarienne / Caesarean", description: "Intervention chirurgicale" },
 ]
+
 export function StepBabyMedical({ form }: StepBabyMedicalProps) {
   const { register, control, watch, setValue } = form
   const [medicalExpanded, setMedicalExpanded] = useState(false)
@@ -26,14 +28,15 @@ export function StepBabyMedical({ form }: StepBabyMedicalProps) {
   const heightCm = watch("heightCm")
   const weight = Number(weightGrams || 3200)
   const height = Number(heightCm || 50)
+
   return (
-    <div className="rounded-xl border border-border overflow-hidden bg-muted/5">
+    <div className="rounded-md border border-border overflow-hidden bg-muted/5">
       <button
         type="button"
         onClick={() => setMedicalExpanded(!medicalExpanded)}
         className="w-full flex items-center justify-between px-4 py-3 bg-muted/40 hover:bg-muted/60 transition-colors text-left"
       >
-        <span className="text-xs font-semibold">🩺 Données médicales (Facultatif)</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-neutral-700">Données médicales / Medical details (Facultatif)</span>
         <ChevronDownIcon className={cn("size-4 text-muted-foreground transition-transform", medicalExpanded && "rotate-180")} />
       </button>
 
@@ -45,34 +48,34 @@ export function StepBabyMedical({ form }: StepBabyMedicalProps) {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="p-4 space-y-4 border-t">
+            <div className="p-4 space-y-4 border-t border-border">
               <div className="grid grid-cols-3 gap-3">
-                <FormField label="Poids (g)">
+                <FormField label="Poids / Weight (g)">
                   <Input type="number" {...register("weightGrams")} placeholder="3200" className="h-10" />
                   <div className="flex gap-1 mt-1">
-                    <button type="button" onClick={() => setValue("weightGrams", Math.max(0, weight - 100))} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">-100g</button>
-                    <button type="button" onClick={() => setValue("weightGrams", Math.max(0, weight + 100))} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">+100g</button>
+                    <button type="button" onClick={() => setValue("weightGrams", Math.max(0, weight - 100))} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer">-100g</button>
+                    <button type="button" onClick={() => setValue("weightGrams", Math.max(0, weight + 100))} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer">+100g</button>
                   </div>
                 </FormField>
 
-                <FormField label="Taille (cm)">
+                <FormField label="Taille / Height (cm)">
                   <Input type="number" step="0.1" {...register("heightCm")} placeholder="50" className="h-10" />
                   <div className="flex gap-1 mt-1">
-                    <button type="button" onClick={() => setValue("heightCm", Math.max(0, height - 1))} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">-1</button>
-                    <button type="button" onClick={() => setValue("heightCm", Math.max(0, height + 1))} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">+1</button>
+                    <button type="button" onClick={() => setValue("heightCm", Math.max(0, height - 1))} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer">-1</button>
+                    <button type="button" onClick={() => setValue("heightCm", Math.max(0, height + 1))} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer">+1</button>
                   </div>
                 </FormField>
 
                 <FormField label="Score Apgar">
                   <Input type="number" min="0" max="10" {...register("apgarScore")} placeholder="9" className="h-10" />
                   <div className="flex gap-1 mt-1">
-                    <button type="button" onClick={() => setValue("apgarScore", 9)} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer">9</button>
-                    <button type="button" onClick={() => setValue("apgarScore", 10)} className="text-[9px] border px-1 py-0.5 rounded hover:bg-muted cursor-pointer font-bold">10</button>
+                    <button type="button" onClick={() => setValue("apgarScore", 9)} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer">9</button>
+                    <button type="button" onClick={() => setValue("apgarScore", 10)} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer font-bold">10</button>
                   </div>
                 </FormField>
               </div>
 
-              <FormField label="Type d'accouchement">
+              <FormField label="Type d'accouchement / Delivery Type">
                 <Controller
                   control={control}
                   name="deliveryType"
@@ -87,8 +90,8 @@ export function StepBabyMedical({ form }: StepBabyMedicalProps) {
                 />
               </FormField>
 
-              <FormField label="Notes médicales">
-                <Textarea {...register("medicalNotes")} rows={2} placeholder="Observations, complications..." className="resize-none text-xs" />
+              <FormField label="Notes médicales / Medical Notes">
+                <Textarea {...register("medicalNotes")} rows={2} placeholder="Observations, complications..." className="resize-none text-xs rounded-md" />
               </FormField>
             </div>
           </motion.div>

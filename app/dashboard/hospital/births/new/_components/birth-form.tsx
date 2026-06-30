@@ -13,11 +13,15 @@ export function BirthForm({
   initialData,
   id,
   defaultBirthPlace,
+  doctorName,
+  hospitalName,
 }: {
   cityHalls: { id: string; name: string; city: string }[]
   initialData?: Partial<BirthFormInput>
   id?: string
   defaultBirthPlace?: string
+  doctorName?: string
+  hospitalName?: string
 }) {
   const {
     step,
@@ -37,7 +41,10 @@ export function BirthForm({
     handleFinalSubmit,
   } = useBirthForm(initialData, id, defaultBirthPlace)
 
-  const formValues = form.watch()
+  const formValues = form.watch() as BirthFormInput
+
+  const selectedCityHallId = formValues.cityHallId
+  const selectedCityHall = cityHalls.find((c) => c.id === selectedCityHallId)
 
   const previewData: PreviewData = {
     babyFirstName: formValues.babyFirstName,
@@ -70,6 +77,21 @@ export function BirthForm({
     parentsMarried: formValues.parentsMarried,
     marriageCertNumber: formValues.marriageCertNumber,
     marriageDate: formValues.marriageDate,
+    
+    // Renseignements Déclarant (Médecin connecté)
+    declarantFirstName: doctorName ? doctorName.split(" ")[0] : null,
+    declarantLastName: doctorName ? doctorName.split(" ").slice(1).join(" ") : null,
+    declarantRole: "Médecin / Doctor",
+    declarantPhone: null,
+    
+    // Établissement
+    hospitalName: hospitalName || null,
+    cityHallName: selectedCityHall ? selectedCityHall.name : null,
+    cityHallCity: selectedCityHall ? selectedCityHall.city : null,
+    
+    // Référence de déclaration
+    declarationRef: formValues.declarationRef,
+    citizenTrackingCode: formValues.citizenTrackingCode,
   }
 
   const goNext = async () => {
@@ -83,12 +105,21 @@ export function BirthForm({
   return (
     <div className="h-full w-full min-h-0 flex flex-col bg-background">
       <div className="w-full flex-1 flex flex-col xl:flex-row min-h-0 overflow-hidden bg-background">
-        <div className="flex flex-col md:flex-row flex-1 min-w-0 xl:w-1/2">
-          <LeftPanel
-            currentStep={step}
-            steps={STEPS}
+        <main className="flex-1 flex flex-col min-w-0 bg-background xl:border-r border-border xl:w-1/2">
+          <FormHeader
+            step={step}
+            totalSteps={STEPS.length}
+            isPending={isPending}
+            onPrev={() => {
+              setDirection(-1)
+              setStep((s) => s - 1)
+            }}
+            onNext={goNext}
+            onSubmit={() => setConfirmOpen(true)}
+            stepLabel={STEPS[step].label}
             saveState={saveState}
             savedAt={savedAt}
+            steps={STEPS}
             onStepClick={async (sIdx) => {
               if (sIdx > step) {
                 if (!(await form.trigger(STEPS[step].fields as (keyof BirthFormInput)[]))) return
@@ -97,21 +128,8 @@ export function BirthForm({
               setDirection(sIdx > step ? 1 : -1)
               setStep(sIdx)
             }}
-            onManualSave={triggerSave}
           />
-          <main className="flex-1 flex flex-col min-w-0 bg-background xl:border-r border-border">
-            <FormHeader
-              step={step}
-              totalSteps={STEPS.length}
-              isPending={isPending}
-              onPrev={() => {
-                setDirection(-1)
-                setStep((s) => s - 1)
-              }}
-              onNext={goNext}
-              onSubmit={() => setConfirmOpen(true)}
-              stepLabel={STEPS[step].label}
-            />
+          <div className="flex-1 overflow-y-auto">
             <StepContainer
               step={step}
               direction={direction}
@@ -123,8 +141,8 @@ export function BirthForm({
               setStep={setStep}
               setDirection={setDirection}
             />
-          </main>
-        </div>
+          </div>
+        </main>
 
         {/* Panneau de droite : Rendu Pixel-Perfect à 50% de largeur */}
         <div className="hidden xl:flex xl:w-1/2 shrink-0 bg-muted/10 p-8 overflow-y-auto border-l border-border select-none items-start justify-center">

@@ -18,10 +18,10 @@ export function StepFatherContact({ form }: StepFatherContactProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="CNI / Passeport">
+        <FormField label="N° CNI ou Passeport / NIC No. or passport">
           <Input {...register("fatherCni")} placeholder="987654321" className="h-10" />
         </FormField>
-        <FormField label="Profession">
+        <FormField label="Profession / Occupation">
           <AutocompleteInput
             value={profession}
             onChangeValue={(val) => setValue("fatherProfession", val)}
@@ -30,12 +30,12 @@ export function StepFatherContact({ form }: StepFatherContactProps) {
           />
         </FormField>
       </div>
-      <FormField label="Adresse">
+      <FormField label="Adresse de Domicile / Domicile Address">
         <Input {...register("fatherAddress")} placeholder="Quartier, ville" className="h-10" />
       </FormField>
-      <FormField label="Téléphone">
+      <FormField label="Téléphone / Phone">
         <div className="flex">
-          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground text-xs">
+          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-neutral-300 bg-muted text-neutral-600 text-xs">
             +237
           </span>
           <Input

@@ -16,12 +16,12 @@ export function StepMotherContact({ form }: StepMotherContactProps) {
   const profession = watch("motherProfession") || ""
 
   return (
-    <div className="rounded-xl border border-border p-4 space-y-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        💼 Contact & Profession
+    <div className="rounded-md border border-border p-4 space-y-4">
+      <p className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+        Contact & Profession / Occupation
       </p>
 
-      <FormField label="Profession">
+      <FormField label="Profession / Occupation">
         <AutocompleteInput
           value={profession}
           onChangeValue={(val) => setValue("motherProfession", val)}
@@ -31,9 +31,9 @@ export function StepMotherContact({ form }: StepMotherContactProps) {
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Téléphone">
+        <FormField label="Téléphone / Phone">
           <div className="flex">
-            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground text-xs">
+            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-neutral-300 bg-muted text-neutral-600 text-xs">
               +237
             </span>
             <Input
@@ -54,7 +54,7 @@ export function StepMotherContact({ form }: StepMotherContactProps) {
         </FormField>
       </div>
 
-      <FormField label="Adresse">
+      <FormField label="Adresse de Domicile / Domicile Address">
         <Input
           {...register("motherAddress")}
           placeholder="Quartier, ville"

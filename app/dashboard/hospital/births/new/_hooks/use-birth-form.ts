@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useTransition, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { birthFormSchema, type BirthFormInput } from "@/lib/schemas/birth"
@@ -31,6 +31,19 @@ export function useBirthForm(initialData?: Partial<BirthFormInput>, id?: string,
       ...initialData,
     },
   })
+
+  // Sauvegarde automatique après 2 secondes d'inactivité sur n'importe quel champ
+  const watchedValues = form.watch()
+  const serializedValues = JSON.stringify(watchedValues)
+  useEffect(() => {
+    if (!form.formState.isDirty) return
+
+    const timer = setTimeout(() => {
+      triggerSave()
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [serializedValues, form.formState.isDirty])
 
   const triggerSave = async () => {
     setSaveState("saving")

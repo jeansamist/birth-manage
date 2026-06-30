@@ -23,20 +23,20 @@ export function StepFather({ form, fatherUnknown, onToggle }: StepFatherProps) {
 
   return (
     <div className="space-y-6">
-      <SectionTitle>👨 Informations sur le père</SectionTitle>
+      <SectionTitle>Renseignements sur le père</SectionTitle>
 
-      <div className="flex rounded-xl border border-border overflow-hidden">
+      <div className="flex rounded-md border border-border overflow-hidden">
         {([false, true] as const).map((isUnknown) => (
           <button
             key={String(isUnknown)}
             type="button"
             onClick={() => onToggle(isUnknown)}
             className={cn(
-              "flex-1 py-2.5 text-xs font-medium transition-colors cursor-pointer",
-              fatherUnknown === isUnknown ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
+              "flex-1 py-2.5 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer",
+              fatherUnknown === isUnknown ? "bg-neutral-800 text-white" : "bg-muted/40 text-neutral-600 hover:bg-muted/60"
             )}
           >
-            {isUnknown ? "❓ Père inconnu" : "👨 Père connu"}
+            {isUnknown ? "Père inconnu / Father Unknown" : "Père connu / Father Known"}
           </button>
         ))}
       </div>
@@ -45,36 +45,36 @@ export function StepFather({ form, fatherUnknown, onToggle }: StepFatherProps) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="rounded-xl border border-dashed border-border p-6 text-center text-xs text-muted-foreground"
+          className="rounded-md border border-dashed border-border p-6 text-center text-xs text-muted-foreground"
         >
-          Le père ne sera pas renseigné sur l'acte de naissance.
+          Le père ne sera pas renseigné sur la déclaration de naissance.
         </motion.div>
       ) : (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           <p className="text-[10px] text-muted-foreground">Ces informations sont facultatives mais recommandées.</p>
 
           <div className="grid grid-cols-2 gap-4">
-            <FormField label="Prénom">
-              <Input {...register("fatherFirstName")} placeholder="Serge" className="h-10" />
-            </FormField>
-            <FormField label="Nom">
+            <FormField label="Nom de famille / Family Name">
               <Input {...register("fatherLastName")} placeholder="Mballa" className="h-10" />
+            </FormField>
+            <FormField label="Prénom / First Name">
+              <Input {...register("fatherFirstName")} placeholder="Serge" className="h-10" />
             </FormField>
           </div>
 
-          <div className="rounded-xl border border-border p-4 space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">🪪 Identité & Documents</p>
+          <div className="rounded-md border border-border p-4 space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-neutral-700">Identité & Documents / Identity Details</p>
             <div className="grid grid-cols-2 gap-4">
-              <FormField label="Date de naissance">
+              <FormField label="Date de naissance / Date of Birth">
                 <Controller
                   control={control}
                   name="fatherBirthDate"
                   render={({ field }) => (
-                    <DatePicker value={field.value} onChange={field.onChange} placeholder="Date de naissance" />
+                    <DatePicker value={field.value} onChange={field.onChange} />
                   )}
                 />
               </FormField>
-              <FormField label="Nationalité">
+              <FormField label="Nationalité / Nationality">
                 <AutocompleteInput
                   value={nationality}
                   onChangeValue={(val) => setValue("fatherNationality", val)}

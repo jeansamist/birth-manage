@@ -19,33 +19,33 @@ export function StepMother({ form }: StepMotherProps) {
 
   return (
     <div className="space-y-6">
-      <SectionTitle>👩 Informations sur la mère</SectionTitle>
+      <SectionTitle>Renseignements sur la mère</SectionTitle>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Prénom" required error={errors.motherFirstName?.message}>
-          <Input {...register("motherFirstName")} placeholder="Amina" className="h-10" />
-        </FormField>
-        <FormField label="Nom" required error={errors.motherLastName?.message}>
+        <FormField label="Nom de famille / Family Name" required error={errors.motherLastName?.message}>
           <Input {...register("motherLastName")} placeholder="Mballa" className="h-10" />
+        </FormField>
+        <FormField label="Prénom / First Name" required error={errors.motherFirstName?.message}>
+          <Input {...register("motherFirstName")} placeholder="Amina" className="h-10" />
         </FormField>
       </div>
 
       {/* Identity block */}
-      <div className="rounded-xl border border-border p-4 space-y-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          🪪 Identité & Documents
+      <div className="rounded-md border border-border p-4 space-y-4">
+        <p className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+          Identité & Documents / Identity Details
         </p>
         <div className="grid grid-cols-2 gap-4">
-          <FormField label="Date de naissance">
+          <FormField label="Date de naissance / Date of Birth">
             <Controller
               control={control}
               name="motherBirthDate"
               render={({ field }) => (
-                <DatePicker value={field.value} onChange={field.onChange} placeholder="Date de naissance" />
+                <DatePicker value={field.value} onChange={field.onChange} />
               )}
             />
           </FormField>
-          <FormField label="Nationalité">
+          <FormField label="Nationalité / Nationality">
             <AutocompleteInput
               value={nationality}
               onChangeValue={(val) => setValue("motherNationality", val)}
@@ -54,7 +54,7 @@ export function StepMother({ form }: StepMotherProps) {
             />
           </FormField>
         </div>
-        <FormField label="CNI / Passeport">
+        <FormField label="N° CNI ou Passeport / NIC No. or passport">
           <Input {...register("motherCni")} placeholder="123456789" className="h-10" />
         </FormField>
       </div>

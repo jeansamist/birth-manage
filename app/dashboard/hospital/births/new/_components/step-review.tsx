@@ -14,6 +14,7 @@ interface CityHallOption {
   name: string
   city: string
 }
+
 interface StepReviewProps {
   form: UseFormReturn<BirthFormInput>
   cityHalls: CityHallOption[]
@@ -21,6 +22,7 @@ interface StepReviewProps {
   fatherUnknown: boolean
   onEditStep: (stepIndex: number) => void
 }
+
 export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEditStep }: StepReviewProps) {
   const { register, watch, setValue, control, formState: { errors } } = form
   const parentsMarried = watch("parentsMarried")
@@ -28,13 +30,13 @@ export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEdit
 
   return (
     <div className="space-y-6">
-      <SectionTitle>🏛️ Mairie & Situation matrimoniale</SectionTitle>
+      <SectionTitle>Mairie & Situation matrimoniale</SectionTitle>
 
       <div className="grid sm:grid-cols-2 gap-4">
-        <FormField label="Mairie de destination" required error={errors.cityHallId?.message}>
+        <FormField label="Mairie de destination / City Hall" required error={errors.cityHallId?.message}>
           <select
             {...register("cityHallId")}
-            className="w-full h-12 px-4 border border-border rounded-xl bg-background text-base cursor-pointer outline-none focus:ring-2 focus:ring-primary/10"
+            className="w-full h-10 px-3 border border-neutral-300 rounded-md bg-white text-sm text-black cursor-pointer outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500"
           >
             <option value="">Sélectionner une mairie</option>
             {cityHalls.map((c) => (
@@ -45,19 +47,19 @@ export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEdit
           </select>
         </FormField>
 
-        <FormField label="Parents mariés ?">
-          <div className="flex rounded-xl border border-border overflow-hidden h-12">
+        <FormField label="Parents mariés ? / Parents Married ?">
+          <div className="flex rounded-md border border-border overflow-hidden h-10">
             {([false, true] as const).map((isMarried) => (
               <button
                 key={String(isMarried)}
                 type="button"
                 onClick={() => setValue("parentsMarried", isMarried)}
                 className={cn(
-                  "flex-1 text-sm font-semibold transition-colors cursor-pointer",
-                  parentsMarried === isMarried ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
+                  "flex-1 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer",
+                  parentsMarried === isMarried ? "bg-neutral-800 text-white" : "bg-muted/40 text-neutral-600 hover:bg-muted/60"
                 )}
               >
-                {isMarried ? "💍 Mariés" : "Non mariés"}
+                {isMarried ? "Oui / Yes" : "Non / No"}
               </button>
             ))}
           </div>
@@ -70,17 +72,17 @@ export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEdit
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="grid grid-cols-2 gap-4 border border-border rounded-xl p-4 bg-muted/5 overflow-hidden"
+            className="grid grid-cols-2 gap-4 border border-border rounded-md p-4 bg-muted/5 overflow-hidden"
           >
-            <FormField label="N° acte de mariage">
+            <FormField label="N° acte de mariage / Marriage certificate No.">
               <Input {...register("marriageCertNumber")} placeholder="ACT-2023-001" className="h-10" />
             </FormField>
-            <FormField label="Date du mariage">
+            <FormField label="Date du mariage / Marriage Date">
               <Controller
                 control={control}
                 name="marriageDate"
                 render={({ field }) => (
-                  <DatePicker value={field.value} onChange={field.onChange} placeholder="Date du mariage" />
+                  <DatePicker value={field.value} onChange={field.onChange} />
                 )}
               />
             </FormField>
@@ -91,7 +93,7 @@ export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEdit
       <ReviewSummary values={values} fatherUnknown={fatherUnknown} onEditStep={onEditStep} />
 
       {serverError && (
-        <div className="rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-xs text-destructive">
+        <div className="rounded-md border border-destructive/30 bg-destructive/5 px-4 py-3 text-xs text-destructive">
           {serverError}
         </div>
       )}

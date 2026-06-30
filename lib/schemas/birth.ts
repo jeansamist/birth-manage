@@ -53,6 +53,8 @@ export const reviewStepSchema = z.object({
   marriageCertNumber: optionalString,
   marriageDate: optionalDate,
   cityHallId: z.string().min(1, "Veuillez sélectionner une mairie"),
+  declarationRef: optionalString,
+  citizenTrackingCode: optionalString,
 })
 
 // ─── Combined ─────────────────────────────────────────────────────────────────
