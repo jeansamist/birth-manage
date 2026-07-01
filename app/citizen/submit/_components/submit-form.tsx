@@ -158,8 +158,8 @@ export function SubmitForm({ cityHalls }: SubmitFormProps) {
   return (
     <div className="h-full w-full min-h-0 flex flex-col bg-background">
       <div className="w-full flex-1 flex flex-col xl:flex-row min-h-0 overflow-hidden bg-background">
-        {/* Input Form Panel */}
-        <main className="flex-1 flex flex-col min-w-0 bg-background xl:border-r border-border xl:w-1/2 h-full overflow-y-auto">
+        {/* Input Form Panel (42%) */}
+        <main className="flex-1 flex flex-col min-w-0 bg-background xl:border-r border-border xl:w-[42%] h-full overflow-y-auto">
           <div className="px-6 py-4 border-b border-border bg-neutral-50/50">
             <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-800">
               Déclaration de naissance hors-système (FNU)
@@ -187,9 +187,9 @@ export function SubmitForm({ cityHalls }: SubmitFormProps) {
           </form>
         </main>
 
-        {/* Live Preview Panel - Roomy and A4 styled using max-w-[760px] */}
-        <aside className="hidden xl:flex xl:w-1/2 flex-col min-w-0 bg-neutral-100 dark:bg-neutral-900/50 h-full overflow-y-auto p-8 items-center justify-start border-l border-neutral-200">
-          <div className="w-full max-w-[760px] sticky top-0 space-y-4">
+        {/* Live Preview Panel - Large, spaced A4 with max-w-[820px] */}
+        <aside className="hidden xl:flex xl:w-[58%] flex-col min-w-0 bg-neutral-100 dark:bg-neutral-900/50 h-full overflow-y-auto p-10 md:p-12 items-center justify-start border-l border-neutral-200">
+          <div className="w-full max-w-[820px] space-y-4">
             <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-neutral-400">
               <span>Prévisualisation de la Déclaration</span>
               <span className="text-green-600 bg-green-500/10 px-2 py-0.5 rounded-sm">Rendu en direct</span>
