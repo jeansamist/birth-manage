@@ -8,6 +8,15 @@ export default function CitizenLayout({
 }) {
   return (
     <div className="min-h-screen bg-neutral-50/30 flex flex-col font-sans antialiased text-neutral-800">
+      {/* Cameroonian National Colors Ribbon */}
+      <div className="w-full h-1 flex shrink-0 select-none">
+        <div className="flex-1 bg-[#007A5E]" />
+        <div className="flex-1 bg-[#CE1126] relative">
+          <div className="absolute inset-0 flex items-center justify-center text-[5px] text-[#FCD116] font-bold">★</div>
+        </div>
+        <div className="flex-1 bg-[#FCD116]" />
+      </div>
+
       {/* Top Floating Navbar */}
       <div className="w-full shrink-0 border-b border-neutral-100 bg-white py-2">
         <Header />

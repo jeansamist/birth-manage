@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { FileSearchIcon, ShieldCheckIcon, GlobeIcon, FileTextIcon, ClockIcon } from "lucide-react"
 import { findCitizenRecord, requestBirthTransfer } from "@/app/actions/citizen"
 import { Button } from "@/components/ui/button"
@@ -142,22 +143,41 @@ export default async function CitizenPortal({
 
       {/* Institutional Partners / Logo section */}
       {!accessId && (
-        <div className="border-t border-neutral-200 pt-10 text-center space-y-4">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+        <div className="border-t border-neutral-200 pt-12 text-center space-y-6">
+          <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400">
             Partenaires Institutionnels / Institutional Partners
           </p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-[0.65] grayscale contrast-150">
-            <div className="flex flex-col items-center">
-              <span className="font-bold text-xs text-neutral-700 tracking-widest uppercase">BUNEC</span>
-              <span className="text-[8px] text-neutral-400 tracking-wider uppercase font-semibold">État Civil</span>
+          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-16 opacity-75 select-none">
+            {/* BUNEC */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative w-12 h-12 grayscale hover:grayscale-0 transition-all duration-300">
+                <Image src="/bunec-logo.png" alt="BUNEC Logo" fill className="object-contain" />
+              </div>
+              <span className="text-[8px] font-black uppercase tracking-wider text-neutral-600">BUNEC</span>
             </div>
-            <div className="flex flex-col items-center">
-              <span className="font-bold text-xs text-neutral-700 tracking-widest uppercase">MINAT</span>
-              <span className="text-[8px] text-neutral-400 tracking-wider uppercase font-semibold">Administration</span>
+
+            {/* MINAT */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative w-12 h-12 grayscale hover:grayscale-0 transition-all duration-300">
+                <Image src="/logo-minat.jpg" alt="MINAT Logo" fill className="object-contain" />
+              </div>
+              <span className="text-[8px] font-black uppercase tracking-wider text-neutral-600">MINAT</span>
             </div>
-            <div className="flex flex-col items-center">
-              <span className="font-bold text-xs text-neutral-700 tracking-widest uppercase">MINSANTE</span>
-              <span className="text-[8px] text-neutral-400 tracking-wider uppercase font-semibold">Santé Publique</span>
+
+            {/* MINSANTE */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative w-12 h-12 grayscale hover:grayscale-0 transition-all duration-300">
+                <Image src="/logo-minsante.jpg" alt="MINSANTE Logo" fill className="object-contain" />
+              </div>
+              <span className="text-[8px] font-black uppercase tracking-wider text-neutral-600">MINSANTE</span>
+            </div>
+
+            {/* DGSN */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative w-12 h-12 grayscale hover:grayscale-0 transition-all duration-300">
+                <Image src="/cameroon-logo.png" alt="DGSN / Cameroun Logo" fill className="object-contain" />
+              </div>
+              <span className="text-[8px] font-black uppercase tracking-wider text-neutral-600">DGSN / PR</span>
             </div>
           </div>
         </div>

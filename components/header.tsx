@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Logo } from "@/components/logo";
 import { useScroll } from "@/hooks/use-scroll";
 import { Button } from "@/components/ui/button";
 import { MobileNav } from "@/components/mobile-nav";
@@ -44,14 +44,27 @@ export function Header() {
         )}
       >
         <Link
-          className="flex items-center gap-2 rounded-md p-1 hover:bg-neutral-50"
+          className="flex items-center gap-2.5 rounded-md p-1 hover:bg-neutral-50 cursor-pointer"
           href="/citizen"
         >
-          <Logo className="h-4.5 text-neutral-900" />
+          <div className="relative w-8 h-8 select-none">
+            <Image
+              src="/bunec-logo.png"
+              alt="BUNEC Logo"
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
           <span className="h-4 w-px bg-neutral-200" />
-          <span className="text-[10px] font-bold tracking-wider uppercase text-neutral-600">
-            Portail Citoyen
-          </span>
+          <div className="flex flex-col text-left select-none">
+            <span className="text-[10px] font-black tracking-wider uppercase text-neutral-800 leading-tight">
+              BUNEC
+            </span>
+            <span className="text-[6.5px] font-bold text-neutral-500 uppercase tracking-widest leading-none">
+              État Civil Cameroun
+            </span>
+          </div>
         </Link>
         <div className="hidden items-center gap-4 md:flex">
           <div className="flex gap-1">
