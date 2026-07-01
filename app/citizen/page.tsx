@@ -17,10 +17,11 @@ export default async function CitizenPortal({
 }) {
   const params = await searchParams
   const accessId = params.code?.trim().toUpperCase() ?? ""
-  const successMessage = params.success ? getSuccessMsg(params.success) : null
-  const errorMessage = params.error ? getErrorMsg(params.error) : null
+  const motherLastName = params.mother?.trim().toUpperCase() ?? ""
+  let successMessage = params.success ? getSuccessMsg(params.success) : null
+  let errorMessage = params.error ? getErrorMsg(params.error) : null
 
-  const [birth, cityHalls] = await Promise.all([
+  const [rawBirth, cityHalls] = await Promise.all([
     accessId
       ? prisma.birthRecord.findUnique({
           where: { citizenAccessId: accessId },
@@ -45,6 +46,15 @@ export default async function CitizenPortal({
       select: { id: true, name: true, city: true },
     }),
   ])
+
+  let birth = null
+  if (accessId) {
+    if (rawBirth && rawBirth.motherLastName?.trim().toUpperCase() === motherLastName) {
+      birth = rawBirth
+    } else {
+      errorMessage = getErrorMsg("not-found")
+    }
+  }
 
   const approvedBirth = birth?.status === "APPROVED" ? birth : null
   const unavailableTargetIds = new Set(
@@ -72,6 +82,7 @@ export default async function CitizenPortal({
 
         <SearchHero
           defaultValue={accessId}
+          defaultMotherValue={motherLastName}
           action={findCitizenRecord}
           successMessage={successMessage}
           errorMessage={errorMessage}
