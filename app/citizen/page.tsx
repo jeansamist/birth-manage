@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { FileSearchIcon } from "lucide-react"
+import { FileSearchIcon, ShieldCheckIcon, GlobeIcon, FileTextIcon, ClockIcon } from "lucide-react"
 import { findCitizenRecord, requestBirthTransfer } from "@/app/actions/citizen"
 import { Button } from "@/components/ui/button"
 import { prisma } from "@/lib/prisma"
@@ -9,11 +9,12 @@ import { RecordDetails } from "./_components/record-details"
 import { AvailabilityList } from "./_components/availability-list"
 import { TransferRequestForm } from "./_components/transfer-request-form"
 import { RecentTransfers } from "./_components/recent-transfers"
+import FaqSection from "@/components/mvpblocks/faq-3"
 
 export default async function CitizenPortal({
   searchParams,
 }: {
-  searchParams: Promise<{ code?: string; success?: string; error?: string }>
+  searchParams: Promise<{ code?: string; mother?: string; success?: string; error?: string }>
 }) {
   const params = await searchParams
   const accessId = params.code?.trim().toUpperCase() ?? ""
@@ -65,21 +66,9 @@ export default async function CitizenPortal({
   )
 
   return (
-    <main className="min-h-screen bg-muted/10 px-4 py-8 md:py-12 flex justify-center items-start">
-      <div className="w-full max-w-[1000px] space-y-6">
-        <header className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between bg-card border border-border rounded-2xl p-6 shadow-xs">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-primary font-bold">
-              <FileSearchIcon className="size-5" />
-              <span className="text-[10px] uppercase tracking-wider">République du Cameroun</span>
-            </div>
-            <h1 className="text-lg font-bold">Portail National de l'État Civil</h1>
-          </div>
-          <Button asChild variant="outline" className="h-10 px-5 rounded-xl font-semibold cursor-pointer">
-            <Link href="/auth/login">Espace Agents</Link>
-          </Button>
-        </header>
-
+    <div className="space-y-12">
+      {/* Hero Section & Search Form */}
+      <div className="space-y-6">
         <SearchHero
           defaultValue={accessId}
           defaultMotherValue={motherLastName}
@@ -87,30 +76,96 @@ export default async function CitizenPortal({
           successMessage={successMessage}
           errorMessage={errorMessage}
         />
+      </div>
 
-        {accessId && birth && birth.status !== "APPROVED" && (
-          <TimelineSection birth={birth} />
-        )}
-
-        {approvedBirth && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
-              <RecordDetails birth={approvedBirth} />
-              <AvailabilityList birth={approvedBirth} />
+      {/* Searched Record Content */}
+      {accessId && birth && (
+        <div className="space-y-6 animate-in fade-in duration-300">
+          {birth.status !== "APPROVED" ? (
+            <div className="max-w-2xl mx-auto">
+              <TimelineSection birth={birth} />
             </div>
-            <div className="space-y-6">
-              <TransferRequestForm
-                accessId={accessId}
-                action={requestBirthTransfer}
-                cityHalls={cityHalls}
-                unavailableTargetIds={unavailableTargetIds}
-              />
-              <RecentTransfers transferRequests={approvedBirth.transferRequests} />
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              <div className="space-y-6">
+                <RecordDetails birth={approvedBirth} />
+                <AvailabilityList birth={approvedBirth} />
+              </div>
+              <div className="space-y-6">
+                <TransferRequestForm
+                  accessId={accessId}
+                  action={requestBirthTransfer}
+                  cityHalls={cityHalls}
+                  unavailableTargetIds={unavailableTargetIds}
+                />
+                <RecentTransfers transferRequests={approvedBirth.transferRequests} />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Info & Stats Section (Bento layout) */}
+      {!accessId && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
+          <div className="bg-white border border-neutral-200 p-6 rounded-md shadow-xs space-y-3">
+            <div className="h-9 w-9 bg-neutral-100 rounded-md flex items-center justify-center text-neutral-800">
+              <ShieldCheckIcon className="size-5" />
+            </div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800">Authenticité Zero-Trust</h3>
+            <p className="text-neutral-500 text-xs leading-relaxed">
+              Toutes les données sont certifiées cryptographiquement avec un QR code d'authenticité vérifiable en temps réel, garantissant des documents infalsifiables.
+            </p>
+          </div>
+
+          <div className="bg-white border border-neutral-200 p-6 rounded-md shadow-xs space-y-3">
+            <div className="h-9 w-9 bg-neutral-100 rounded-md flex items-center justify-center text-neutral-800">
+              <GlobeIcon className="size-5" />
+            </div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800">Mairies Connectées</h3>
+            <p className="text-neutral-500 text-xs leading-relaxed">
+              Demandez des copies d'actes physiques certifiées et transférez votre dossier instantanément d'une commune à une autre à travers le réseau national.
+            </p>
+          </div>
+
+          <div className="bg-white border border-neutral-200 p-6 rounded-md shadow-xs space-y-3">
+            <div className="h-9 w-9 bg-neutral-100 rounded-md flex items-center justify-center text-neutral-800">
+              <ClockIcon className="size-5" />
+            </div>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800">Suivi en direct</h3>
+            <p className="text-neutral-500 text-xs leading-relaxed">
+              Suivez chaque étape de la validation de votre déclaration de naissance (Hôpital ➔ Secrétariat de Mairie ➔ Signature du Maire) en temps réel.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Institutional Partners / Logo section */}
+      {!accessId && (
+        <div className="border-t border-neutral-200 pt-10 text-center space-y-4">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+            Partenaires Institutionnels / Institutional Partners
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-[0.65] grayscale contrast-150">
+            <div className="flex flex-col items-center">
+              <span className="font-bold text-xs text-neutral-700 tracking-widest uppercase">BUNEC</span>
+              <span className="text-[8px] text-neutral-400 tracking-wider uppercase font-semibold">État Civil</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="font-bold text-xs text-neutral-700 tracking-widest uppercase">MINAT</span>
+              <span className="text-[8px] text-neutral-400 tracking-wider uppercase font-semibold">Administration</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="font-bold text-xs text-neutral-700 tracking-widest uppercase">MINSANTE</span>
+              <span className="text-[8px] text-neutral-400 tracking-wider uppercase font-semibold">Santé Publique</span>
             </div>
           </div>
-        )}
-      </div>
-    </main>
+        </div>
+      )}
+
+      {/* FAQ Section */}
+      <FaqSection />
+    </div>
   )
 }
 
@@ -123,8 +178,8 @@ function getSuccessMsg(code: string) {
 
 function getErrorMsg(code: string) {
   if (code === "missing-code") return "Veuillez saisir votre identifiant unique citoyen pour lancer la recherche."
-  if (code === "missing-fields") return "Veuillez renseigner tous les champs requis pour le transfert."
-  if (code === "not-found") return "Aucune déclaration validée n'a été trouvée pour cet identifiant."
+  if (code === "missing-fields") return "Veuillez renseigner tous les champs requis pour lancer la recherche."
+  if (code === "not-found") return "Aucun dossier trouvé pour cet identifiant et ce nom de mère."
   if (code === "same-city-hall") return "Cet acte est déjà présent dans cette mairie d'origine."
   if (code === "target-not-found") return "La mairie destinataire demandée n'existe pas ou est inactive."
   return "Une erreur est survenue."
