@@ -37,7 +37,7 @@ export default async function DeclarePage({ searchParams }: DeclarePageProps) {
   }
 
   return (
-    <div className="border border-neutral-200 rounded-md overflow-hidden bg-white shadow-xs">
+    <div className="w-full h-[calc(100vh-7rem)] min-h-0">
       <DeclareForm birth={birth} />
     </div>
   )
