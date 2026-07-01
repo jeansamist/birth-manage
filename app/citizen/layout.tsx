@@ -35,8 +35,8 @@ export default function CitizenLayout({
       {/* Fixed Header */}
       <Header />
 
-      {/* Main content slot */}
-      <div className="flex-1 w-full max-w-5xl mx-auto px-4 md:px-6 pt-32 pb-8 md:pb-12">
+      {/* Main content slot - Full width to allow split-screen pages to take full bleed */}
+      <div className="flex-1 w-full pt-28 flex flex-col min-h-0">
         {children}
       </div>
 
