@@ -6,11 +6,11 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
 import { DocumentPreview } from "@/components/form/document-preview"
 import { finalizeCitizenDeclaration } from "@/app/actions/citizen"
+import { MotherFields } from "./mother-fields"
+import { FatherFields } from "./father-fields"
+import { MarriageFields } from "./marriage-fields"
 
 const parentDeclareSchema = z.object({
   motherProfession: z.string().optional(),
@@ -142,109 +142,9 @@ export function DeclareForm({ birth }: DeclareFormProps) {
           </div>
 
           <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-8">
-            {/* MOTHER SECTION */}
-            <div className="space-y-4">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 border-b border-neutral-100 pb-1">
-                Informations complémentaires de la Mère / Mother details
-              </h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label htmlFor="motherNationality" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Nationalité</Label>
-                  <Input id="motherNationality" {...form.register("motherNationality")} className="h-9 text-xs rounded-md" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="motherProfession" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Profession</Label>
-                  <Input id="motherProfession" {...form.register("motherProfession")} className="h-9 text-xs rounded-md" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="motherCni" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">N° CNI / Passeport</Label>
-                  <Input id="motherCni" {...form.register("motherCni")} className="h-9 text-xs rounded-md" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="motherPhone" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Téléphone</Label>
-                  <Input id="motherPhone" {...form.register("motherPhone")} className="h-9 text-xs rounded-md" />
-                </div>
-                <div className="space-y-1.5 sm:col-span-2">
-                  <Label htmlFor="motherAddress" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Adresse & Domicile</Label>
-                  <Input id="motherAddress" {...form.register("motherAddress")} className="h-9 text-xs rounded-md" />
-                </div>
-              </div>
-            </div>
-
-            {/* FATHER SECTION */}
-            <div className="space-y-4">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 border-b border-neutral-100 pb-1">
-                Informations du Père / Father details
-              </h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label htmlFor="fatherLastName" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Nom du Père</Label>
-                  <Input id="fatherLastName" {...form.register("fatherLastName")} className="h-9 text-xs rounded-md" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="fatherFirstName" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Prénoms du Père</Label>
-                  <Input id="fatherFirstName" {...form.register("fatherFirstName")} className="h-9 text-xs rounded-md" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="fatherBirthDate" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Date de naissance</Label>
-                  <Input id="fatherBirthDate" type="date" {...form.register("fatherBirthDate")} className="h-9 text-xs rounded-md" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="fatherNationality" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Nationalité</Label>
-                  <Input id="fatherNationality" {...form.register("fatherNationality")} className="h-9 text-xs rounded-md" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="fatherProfession" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Profession</Label>
-                  <Input id="fatherProfession" {...form.register("fatherProfession")} className="h-9 text-xs rounded-md" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="fatherCni" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">N° CNI / Passeport</Label>
-                  <Input id="fatherCni" {...form.register("fatherCni")} className="h-9 text-xs rounded-md" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="fatherPhone" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Téléphone</Label>
-                  <Input id="fatherPhone" {...form.register("fatherPhone")} className="h-9 text-xs rounded-md" />
-                </div>
-                <div className="space-y-1.5 sm:col-span-2">
-                  <Label htmlFor="fatherAddress" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Adresse & Domicile</Label>
-                  <Input id="fatherAddress" {...form.register("fatherAddress")} className="h-9 text-xs rounded-md" />
-                </div>
-              </div>
-            </div>
-
-            {/* MARRIAGE SECTION */}
-            <div className="space-y-4">
-              <h3 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 border-b border-neutral-100 pb-1">
-                Mariage des parents / Legal Marriage
-              </h3>
-              <div className="flex items-center space-x-2 bg-neutral-50 p-4 rounded-md border border-neutral-100">
-                <Checkbox
-                  id="parentsMarried"
-                  checked={form.watch("parentsMarried")}
-                  onCheckedChange={(checked) => form.setValue("parentsMarried", checked === true)}
-                  className="rounded-sm border-neutral-300"
-                />
-                <label
-                  htmlFor="parentsMarried"
-                  className="text-xs font-semibold text-neutral-700 cursor-pointer select-none"
-                >
-                  Les parents de l'enfant sont mariés légitimement
-                </label>
-              </div>
-
-              {form.watch("parentsMarried") && (
-                <div className="grid gap-4 sm:grid-cols-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="marriageCertNumber" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">N° Acte de Mariage</Label>
-                    <Input id="marriageCertNumber" {...form.register("marriageCertNumber")} className="h-9 text-xs rounded-md" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="marriageDate" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">Date du Mariage</Label>
-                    <Input id="marriageDate" type="date" {...form.register("marriageDate")} className="h-9 text-xs rounded-md" />
-                  </div>
-                </div>
-              )}
-            </div>
+            <MotherFields form={form} />
+            <FatherFields form={form} />
+            <MarriageFields form={form} />
 
             <Button
               type="submit"
@@ -256,9 +156,9 @@ export function DeclareForm({ birth }: DeclareFormProps) {
           </form>
         </main>
 
-        {/* Live Preview panel (50%) */}
-        <aside className="hidden xl:flex xl:w-1/2 flex-col min-w-0 bg-neutral-50 h-full overflow-y-auto p-6 items-center justify-start border-l border-neutral-200">
-          <div className="w-full max-w-[500px] sticky top-0 space-y-4">
+        {/* Live Preview panel (50%) - Espacé et A4 avec max-w-[760px] */}
+        <aside className="hidden xl:flex xl:w-1/2 flex-col min-w-0 bg-neutral-100 dark:bg-neutral-900/50 h-full overflow-y-auto p-8 items-center justify-start border-l border-neutral-200">
+          <div className="w-full max-w-[760px] sticky top-0 space-y-4">
             <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-neutral-400">
               <span>Aperçu de la déclaration (Section 3 & 4)</span>
               <span className="text-green-600 bg-green-500/10 px-2 py-0.5 rounded-sm">Rendu dynamique</span>
