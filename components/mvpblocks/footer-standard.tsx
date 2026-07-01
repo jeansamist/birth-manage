@@ -3,10 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { useTheme } from 'next-themes';
 import {
-  Moon,
-  Sun,
   ArrowDownLeft,
   MessageCircle,
   GlobeIcon,
@@ -66,7 +63,6 @@ const data = () => ({
 });
 
 export default function FooterStandard() {
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -110,21 +106,7 @@ export default function FooterStandard() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="hover:bg-[#007A5E] dark:hover:bg-[#007A5E] !border-neutral-200 cursor-pointer shadow-none transition-all duration-300 hover:scale-105 hover:text-white"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-
-              <div className="flex items-center gap-1.5 ml-2 border border-neutral-100 bg-neutral-50/50 px-2.5 py-1 rounded-sm">
+              <div className="flex items-center gap-1.5 border border-neutral-200/80 bg-neutral-50/50 px-2.5 py-1 rounded-sm">
                 <div className="relative w-4 h-3">
                   <div className="absolute inset-0 flex">
                     <div className="flex-1 bg-[#007A5E]" />
