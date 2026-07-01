@@ -18,9 +18,13 @@ function redirectToPortal(
 
 export async function findCitizenRecord(formData: FormData): Promise<void> {
   const accessId = normalizeAccessId(formData.get("accessId"))
-  if (!accessId) redirect("/citizen?error=missing-code")
+  const motherLastName = String(formData.get("motherLastName") ?? "").trim().toUpperCase()
+  
+  if (!accessId || !motherLastName) {
+    redirect("/citizen?error=missing-fields")
+  }
 
-  redirect(`/citizen?code=${encodeURIComponent(accessId)}`)
+  redirect(`/citizen?code=${encodeURIComponent(accessId)}&mother=${encodeURIComponent(motherLastName)}`)
 }
 
 export async function requestBirthTransfer(formData: FormData): Promise<void> {
