@@ -1,38 +1,61 @@
 import Link from "next/link"
-import { FileSearchIcon } from "lucide-react"
+import Image from "next/image"
+import {
+  FileSearchIcon,
+  ShieldCheckIcon,
+  GlobeIcon,
+  FileTextIcon,
+  ClockIcon,
+} from "lucide-react"
 import { findCitizenRecord, requestBirthTransfer } from "@/app/actions/citizen"
 import { Button } from "@/components/ui/button"
 import { prisma } from "@/lib/prisma"
+import { cn } from "@/lib/utils"
 import { SearchHero } from "./_components/search-hero"
 import { TimelineSection } from "./_components/timeline-section"
 import { RecordDetails } from "./_components/record-details"
 import { AvailabilityList } from "./_components/availability-list"
 import { TransferRequestForm } from "./_components/transfer-request-form"
 import { RecentTransfers } from "./_components/recent-transfers"
+import FaqSection from "@/components/mvpblocks/faq-3"
 
 export default async function CitizenPortal({
   searchParams,
 }: {
-  searchParams: Promise<{ code?: string; success?: string; error?: string }>
+  searchParams: Promise<{
+    code?: string
+    mother?: string
+    success?: string
+    error?: string
+  }>
 }) {
   const params = await searchParams
   const accessId = params.code?.trim().toUpperCase() ?? ""
-  const successMessage = params.success ? getSuccessMsg(params.success) : null
-  const errorMessage = params.error ? getErrorMsg(params.error) : null
+  const motherLastName = params.mother?.trim().toUpperCase() ?? ""
+  let successMessage = params.success ? getSuccessMsg(params.success) : null
+  let errorMessage = params.error ? getErrorMsg(params.error) : null
 
-  const [birth, cityHalls] = await Promise.all([
+  const [rawBirth, cityHalls] = await Promise.all([
     accessId
       ? prisma.birthRecord.findUnique({
           where: { citizenAccessId: accessId },
           include: {
-            cityHall: { select: { id: true, name: true, city: true, address: true } },
+            cityHall: {
+              select: { id: true, name: true, city: true, address: true },
+            },
             hospital: { select: { name: true, city: true } },
             copies: {
-              include: { cityHall: { select: { id: true, name: true, city: true, address: true } } },
+              include: {
+                cityHall: {
+                  select: { id: true, name: true, city: true, address: true },
+                },
+              },
               orderBy: { createdAt: "desc" },
             },
             transferRequests: {
-              include: { targetCityHall: { select: { name: true, city: true } } },
+              include: {
+                targetCityHall: { select: { name: true, city: true } },
+              },
               orderBy: { createdAt: "desc" },
               take: 5,
             },
@@ -46,6 +69,18 @@ export default async function CitizenPortal({
     }),
   ])
 
+  let birth = null
+  if (accessId) {
+    if (
+      rawBirth &&
+      rawBirth.motherLastName?.trim().toUpperCase() === motherLastName
+    ) {
+      birth = rawBirth
+    } else {
+      errorMessage = getErrorMsg("not-found")
+    }
+  }
+
   const approvedBirth = birth?.status === "APPROVED" ? birth : null
   const unavailableTargetIds = new Set(
     [
@@ -55,66 +90,151 @@ export default async function CitizenPortal({
   )
 
   return (
-    <main className="min-h-screen bg-muted/10 px-4 py-8 md:py-12 flex justify-center items-start">
-      <div className="w-full max-w-[1000px] space-y-6">
-        <header className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between bg-card border border-border rounded-2xl p-6 shadow-xs">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-primary font-bold">
-              <FileSearchIcon className="size-5" />
-              <span className="text-[10px] uppercase tracking-wider">République du Cameroun</span>
-            </div>
-            <h1 className="text-lg font-bold">Portail National de l'État Civil</h1>
-          </div>
-          <Button asChild variant="outline" className="h-10 px-5 rounded-xl font-semibold cursor-pointer">
-            <Link href="/auth/login">Espace Agents</Link>
-          </Button>
-        </header>
-
+    <div className="w-full max-w-5xl mx-auto px-4 md:px-6 pb-8 md:pb-12 flex-1 flex flex-col justify-start">
+      <div className={cn("space-y-12 w-full", {
+        "min-h-[60vh] flex flex-col justify-center": !accessId
+      })}>
+      {/* Hero Section & Search Form */}
+      <div className={cn("space-y-6 w-full animate-in fade-in slide-in-from-bottom-4 duration-500", {
+        "max-w-2xl mx-auto my-auto": !accessId
+      })}>
         <SearchHero
           defaultValue={accessId}
+          defaultMotherValue={motherLastName}
           action={findCitizenRecord}
           successMessage={successMessage}
           errorMessage={errorMessage}
         />
+      </div>
 
-        {accessId && birth && birth.status !== "APPROVED" && (
-          <TimelineSection birth={birth} />
-        )}
-
-        {approvedBirth && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-6">
-              <RecordDetails birth={approvedBirth} />
-              <AvailabilityList birth={approvedBirth} />
+      {/* Searched Record Content */}
+      {accessId && birth && (
+        <div className="animate-in space-y-6 duration-300 fade-in">
+          {birth.status !== "APPROVED" ? (
+            <div className="mx-auto max-w-2xl">
+              <TimelineSection birth={birth} />
             </div>
-            <div className="space-y-6">
-              <TransferRequestForm
-                accessId={accessId}
-                action={requestBirthTransfer}
-                cityHalls={cityHalls}
-                unavailableTargetIds={unavailableTargetIds}
-              />
-              <RecentTransfers transferRequests={approvedBirth.transferRequests} />
+          ) : (
+            <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
+              <div className="space-y-6">
+                <RecordDetails birth={approvedBirth!} />
+                <AvailabilityList birth={approvedBirth!} />
+              </div>
+              <div className="space-y-6">
+                <TransferRequestForm
+                  accessId={accessId}
+                  action={requestBirthTransfer}
+                  cityHalls={cityHalls}
+                  unavailableTargetIds={unavailableTargetIds}
+                />
+                <RecentTransfers
+                  transferRequests={approvedBirth!.transferRequests}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Info & Stats Section (Bento layout) */}
+
+      {/* Institutional Partners / Logo section */}
+      {!accessId && (
+        <div className="space-y-6 border-t border-neutral-200 pt-12 text-center">
+          <p className="text-[10px] font-black tracking-widest text-neutral-400 uppercase">
+            Partenaires Institutionnels / Institutional Partners
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-12 opacity-75 select-none md:gap-16">
+            {/* BUNEC */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative h-12 w-12 grayscale transition-all duration-300 hover:grayscale-0">
+                <Image
+                  src="/bunec-logo.png"
+                  alt="BUNEC Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-[8px] font-black tracking-wider text-neutral-600 uppercase">
+                BUNEC
+              </span>
+            </div>
+
+            {/* MINAT */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative h-12 w-12 grayscale transition-all duration-300 hover:grayscale-0">
+                <Image
+                  src="/logo-minat.jpg"
+                  alt="MINAT Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-[8px] font-black tracking-wider text-neutral-600 uppercase">
+                MINAT
+              </span>
+            </div>
+
+            {/* MINSANTE */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative h-12 w-12 grayscale transition-all duration-300 hover:grayscale-0">
+                <Image
+                  src="/logo-minsante.jpg"
+                  alt="MINSANTE Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-[8px] font-black tracking-wider text-neutral-600 uppercase">
+                MINSANTE
+              </span>
+            </div>
+
+            {/* DGSN */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative h-12 w-12 grayscale transition-all duration-300 hover:grayscale-0">
+                <Image
+                  src="/cameroon-logo.png"
+                  alt="DGSN / Cameroun Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-[8px] font-black tracking-wider text-neutral-600 uppercase">
+                DGSN / PR
+              </span>
             </div>
           </div>
-        )}
+        </div>
+      )}
+
+      {/* FAQ Section */}
+      <FaqSection />
       </div>
-    </main>
+    </div>
   )
 }
 
 function getSuccessMsg(code: string) {
-  if (code === "request-created") return "Votre demande de transfert a été enregistrée avec succès. Elle est en attente de validation par le maire."
-  if (code === "pending") return "Une demande de transfert vers cette mairie est déjà en cours de traitement."
-  if (code === "already-available") return "Une copie certifiée de cet acte de naissance est déjà disponible dans cette mairie."
+  if (code === "request-created")
+    return "Votre demande de transfert a été enregistrée avec succès. Elle est en attente de validation par le maire."
+  if (code === "pending")
+    return "Une demande de transfert vers cette mairie est déjà en cours de traitement."
+  if (code === "already-available")
+    return "Une copie certifiée de cet acte de naissance est déjà disponible dans cette mairie."
   return null
 }
 
 function getErrorMsg(code: string) {
-  if (code === "missing-code") return "Veuillez saisir votre identifiant unique citoyen pour lancer la recherche."
-  if (code === "missing-fields") return "Veuillez renseigner tous les champs requis pour le transfert."
-  if (code === "not-found") return "Aucune déclaration validée n'a été trouvée pour cet identifiant."
-  if (code === "same-city-hall") return "Cet acte est déjà présent dans cette mairie d'origine."
-  if (code === "target-not-found") return "La mairie destinataire demandée n'existe pas ou est inactive."
+  if (code === "missing-code")
+    return "Veuillez saisir votre identifiant unique citoyen pour lancer la recherche."
+  if (code === "missing-fields")
+    return "Veuillez renseigner tous les champs requis pour lancer la recherche."
+  if (code === "not-found")
+    return "Aucun dossier trouvé pour cet identifiant et ce nom de mère."
+  if (code === "same-city-hall")
+    return "Cet acte est déjà présent dans cette mairie d'origine."
+  if (code === "target-not-found")
+    return "La mairie destinataire demandée n'existe pas ou est inactive."
   return "Une erreur est survenue."
 }

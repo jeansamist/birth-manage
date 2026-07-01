@@ -18,9 +18,13 @@ function redirectToPortal(
 
 export async function findCitizenRecord(formData: FormData): Promise<void> {
   const accessId = normalizeAccessId(formData.get("accessId"))
-  if (!accessId) redirect("/citizen?error=missing-code")
+  const motherLastName = String(formData.get("motherLastName") ?? "").trim().toUpperCase()
+  
+  if (!accessId || !motherLastName) {
+    redirect("/citizen?error=missing-fields")
+  }
 
-  redirect(`/citizen?code=${encodeURIComponent(accessId)}`)
+  redirect(`/citizen?code=${encodeURIComponent(accessId)}&mother=${encodeURIComponent(motherLastName)}`)
 }
 
 export async function requestBirthTransfer(formData: FormData): Promise<void> {
@@ -86,3 +90,106 @@ export async function requestBirthTransfer(formData: FormData): Promise<void> {
 
   redirectToPortal(accessId, { success: "request-created" })
 }
+
+export async function finalizeCitizenDeclaration(id: string, data: any): Promise<void> {
+  const motherBirthDate = data.motherBirthDate ? new Date(data.motherBirthDate) : null
+  const fatherBirthDate = data.fatherBirthDate ? new Date(data.fatherBirthDate) : null
+  const marriageDate = data.marriageDate ? new Date(data.marriageDate) : null
+
+  await prisma.birthRecord.update({
+    where: { id },
+    data: {
+      motherProfession: data.motherProfession || null,
+      motherNationality: data.motherNationality || null,
+      motherCni: data.motherCni || null,
+      motherAddress: data.motherAddress || null,
+      motherPhone: data.motherPhone || null,
+
+      fatherFirstName: data.fatherFirstName || null,
+      fatherLastName: data.fatherLastName || null,
+      fatherBirthDate: fatherBirthDate,
+      fatherNationality: data.fatherNationality || null,
+      fatherProfession: data.fatherProfession || null,
+      fatherCni: data.fatherCni || null,
+      fatherAddress: data.fatherAddress || null,
+      fatherPhone: data.fatherPhone || null,
+
+      parentsMarried: data.parentsMarried || false,
+      marriageCertNumber: data.marriageCertNumber || null,
+      marriageDate: marriageDate,
+
+      isCompletedByCitizen: true,
+      status: "SUBMITTED",
+    },
+  })
+}
+
+export async function submitCitizenDeclaration(data: any): Promise<{ trackingCode: string }> {
+  // Generate random tracking code and access ID
+  const trackingCode = `TRK-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
+  const accessId = `CID-${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 5).toUpperCase()}-${Math.floor(10000000 + Math.random() * 90000000)}`
+
+  // Fetch a default hospital and doctor to satisfy database relations
+  const hospital = await prisma.hospital.findFirst({ where: { isActive: true } })
+  const doctor = await prisma.user.findFirst({ where: { role: "DOCTOR", isActive: true } })
+
+  if (!hospital || !doctor) {
+    throw new Error("No active hospital or doctor found to assign the declaration.")
+  }
+
+  const birthDate = data.birthDate ? new Date(data.birthDate) : null
+  const motherBirthDate = data.motherBirthDate ? new Date(data.motherBirthDate) : null
+  const fatherBirthDate = data.fatherBirthDate ? new Date(data.fatherBirthDate) : null
+  const marriageDate = data.marriageDate ? new Date(data.marriageDate) : null
+
+  await prisma.birthRecord.create({
+    data: {
+      babyFirstName: data.babyFirstName || null,
+      babyLastName: data.babyLastName || null,
+      babyGender: data.babyGender || null,
+      birthDate: birthDate,
+      birthTime: data.birthTime || null,
+      birthPlace: data.birthPlace || null,
+
+      weightGrams: data.weightGrams ? Number(data.weightGrams) : null,
+      heightCm: data.heightCm ? Number(data.heightCm) : null,
+      apgarScore: data.apgarScore ? Number(data.apgarScore) : null,
+      deliveryType: "NATURAL",
+
+      motherFirstName: data.motherFirstName || null,
+      motherLastName: data.motherLastName || null,
+      motherBirthDate: motherBirthDate,
+      motherNationality: data.motherNationality || "Camerounaise",
+      motherCni: data.motherCni || null,
+      motherProfession: data.motherProfession || null,
+      motherAddress: data.motherAddress || null,
+      motherPhone: data.motherPhone || null,
+      motherEmail: data.motherEmail || null,
+
+      fatherFirstName: data.fatherFirstName || null,
+      fatherLastName: data.fatherLastName || null,
+      fatherBirthDate: fatherBirthDate,
+      fatherNationality: data.fatherNationality || "Camerounaise",
+      fatherProfession: data.fatherProfession || null,
+      fatherCni: data.fatherCni || null,
+      fatherAddress: data.fatherAddress || null,
+      fatherPhone: data.fatherPhone || null,
+
+      parentsMarried: data.parentsMarried || false,
+      marriageCertNumber: data.marriageCertNumber || null,
+      marriageDate: marriageDate,
+
+      cityHallId: data.cityHallId,
+      hospitalId: hospital.id,
+      doctorId: doctor.id,
+
+      citizenTrackingCode: trackingCode,
+      citizenAccessId: accessId,
+      isCompletedByCitizen: true,
+      status: "SUBMITTED",
+    },
+  })
+
+  return { trackingCode }
+}
+
