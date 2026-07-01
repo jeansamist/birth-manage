@@ -28,7 +28,7 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 mx-auto w-full max-w-5xl border-transparent border-b md:transition-all md:ease-out",
+        "fixed top-1 left-0 right-0 z-50 mx-auto w-full max-w-5xl border-b border-neutral-100 bg-white/80 backdrop-blur-md md:transition-all md:ease-out",
         {
           "border-neutral-200 bg-white/90 backdrop-blur-md md:top-2 md:max-w-4xl md:shadow-xs md:rounded-md":
             scrolled,

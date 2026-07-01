@@ -9,7 +9,7 @@ export default function CitizenLayout({
   return (
     <div className="min-h-screen bg-neutral-50/30 flex flex-col font-sans antialiased text-neutral-800">
       {/* Cameroonian National Colors Ribbon */}
-      <div className="w-full h-1 flex shrink-0 select-none">
+      <div className="fixed top-0 left-0 right-0 h-1 flex z-50 select-none">
         <div className="flex-1 bg-[#007A5E]" />
         <div className="flex-1 bg-[#CE1126] relative">
           <div className="absolute inset-0 flex items-center justify-center text-[5px] text-[#FCD116] font-bold">★</div>
@@ -17,13 +17,11 @@ export default function CitizenLayout({
         <div className="flex-1 bg-[#FCD116]" />
       </div>
 
-      {/* Top Floating Navbar */}
-      <div className="w-full shrink-0 border-b border-neutral-100 bg-white py-2">
-        <Header />
-      </div>
+      {/* Fixed Header */}
+      <Header />
 
       {/* Main content slot */}
-      <div className="flex-1 w-full max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-12">
+      <div className="flex-1 w-full max-w-5xl mx-auto px-4 md:px-6 pt-20 pb-8 md:pb-12">
         {children}
       </div>
 
