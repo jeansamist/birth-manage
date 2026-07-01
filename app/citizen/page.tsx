@@ -90,9 +90,10 @@ export default async function CitizenPortal({
   )
 
   return (
-    <div className={cn("space-y-12 w-full", {
-      "min-h-[60vh] flex flex-col justify-center": !accessId
-    })}>
+    <div className="w-full max-w-5xl mx-auto px-4 md:px-6 pb-8 md:pb-12 flex-1 flex flex-col justify-start">
+      <div className={cn("space-y-12 w-full", {
+        "min-h-[60vh] flex flex-col justify-center": !accessId
+      })}>
       {/* Hero Section & Search Form */}
       <div className={cn("space-y-6 w-full animate-in fade-in slide-in-from-bottom-4 duration-500", {
         "max-w-2xl mx-auto my-auto": !accessId
@@ -209,6 +210,7 @@ export default async function CitizenPortal({
 
       {/* FAQ Section */}
       <FaqSection />
+      </div>
     </div>
   )
 }
