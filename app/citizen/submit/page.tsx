@@ -10,7 +10,7 @@ export default async function SubmitPage() {
   })
 
   return (
-    <div className="border border-neutral-200 rounded-md overflow-hidden bg-white shadow-xs">
+    <div className="w-full h-[calc(100vh-7rem)] min-h-0">
       <SubmitForm cityHalls={cityHalls} />
     </div>
   )
