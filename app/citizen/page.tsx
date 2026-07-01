@@ -109,8 +109,8 @@ export default async function CitizenPortal({
       {/* Info & Stats Section (Bento layout) */}
       {!accessId && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
-          <div className="bg-white border border-neutral-200 p-6 rounded-md shadow-xs space-y-3">
-            <div className="h-9 w-9 bg-neutral-100 rounded-md flex items-center justify-center text-neutral-800">
+          <div className="bg-white border border-neutral-200 border-l-4 border-l-[#007A5E] p-6 rounded-md shadow-xs space-y-3">
+            <div className="h-9 w-9 bg-[#007A5E]/10 rounded-md flex items-center justify-center text-[#007A5E]">
               <ShieldCheckIcon className="size-5" />
             </div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800">Authenticité Zero-Trust</h3>
@@ -119,8 +119,8 @@ export default async function CitizenPortal({
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 p-6 rounded-md shadow-xs space-y-3">
-            <div className="h-9 w-9 bg-neutral-100 rounded-md flex items-center justify-center text-neutral-800">
+          <div className="bg-white border border-neutral-200 border-l-4 border-l-[#CE1126] p-6 rounded-md shadow-xs space-y-3">
+            <div className="h-9 w-9 bg-[#CE1126]/10 rounded-md flex items-center justify-center text-[#CE1126]">
               <GlobeIcon className="size-5" />
             </div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800">Mairies Connectées</h3>
@@ -129,8 +129,8 @@ export default async function CitizenPortal({
             </p>
           </div>
 
-          <div className="bg-white border border-neutral-200 p-6 rounded-md shadow-xs space-y-3">
-            <div className="h-9 w-9 bg-neutral-100 rounded-md flex items-center justify-center text-neutral-800">
+          <div className="bg-white border border-neutral-200 border-l-4 border-l-[#FCD116] p-6 rounded-md shadow-xs space-y-3">
+            <div className="h-9 w-9 bg-[#FCD116]/15 rounded-md flex items-center justify-center text-[#B89000]">
               <ClockIcon className="size-5" />
             </div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800">Suivi en direct</h3>
