@@ -28,14 +28,7 @@ export function SearchHero({
 
   return (
     <div className="rounded-md border border-neutral-200/80 bg-gradient-to-b from-white to-neutral-50/50 shadow-sm overflow-hidden">
-      {/* Tricolor Ribbon Header */}
-      <div className="w-full h-1 flex shrink-0 select-none">
-        <div className="flex-1 bg-[#007A5E]" />
-        <div className="flex-1 bg-[#CE1126]" />
-        <div className="flex-1 bg-[#FCD116]" />
-      </div>
-
-      <div className="p-6 md:p-8 space-y-8">
+      <div className="p-8 md:p-12 space-y-8">
         <div className="space-y-2 text-left">
           <div className="flex items-center gap-2 text-neutral-600">
             <FileSearchIcon className="size-4.5 text-[#007A5E]" />
@@ -43,7 +36,7 @@ export function SearchHero({
               Portail National de l'État Civil · Cameroun
             </span>
           </div>
-          <h1 className="text-lg md:text-xl font-black tracking-tight text-neutral-800 uppercase">
+          <h1 className="text-xl md:text-2xl font-black tracking-tight text-neutral-800 uppercase">
             Vérification, Suivi et Téléchargement d'Actes
           </h1>
           <p className="text-xs text-neutral-500 max-w-2xl leading-relaxed">
@@ -85,10 +78,10 @@ export function SearchHero({
                   name="accessId"
                   defaultValue={defaultValue}
                   placeholder="Ex: CID-2026-ABC-12345678"
-                  className="uppercase h-11 text-xs rounded-md pl-4 pr-10 border-neutral-200/80 bg-neutral-50/50 focus-visible:bg-white focus-visible:ring-1 focus-visible:ring-[#007A5E] focus-visible:border-[#007A5E] transition-all duration-300 font-mono tracking-wider font-semibold placeholder:font-sans"
+                  className="uppercase h-14 text-sm rounded-md pl-4 pr-10 border-neutral-200/80 bg-neutral-50/50 focus-visible:bg-white focus-visible:ring-1 focus-visible:ring-[#007A5E] focus-visible:border-[#007A5E] transition-all duration-300 font-mono tracking-wider font-semibold placeholder:font-sans"
                   required
                 />
-                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 font-mono text-[9px] font-black group-focus-within/input:text-[#007A5E]">
+                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 font-mono text-[10px] font-black group-focus-within/input:text-[#007A5E]">
                   CID
                 </span>
               </div>
@@ -106,7 +99,7 @@ export function SearchHero({
                   name="motherLastName"
                   defaultValue={defaultMotherValue}
                   placeholder="Ex: MBALLA"
-                  className="uppercase h-11 text-xs rounded-md pl-4 border-neutral-200/80 bg-neutral-50/50 focus-visible:bg-white focus-visible:ring-1 focus-visible:ring-[#007A5E] focus-visible:border-[#007A5E] transition-all duration-300 font-semibold"
+                  className="uppercase h-14 text-sm rounded-md pl-4 border-neutral-200/80 bg-neutral-50/50 focus-visible:bg-white focus-visible:ring-1 focus-visible:ring-[#007A5E] focus-visible:border-[#007A5E] transition-all duration-300 font-semibold"
                   required
                 />
               </div>
@@ -116,7 +109,7 @@ export function SearchHero({
             {/* Search Button */}
             <Button
               type="submit"
-              className="h-11 px-8 rounded-md text-xs font-black uppercase tracking-wider cursor-pointer bg-[#007A5E] hover:bg-[#00664f] active:scale-98 transition-all duration-300 text-white flex items-center justify-center gap-2 shadow-sm"
+              className="h-14 px-10 rounded-md text-xs font-black uppercase tracking-wider cursor-pointer bg-[#007A5E] hover:bg-[#00664f] active:scale-98 transition-all duration-300 text-white flex items-center justify-center gap-2 shadow-sm w-full md:w-auto"
             >
               <SearchIcon className="size-4" />
               Rechercher l'acte
