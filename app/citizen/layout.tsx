@@ -1,4 +1,5 @@
 import * as React from "react"
+import Image from "next/image"
 import { Header } from "@/components/header"
 
 export default function CitizenLayout({
@@ -7,7 +8,19 @@ export default function CitizenLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-neutral-50/30 flex flex-col font-sans antialiased text-neutral-800">
+    <div className="min-h-screen bg-neutral-50/30 flex flex-col font-sans antialiased text-neutral-800 relative">
+      {/* Background Cameroon Crest Watermark */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.025] flex items-center justify-center z-0 select-none">
+        <div className="relative w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] md:w-[700px] md:h-[700px]">
+          <Image
+            src="/cameroon-logo.png"
+            alt="Armoiries du Cameroun"
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
+      </div>
       {/* Cameroonian National Colors Ribbon */}
       <div className="fixed top-0 left-0 right-0 h-1 flex z-50 select-none">
         <div className="flex-1 bg-[#007A5E]" />
