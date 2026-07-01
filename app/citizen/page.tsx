@@ -10,6 +10,7 @@ import {
 import { findCitizenRecord, requestBirthTransfer } from "@/app/actions/citizen"
 import { Button } from "@/components/ui/button"
 import { prisma } from "@/lib/prisma"
+import { cn } from "@/lib/utils"
 import { SearchHero } from "./_components/search-hero"
 import { TimelineSection } from "./_components/timeline-section"
 import { RecordDetails } from "./_components/record-details"
@@ -89,51 +90,13 @@ export default async function CitizenPortal({
   )
 
   return (
-    <div className="space-y-10">
-      {/* Welcome & Republic of Cameroon National Banner */}
-      {!accessId && (
-        <div className="bg-white border border-neutral-200 rounded-md p-6 shadow-xs flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-          {/* Flag background ribbon internally */}
-          <div className="absolute top-0 left-0 right-0 h-1 flex select-none">
-            <div className="flex-1 bg-[#007A5E]" />
-            <div className="flex-1 bg-[#CE1126] relative">
-              <div className="absolute inset-0 flex items-center justify-center text-[4px] text-[#FCD116] font-bold">★</div>
-            </div>
-            <div className="flex-1 bg-[#FCD116]" />
-          </div>
-
-          <div className="flex items-center gap-4 text-left">
-            <div className="relative w-14 h-14 shrink-0">
-              <Image
-                src="/cameroon-logo.png"
-                alt="Armoiries de la République du Cameroun"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <div className="space-y-1">
-              <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest leading-none">
-                République du Cameroun / Republic of Cameroon
-              </p>
-              <h2 className="text-sm font-black text-neutral-800 uppercase tracking-wider leading-tight">
-                Bureau National de l'État Civil (BUNEC)
-              </h2>
-              <p className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider leading-none">
-                Portail National de Numérisation et d'Impression des Actes Civils
-              </p>
-            </div>
-          </div>
-
-          <div className="hidden md:flex flex-col items-end text-right border-l border-neutral-100 pl-6 shrink-0">
-            <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Devise Nationale</p>
-            <p className="text-[10px] font-black text-[#007A5E] uppercase tracking-wide">Paix - Travail - Patrie</p>
-            <p className="text-[9px] font-bold text-[#CE1126] uppercase tracking-wider">Peace - Work - Fatherland</p>
-          </div>
-        </div>
-      )}
-
+    <div className={cn("space-y-12 w-full", {
+      "min-h-[60vh] flex flex-col justify-center": !accessId
+    })}>
       {/* Hero Section & Search Form */}
-      <div className="space-y-6">
+      <div className={cn("space-y-6 w-full animate-in fade-in slide-in-from-bottom-4 duration-500", {
+        "max-w-2xl mx-auto my-auto": !accessId
+      })}>
         <SearchHero
           defaultValue={accessId}
           defaultMotherValue={motherLastName}
@@ -178,7 +141,7 @@ export default async function CitizenPortal({
       {!accessId && (
         <div className="space-y-6 border-t border-neutral-200 pt-12 text-center">
           <p className="text-[10px] font-black tracking-widest text-neutral-400 uppercase">
-            Institutions Portrices du Projet / Project Governance
+            Partenaires Institutionnels / Institutional Partners
           </p>
           <div className="flex flex-wrap items-center justify-center gap-12 opacity-75 select-none md:gap-16">
             {/* BUNEC */}
