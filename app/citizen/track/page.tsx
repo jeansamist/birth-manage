@@ -30,7 +30,8 @@ export default async function TrackPage({ searchParams }: TrackPageProps) {
     : null
 
   return (
-    <div className="max-w-2xl mx-auto space-y-10">
+    <div className="w-full max-w-5xl mx-auto px-4 md:px-6 pb-8 md:pb-12">
+      <div className="max-w-2xl mx-auto space-y-10">
       <div className="space-y-4">
         <h1 className="text-xl font-bold uppercase tracking-wider text-neutral-800">
           Suivi de Dossier en Ligne / Track Request
@@ -152,6 +153,7 @@ export default async function TrackPage({ searchParams }: TrackPageProps) {
           )}
         </div>
       )}
+      </div>
     </div>
   )
 }
