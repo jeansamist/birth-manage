@@ -90,3 +90,36 @@ export async function requestBirthTransfer(formData: FormData): Promise<void> {
 
   redirectToPortal(accessId, { success: "request-created" })
 }
+
+export async function finalizeCitizenDeclaration(id: string, data: any): Promise<void> {
+  const motherBirthDate = data.motherBirthDate ? new Date(data.motherBirthDate) : null
+  const fatherBirthDate = data.fatherBirthDate ? new Date(data.fatherBirthDate) : null
+  const marriageDate = data.marriageDate ? new Date(data.marriageDate) : null
+
+  await prisma.birthRecord.update({
+    where: { id },
+    data: {
+      motherProfession: data.motherProfession || null,
+      motherNationality: data.motherNationality || null,
+      motherCni: data.motherCni || null,
+      motherAddress: data.motherAddress || null,
+      motherPhone: data.motherPhone || null,
+
+      fatherFirstName: data.fatherFirstName || null,
+      fatherLastName: data.fatherLastName || null,
+      fatherBirthDate: fatherBirthDate,
+      fatherNationality: data.fatherNationality || null,
+      fatherProfession: data.fatherProfession || null,
+      fatherCni: data.fatherCni || null,
+      fatherAddress: data.fatherAddress || null,
+      fatherPhone: data.fatherPhone || null,
+
+      parentsMarried: data.parentsMarried || false,
+      marriageCertNumber: data.marriageCertNumber || null,
+      marriageDate: marriageDate,
+
+      isCompletedByCitizen: true,
+      status: "SUBMITTED",
+    },
+  })
+}
