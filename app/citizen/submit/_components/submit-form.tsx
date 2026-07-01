@@ -160,7 +160,7 @@ export function SubmitForm({ cityHalls }: SubmitFormProps) {
       <div className="w-full flex-1 flex flex-col xl:flex-row min-h-0 overflow-hidden bg-background">
         {/* Input Form Panel (42%) */}
         <main className="flex-1 flex flex-col min-w-0 bg-background xl:border-r border-border xl:w-[42%] h-full overflow-y-auto">
-          <div className="px-6 py-4 border-b border-border bg-neutral-50/50">
+          <div className="w-full max-w-xl mx-auto px-6 py-6 border-b border-border bg-neutral-50/50">
             <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-800">
               Déclaration de naissance hors-système (FNU)
             </h2>
@@ -169,7 +169,7 @@ export function SubmitForm({ cityHalls }: SubmitFormProps) {
             </p>
           </div>
 
-          <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-xl mx-auto p-6 md:p-8 space-y-8">
             <CityHallSelector form={form} cityHalls={cityHalls} />
             <BabyFields form={form} />
             <MotherFields form={form} />
