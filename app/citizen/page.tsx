@@ -88,8 +88,8 @@ export default async function CitizenPortal({
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
               <div className="space-y-6">
-                <RecordDetails birth={approvedBirth} />
-                <AvailabilityList birth={approvedBirth} />
+                <RecordDetails birth={approvedBirth!} />
+                <AvailabilityList birth={approvedBirth!} />
               </div>
               <div className="space-y-6">
                 <TransferRequestForm
@@ -98,7 +98,7 @@ export default async function CitizenPortal({
                   cityHalls={cityHalls}
                   unavailableTargetIds={unavailableTargetIds}
                 />
-                <RecentTransfers transferRequests={approvedBirth.transferRequests} />
+                <RecentTransfers transferRequests={approvedBirth!.transferRequests} />
               </div>
             </div>
           )}

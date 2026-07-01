@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
-import { zodResolver } from "@hook-form/resolvers/zod"
+import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -28,7 +28,7 @@ const parentDeclareSchema = z.object({
   fatherAddress: z.string().optional(),
   fatherPhone: z.string().optional(),
   
-  parentsMarried: z.boolean().default(false),
+  parentsMarried: z.boolean(),
   marriageCertNumber: z.string().optional(),
   marriageDate: z.string().optional(),
 })
