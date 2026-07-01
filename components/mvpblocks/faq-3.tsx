@@ -117,29 +117,29 @@ function FAQItem({ question, answer, index }: FAQItemProps) {
 export default function FaqSection() {
   const faqs: Omit<FAQItemProps, "index">[] = [
     {
-      question: "Quel est le délai légal au Cameroun pour déclarer une naissance ?",
+      question: "Quel est le délai légal pour déclarer une naissance au Cameroun ?",
       answer:
-        "Conformément à la loi camerounaise relative à l'état civil, vous disposez d'un délai légal de quatre-vingt-dix (90) jours pour déclarer une naissance auprès de la Mairie (ou du centre d'état civil secondaire) du lieu d'accouchement. Passé ce délai de 90 jours, l'acte de naissance ne pourra plus être établi directement et nécessitera l'obtention d'un jugement supplétif auprès du tribunal de grande instance compétent.",
+        "Conformément à l'article 30 de l'Ordonnance n° 81-02 du 29 juin 1981 portant organisation de l'état civil au Cameroun, modifiée par la Loi n° 2011/011 du 06 mai 2011, le délai légal de déclaration est de quatre-vingt-dix (90) jours. Au-delà de ce délai de 90 jours, le centre d'état civil ne peut plus enregistrer la naissance. Vous devrez obligatoirement obtenir un jugement supplétif d'acte de naissance auprès du Tribunal de Premier Degré (TPD) ou du Tribunal de Grande Instance (TGI) de votre ressort, ce qui rallonge et complexifie la procédure.",
     },
     {
-      question: "Comment fonctionne l'Identifiant Unique Citoyen (CID) attribué par le BUNEC ?",
+      question: "Combien coûte l'établissement d'un acte de naissance sur ce portail ?",
       answer:
-        "Le CID (Citizen ID) est un identifiant unique à 16 caractères généré par le registre national du Bureau National de l'État Civil (BUNEC) lors de la saisie hospitalière. Ce code sécurisé permet de lier de manière définitive l'enfant à sa filiation et sert de clé d'accès unique pour imprimer l'acte de naissance officiel ou demander une copie certifiée conforme en ligne.",
+        "L'établissement de l'acte de naissance original ainsi que sa première copie certifiée dans le délai légal de 90 jours sont strictement gratuits sur l'ensemble du territoire camerounais. Aucun frais d'enregistrement, timbre municipal ou timbre fiscal (les 1000 FCFA habituels) ne doit vous être réclamé par la Mairie ou l'Hôpital pour cette formalité initiale. Ce portail numérique applique et protège cette gratuité légale voulue par l'État pour lutter contre le phénomène des 'enfants sans identité' (enfants fantômes).",
     },
     {
-      question: "Puis-je retirer une copie certifiée d'acte dans n'importe quelle Mairie (ex: Douala vers Yaoundé) ?",
+      question: "Le CID (Citizen ID) remplace-t-il le carnet de vaccination de la maternité ?",
       answer:
-        "Oui, c'est l'un des avantages majeurs du système interconnecté initié par le MINAT et le BUNEC. Si l'acte de naissance d'origine a été établi à la Mairie de Garoua ou de Douala Ier, et que vous résidez actuellement à Yaoundé, vous pouvez introduire une demande de transfert en ligne. Dès que l'Officier d'état civil de votre mairie de résidence (ex: Yaoundé VI) valide le transfert, la copie y est imprimable instantanément sans voyage physique.",
+        "Non. Le CID généré par le Bureau National de l'État Civil (BUNEC) est un identifiant d'état civil numérique sécurisé. Il ne se substitue pas au carnet de vaccination ou à la déclaration de naissance papier remis par la maternité (Centre de Santé Intégré, Hôpital de District ou Hôpital Général). C'est un code de liaison numérique qui verrouille définitivement le volet médical de l'accouchement saisi par le médecin, empêchant toute falsification ultérieure des données (date, heure, sexe, identité de la mère).",
     },
     {
-      question: "La vérification d'acte par QR Code est-elle acceptée par les administrations publiques et ambassades ?",
+      question: "Puis-je imprimer une copie certifiée de mon acte dans une mairie différente de mon lieu de naissance (ex: né à Kribi, résidant à Garoua) ?",
       answer:
-        "Absolument. Les administrations camerounaises (DGSN pour l'obtention de la CNI ou du Passeport, Ministères) et les représentations diplomatiques à l'étranger scannent le QR Code présent sur l'acte officiel imprimé au format A4. Ce scan les redirige instantanément vers le portail public de vérification sécurisé du BUNEC, confirmant l'authenticité de l'acte et réduisant à zéro les risques de faux actes physiques.",
+        "Oui. L'interconnexion nationale des centres d'état civil du BUNEC permet le transfert numérique de dossier. Si l'enfant est né à Kribi ou à Maroua, et que vous résidez actuellement à Douala Vème ou Yaoundé VI, vous pouvez soumettre une demande de transfert en ligne via l'onglet 'Suivi'. Une fois la demande validée par l'Officier d'état civil de la mairie de destination, vous pourrez imprimer une copie certifiée conforme directement dans votre mairie de résidence, évitant ainsi des déplacements coûteux.",
     },
     {
-      question: "Que faire en cas d'accouchement hors-système ou à domicile en zone rurale ?",
+      question: "Comment les administrations (DGSN pour la CNI, MINFOPRA pour les concours) contrôlent-elles l'authenticité de mon acte ?",
       answer:
-        "Si l'accouchement a eu lieu à domicile ou dans une clinique non raccordée au réseau numérique, le parent doit utiliser l'onglet 'Déclaration FNU' sur ce portail. Il lui suffit de remplir les informations d'identité, de sélectionner sa mairie locale, et de téléverser la photo ou le scan de la déclaration papier établie par l'autorité locale ou le chef de village pour instruction.",
+        "Chaque acte officiel imprimé via notre réseau national comporte un QR Code sécurisé lié à une signature cryptographique. Les agents de la Délégation Générale à la Sûreté Nationale (DGSN) lors de l'établissement d'une Carte Nationale d'Identité (CNI) ou d'un Passeport, de même que le Ministère de la Fonction Publique (MINFOPRA) lors des concours administratifs, scannent ce QR code. Ils sont redirigés vers le portail de vérification souverain du BUNEC qui confirme l'authenticité de la signature de l'Officier d'état civil.",
     },
   ];
 
@@ -158,7 +158,7 @@ export default function FaqSection() {
             Questions Fréquentes & Législation Camerounaise
           </h2>
           <p className="text-neutral-500 text-xs">
-            Comprendre la gestion numérique de l'état civil au Cameroun, la délivrance des actes et la législation en vigueur.
+            Comprendre la gestion numérique de l'état civil au Cameroun, la délivrance des actes et la législation en vigueur (Ordonnance de 1981, Loi de 2011).
           </p>
         </div>
 
