@@ -10,6 +10,7 @@ import { ApproveDeclinePanel } from "./_components/approve-decline-panel"
 import { DocumentPreview, type PreviewData } from "@/components/form/document-preview"
 import Link from "next/link"
 import { ArrowLeftIcon } from "lucide-react"
+import { getBaseUrl } from "@/lib/utils"
 
 export default async function MaireReviewPage({
   params,
@@ -87,7 +88,7 @@ export default async function MaireReviewPage({
     cityHallCity: birth.cityHall?.city || "Yaoundé",
     maireName: maireFullName,
     secretaireName: secretaireFullName,
-    qrCodeUrl: birth.citizenAccessId ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`/verify/${birth.citizenAccessId}`)}` : null,
+    qrCodeUrl: birth.citizenAccessId ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${getBaseUrl()}/verify/${birth.citizenAccessId}`)}` : null,
     declarationRef: birth.declarationRef,
     citizenTrackingCode: birth.citizenTrackingCode,
   }
