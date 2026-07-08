@@ -28,10 +28,15 @@ export function CertificateHeader({
           </div>
         </div>
 
-        {/* Timbre rond central CM */}
+        {/* Armoiries nationales */}
         <div className="flex justify-center items-center shrink-0 pt-1">
-          <div className="border-2 border-neutral-300 rounded-full w-11 h-11 flex items-center justify-center text-xs font-bold text-neutral-400">
-            CM
+          <div className="relative w-12 h-12">
+            <Image
+              src="/cameroon-logo.png"
+              alt="Armoiries du Cameroun"
+              fill
+              className="object-contain"
+            />
           </div>
         </div>
 
