@@ -1,4 +1,6 @@
 import * as React from "react"
+import Image from "next/image"
+import { getBaseUrl } from "@/lib/utils"
 
 interface SectionRegistrarProps {
   secretaireName?: string | null
@@ -37,11 +39,27 @@ export function SectionRegistrar({
         </div>
 
         <div className="col-span-4 border-l border-black pl-3 flex flex-col justify-between items-center text-center">
-          <span className="font-semibold text-neutral-500 text-[9px]">Signature & Cachet</span>
-          <div className="h-8 flex items-center justify-center font-serif italic text-[8px] text-blue-900 font-bold border border-dashed border-neutral-300 w-full rounded-sm bg-white mt-1.5 select-none">
-            {secretaireName ? "[Cachet État Civil]" : "[Attente validation]"}
+          <span className="font-semibold text-neutral-500 text-[8px] uppercase tracking-wide">Signature, Cachet & Suivi QR</span>
+          <div className="flex gap-2 items-center justify-center w-full mt-1.5">
+            <div className="h-10 flex items-center justify-center font-serif italic text-[7px] text-blue-900 font-bold border border-dashed border-neutral-300 flex-1 rounded-sm bg-white select-none">
+              {secretaireName ? "[Cachet Mairie]" : "[Attente]"}
+            </div>
+            {citizenTrackingCode ? (
+              <div className="relative w-10 h-10 border border-neutral-200 bg-white p-0.5 shrink-0 rounded shadow-xs">
+                <Image
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${getBaseUrl()}/verify/${citizenTrackingCode}`)}`}
+                  alt="QR Code Suivi"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            ) : (
+              <div className="w-10 h-10 border border-dashed border-neutral-300 flex items-center justify-center text-[5px] text-neutral-400 p-0.5 text-center shrink-0">
+                [QR]
+              </div>
+            )}
           </div>
-          <div className="w-full mt-2.5 flex flex-col text-[7px] text-neutral-400 font-mono">
+          <div className="w-full mt-2 flex flex-col text-[7px] text-neutral-400 font-mono">
             <span>Date : {new Intl.DateTimeFormat("fr-FR").format(new Date())}</span>
             <span>Code : {citizenTrackingCode || "TRK-PENDING"}</span>
           </div>

@@ -109,8 +109,6 @@ export function BirthsTable({ births, initialStatusFilter }: BirthsTableProps) {
     if (initialStatusFilter) {
       setStatusFilter(
         initialStatusFilter === "draft" ? "DRAFT" :
-        initialStatusFilter === "submitted" ? "in_progress" :
-        initialStatusFilter === "approved" ? "APPROVED" :
         initialStatusFilter === "declined" ? "DECLINED" : "all"
       )
     } else {
@@ -251,22 +249,10 @@ export function BirthsTable({ births, initialStatusFilter }: BirthsTableProps) {
                 Brouillons
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
-                checked={statusFilter === "in_progress"}
-                onCheckedChange={() => setStatusFilter("in_progress")}
-              >
-                En cours de traitement
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
-                checked={statusFilter === "APPROVED"}
-                onCheckedChange={() => setStatusFilter("APPROVED")}
-              >
-                Actes approuvés
-              </DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem
                 checked={statusFilter === "DECLINED"}
                 onCheckedChange={() => setStatusFilter("DECLINED")}
               >
-                Refusés
+                Refusés / À corriger
               </DropdownMenuCheckboxItem>
 
               {uniqueCityHalls.length > 0 && (

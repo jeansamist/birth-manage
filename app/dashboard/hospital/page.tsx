@@ -6,6 +6,9 @@ import type { StatCard } from "@/app/dashboard/_components/content"
 import { getMonthlyStats } from "@/lib/stats"
 import { DashboardChart } from "@/app/dashboard/_components/dashboard-chart"
 import { BirthsTable } from "./_components/births-table"
+import { Button } from "@/components/ui/button"
+import { PlusIcon } from "lucide-react"
+import Link from "next/link"
 
 export default async function HospitalDashboard({
   searchParams,
@@ -16,62 +19,67 @@ export default async function HospitalDashboard({
   const session = await getSession()
   if (!session || session.role !== "DOCTOR") redirect("/dashboard")
 
-  const births = await prisma.birthRecord.findMany({
+  // Toutes les déclarations du médecin (pour stats & graph)
+  const allBirths = await prisma.birthRecord.findMany({
     where: { doctorId: session.userId },
     orderBy: { updatedAt: "desc" },
     include: { cityHall: { select: { name: true } } },
   })
 
+  // Table : uniquement DRAFT et DECLINED
+  const actionableBirths = allBirths.filter((b) =>
+    ["DRAFT", "DECLINED"].includes(b.status)
+  )
+
   const stats = {
-    total: births.length,
-    draft: births.filter((b) => b.status === "DRAFT").length,
-    inProgress: births.filter((b) =>
+    draft: allBirths.filter((b) => b.status === "DRAFT").length,
+    submitted: allBirths.filter((b) =>
       ["SUBMITTED", "PROCESSING", "PENDING_APPROVAL"].includes(b.status)
     ).length,
-    approved: births.filter((b) => b.status === "APPROVED").length,
-    declined: births.filter((b) => b.status === "DECLINED").length,
+    approved: allBirths.filter((b) => b.status === "APPROVED").length,
+    declined: allBirths.filter((b) => b.status === "DECLINED").length,
   }
 
   const statsCards: StatCard[] = [
     {
-      title: "Total déclarations",
-      value: String(stats.total),
-      subtitle: `Brouillons : ${stats.draft}`,
-      icon: "baby",
-      subtitleIcon: "filetext",
+      title: "Brouillons",
+      value: String(stats.draft),
+      subtitle: "À finaliser et soumettre",
+      icon: "filetext",
+      subtitleIcon: "clock",
     },
     {
-      title: "En attente mairie",
-      value: String(stats.inProgress),
-      subtitle: "En cours de traitement",
-      icon: "clock",
+      title: "En traitement mairie",
+      value: String(stats.submitted),
+      subtitle: "En cours d'instruction",
+      icon: "send",
       subtitleIcon: "inbox",
     },
     {
-      title: "Actes approuvés",
+      title: "Actes signés",
       value: String(stats.approved),
-      subtitle: "Certificats signés",
+      subtitle: "Certificats validés",
       icon: "check",
       subtitleIcon: "file",
     },
     {
-      title: "Refusés",
+      title: "À corriger",
       value: String(stats.declined),
-      subtitle: "À corriger",
+      subtitle: "Renvoyés par la mairie",
       icon: "x",
-      subtitleIcon: "filetext",
+      subtitleIcon: "alert",
     },
   ]
 
   const alertMessage =
-    stats.draft > 0
-      ? `Vous avez ${stats.draft} déclaration${stats.draft > 1 ? "s" : ""} en brouillon — pensez à les soumettre à la mairie.`
-      : stats.inProgress > 0
-      ? `${stats.inProgress} déclaration${stats.inProgress > 1 ? "s sont" : " est"} en cours de traitement à la mairie.`
+    stats.declined > 0
+      ? `${stats.declined} déclaration(s) rejetée(s) par la mairie — corrections requises.`
+      : stats.draft > 0
+      ? `${stats.draft} brouillon(s) en cours — pensez à les finaliser.`
       : null
 
   const chartData = getMonthlyStats(
-    births,
+    allBirths,
     () => true,
     (b) => b.status !== "DRAFT"
   )
@@ -82,14 +90,28 @@ export default async function HospitalDashboard({
       statsCards={statsCards}
       chart={
         <DashboardChart
-          title="Flux des déclarations"
+          title="Mes déclarations de naissance"
           series1Label="Déclarations créées"
           series2Label="Soumises à la mairie"
           data={chartData}
         />
       }
-      table={<BirthsTable births={births as any} initialStatusFilter={filter} />}
+      table={
+        <div className="rounded-xl border bg-card overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b">
+            <span className="font-medium text-muted-foreground text-sm">
+              Brouillons & Corrections à traiter
+            </span>
+            <Button asChild size="sm" className="gap-2 h-8 text-xs cursor-pointer">
+              <Link href="/dashboard/hospital/births/new">
+                <PlusIcon className="size-3.5" />
+                Déclarer
+              </Link>
+            </Button>
+          </div>
+          <BirthsTable births={actionableBirths as any} initialStatusFilter={filter} />
+        </div>
+      }
     />
   )
 }
-

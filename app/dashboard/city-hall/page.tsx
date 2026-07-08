@@ -8,16 +8,50 @@ import { DashboardContent } from "@/app/dashboard/_components/content"
 import type { StatCard } from "@/app/dashboard/_components/content"
 import { getMonthlyStats } from "@/lib/stats"
 import { DashboardChart } from "@/app/dashboard/_components/dashboard-chart"
-import { FileTextIcon, InboxIcon, ClockIcon, CheckCircleIcon, ArrowRightLeftIcon } from "lucide-react"
+import { FileTextIcon, InboxIcon, ClockIcon, CheckCircleIcon, ArrowRightLeftIcon, BookOpenIcon } from "lucide-react"
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+type FilterKey = "submitted" | "processing" | "pending_approval" | "all" | null
 
 function formatDate(date: Date | null) {
   if (!date) return "—"
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(
-    new Date(date)
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(date))
+}
+
+function SectionTitle({ icon: Icon, title }: { icon: React.ElementType; title: string }) {
+  return (
+    <div className="flex items-center gap-2 px-5 py-4 border-b">
+      <Icon className="size-5 text-muted-foreground" />
+      <span className="font-medium text-muted-foreground">{title}</span>
+    </div>
   )
 }
 
-export default async function CityHallDashboard() {
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-12 text-center">
+      <InboxIcon className="mb-2 size-7 text-muted-foreground/40" />
+      <p className="text-sm text-muted-foreground">{message}</p>
+    </div>
+  )
+}
+
+function Th({ children }: { children: React.ReactNode }) {
+  return <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">{children}</th>
+}
+function Td({ children, mono = false }: { children: React.ReactNode; mono?: boolean }) {
+  return <td className={`px-4 py-3 text-xs text-muted-foreground ${mono ? "font-mono" : ""}`}>{children}</td>
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default async function CityHallDashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ filter?: string }>
+}) {
+  const { filter } = await searchParams
   const session = await getSession()
   if (!session || !["SECRETAIRE", "MAINTAINER"].includes(session.role))
     redirect("/dashboard")
@@ -25,14 +59,19 @@ export default async function CityHallDashboard() {
   const cityHallId = session.institutionId
   if (!cityHallId) redirect("/dashboard")
 
+  const activeFilter: FilterKey =
+    filter === "submitted" ? "submitted" :
+    filter === "processing" ? "processing" :
+    filter === "pending_approval" ? "pending_approval" :
+    filter === "all" ? "all" :
+    null
+
   const [submitted, mine, transferredCopies, allCityHallBirths] = await Promise.all([
-    // Unclaimed submitted births for this city hall
     prisma.birthRecord.findMany({
       where: { cityHallId, status: "SUBMITTED" },
       orderBy: { updatedAt: "asc" },
       include: { hospital: { select: { name: true, city: true } } },
     }),
-    // Births this secretaire is processing
     prisma.birthRecord.findMany({
       where: {
         secretaireId: session.userId,
@@ -44,7 +83,7 @@ export default async function CityHallDashboard() {
     prisma.birthRecordCopy.findMany({
       where: { cityHallId },
       orderBy: { createdAt: "desc" },
-      take: 20,
+      take: 50,
       include: {
         birthRecord: {
           select: {
@@ -104,10 +143,93 @@ export default async function CityHallDashboard() {
 
   const alertMessage =
     submitted.length > 0
-      ? `Il y a ${submitted.length} déclaration${submitted.length > 1 ? "s" : ""} en attente de réclamation par le secrétariat.`
+      ? `${submitted.length} déclaration${submitted.length > 1 ? "s" : ""} en attente de réclamation par le secrétariat.`
       : mine.length > 0
       ? `Vous traitez actuellement ${mine.length} déclaration${mine.length > 1 ? "s" : ""}.`
       : null
+
+  // ─── Vues filtrées ──────────────────────────────────────────────────────────
+
+  if (activeFilter === "submitted") {
+    return (
+      <DashboardContent alertMessage={alertMessage}>
+        <div className="rounded-xl border bg-card overflow-hidden">
+          <SectionTitle icon={InboxIcon} title={`Dossiers reçus — en attente de réclamation (${submitted.length})`} />
+          <div className="overflow-x-auto">
+            {submitted.length === 0 ? (
+              <EmptyState message="Aucun dossier en attente de réclamation." />
+            ) : (
+              <SubmittedTable births={submitted} />
+            )}
+          </div>
+        </div>
+      </DashboardContent>
+    )
+  }
+
+  if (activeFilter === "processing") {
+    return (
+      <DashboardContent>
+        <div className="rounded-xl border bg-card overflow-hidden">
+          <SectionTitle icon={ClockIcon} title={`Mes dossiers en traitement (${mine.length})`} />
+          <div className="overflow-x-auto">
+            {mine.length === 0 ? (
+              <EmptyState message="Vous n'avez aucun dossier en cours de traitement." />
+            ) : (
+              <MineTable births={mine} />
+            )}
+          </div>
+        </div>
+      </DashboardContent>
+    )
+  }
+
+  if (activeFilter === "pending_approval") {
+    const pendingApproval = mine.filter((b) => b.status === "PENDING_APPROVAL")
+    return (
+      <DashboardContent>
+        <div className="rounded-xl border bg-card overflow-hidden">
+          <SectionTitle icon={CheckCircleIcon} title={`Soumis au Maire — en attente de signature (${pendingApproval.length})`} />
+          <div className="overflow-x-auto">
+            {pendingApproval.length === 0 ? (
+              <EmptyState message="Aucun dossier actuellement soumis au Maire." />
+            ) : (
+              <MineTable births={pendingApproval} />
+            )}
+          </div>
+        </div>
+      </DashboardContent>
+    )
+  }
+
+  if (activeFilter === "all") {
+    return (
+      <DashboardContent statsCards={statsCards}>
+        <div className="space-y-6">
+          <div className="rounded-xl border bg-card overflow-hidden">
+            <SectionTitle icon={BookOpenIcon} title={`Tous les dossiers de la mairie — ${allCityHallBirths.length} au total`} />
+            <div className="overflow-x-auto">
+              {submitted.length === 0 && mine.length === 0 ? (
+                <EmptyState message="Aucun dossier pour cette mairie." />
+              ) : (
+                <AllBirthsTable submitted={submitted} mine={mine} />
+              )}
+            </div>
+          </div>
+          {transferredCopies.length > 0 && (
+            <div className="rounded-xl border bg-card overflow-hidden">
+              <SectionTitle icon={ArrowRightLeftIcon} title={`Copies transférées disponibles (${transferredCopies.length})`} />
+              <div className="overflow-x-auto">
+                <CopiesTable copies={transferredCopies} />
+              </div>
+            </div>
+          )}
+        </div>
+      </DashboardContent>
+    )
+  }
+
+  // ─── Vue par défaut ──────────────────────────────────────────────────────────
 
   return (
     <DashboardContent
@@ -123,156 +245,156 @@ export default async function CityHallDashboard() {
       }
     >
       <div className="space-y-6">
-        {/* Submitted (unclaimed) */}
+        {/* Dossiers en attente */}
         <div className="rounded-xl border bg-card overflow-hidden">
-          <div className="flex items-center gap-2 px-5 py-4 border-b">
-            <InboxIcon className="size-5 text-muted-foreground" />
-            <span className="font-medium text-muted-foreground">
-              Dossiers soumis par les hôpitaux (en attente)
-            </span>
-          </div>
+          <SectionTitle icon={InboxIcon} title="Dossiers soumis par les hôpitaux (en attente)" />
           <div className="overflow-x-auto">
             {submitted.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <InboxIcon className="mb-2 size-7 text-muted-foreground/40" />
-                <p className="text-sm text-muted-foreground">Aucun dossier en attente.</p>
-              </div>
+              <EmptyState message="Aucun dossier en attente." />
             ) : (
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-muted/40">
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Enfant</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Hôpital</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Date naissance</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Soumis le</th>
-                    <th className="px-4 py-3" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {submitted.map((b) => (
-                    <tr
-                      key={b.id}
-                      className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
-                    >
-                      <td className="px-4 py-3 font-medium">
-                        {b.babyFirstName || b.babyLastName ? (
-                          `${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim()
-                        ) : (
-                          <span className="text-muted-foreground italic text-xs">Sans nom</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">{b.hospital.name}</td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">{formatDate(b.birthDate)}</td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">{formatDate(b.updatedAt)}</td>
-                      <td className="px-4 py-3 text-right">
-                        <ClaimButton birthId={b.id} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <SubmittedTable births={submitted} />
             )}
           </div>
         </div>
 
-        {/* Transferred copies */}
+        {/* Copies transférées */}
         {transferredCopies.length > 0 && (
           <div className="rounded-xl border bg-card overflow-hidden">
-            <div className="flex items-center gap-2 px-5 py-4 border-b">
-              <ArrowRightLeftIcon className="size-5 text-muted-foreground" />
-              <span className="font-medium text-muted-foreground">
-                Copies transférées disponibles au retrait
-              </span>
-            </div>
+            <SectionTitle icon={ArrowRightLeftIcon} title="Copies transférées disponibles au retrait" />
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-muted/40">
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Enfant</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Mairie d’origine</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">N° acte</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Disponible depuis</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transferredCopies.map((copy) => (
-                    <tr
-                      key={copy.id}
-                      className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
-                    >
-                      <td className="px-4 py-3 font-medium">
-                        {`${copy.birthRecord.babyFirstName ?? ""} ${copy.birthRecord.babyLastName ?? ""}`.trim() || "—"}
-                        <span className="block font-normal text-muted-foreground text-[10px] mt-0.5">
-                          Né(e) le {formatDate(copy.birthRecord.birthDate)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">
-                        {copy.birthRecord.cityHall
-                          ? `${copy.birthRecord.cityHall.name} · ${copy.birthRecord.cityHall.city}`
-                          : "—"}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-muted-foreground text-xs">
-                        {copy.birthRecord.certificateNumber ?? "—"}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">{formatDate(copy.createdAt)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <CopiesTable copies={transferredCopies} />
             </div>
           </div>
         )}
 
-        {/* My processing */}
+        {/* Mes dossiers en cours */}
         {mine.length > 0 && (
           <div className="rounded-xl border bg-card overflow-hidden">
-            <div className="flex items-center gap-2 px-5 py-4 border-b">
-              <FileTextIcon className="size-5 text-muted-foreground" />
-              <span className="font-medium text-muted-foreground">
-                Mes dossiers en cours de traitement
-              </span>
-            </div>
+            <SectionTitle icon={FileTextIcon} title="Mes dossiers en cours de traitement" />
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-muted/40">
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Enfant</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Hôpital</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground">Statut</th>
-                    <th className="px-4 py-3" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {mine.map((b) => (
-                    <tr
-                      key={b.id}
-                      className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
-                    >
-                      <td className="px-4 py-3 font-medium">
-                        {`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground text-xs">{b.hospital.name}</td>
-                      <td className="px-4 py-3">
-                        <StatusBadge status={b.status} />
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        {b.status === "PROCESSING" && (
-                          <Link
-                            href={`/dashboard/city-hall/births/${b.id}`}
-                            className="text-xs font-semibold text-primary hover:underline"
-                          >
-                            Compléter
-                          </Link>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <MineTable births={mine} />
             </div>
           </div>
         )}
       </div>
     </DashboardContent>
+  )
+}
+
+// ─── Sub-tables ────────────────────────────────────────────────────────────────
+
+function SubmittedTable({ births }: { births: any[] }) {
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b border-border bg-muted/40">
+          <Th>Enfant</Th><Th>Hôpital</Th><Th>Date naissance</Th><Th>Soumis le</Th>
+          <th className="px-4 py-3" />
+        </tr>
+      </thead>
+      <tbody>
+        {births.map((b) => (
+          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+            <td className="px-4 py-3 font-medium text-sm">
+              {b.babyFirstName || b.babyLastName
+                ? `${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim()
+                : <span className="text-muted-foreground italic text-xs">Sans nom</span>}
+            </td>
+            <Td>{b.hospital.name}</Td>
+            <Td>{formatDate(b.birthDate)}</Td>
+            <Td>{formatDate(b.updatedAt)}</Td>
+            <td className="px-4 py-3 text-right"><ClaimButton birthId={b.id} /></td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+function MineTable({ births }: { births: any[] }) {
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b border-border bg-muted/40">
+          <Th>Enfant</Th><Th>Hôpital</Th><Th>Statut</Th>
+          <th className="px-4 py-3" />
+        </tr>
+      </thead>
+      <tbody>
+        {births.map((b) => (
+          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+            <td className="px-4 py-3 font-medium text-sm">{`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}</td>
+            <Td>{b.hospital.name}</Td>
+            <td className="px-4 py-3"><StatusBadge status={b.status} /></td>
+            <td className="px-4 py-3 text-right">
+              {b.status === "PROCESSING" && (
+                <Link href={`/dashboard/city-hall/births/${b.id}`} className="text-xs font-semibold text-primary hover:underline">
+                  Compléter
+                </Link>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+function AllBirthsTable({ submitted, mine }: { submitted: any[]; mine: any[] }) {
+  const all = [...submitted, ...mine]
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b border-border bg-muted/40">
+          <Th>Enfant</Th><Th>Hôpital</Th><Th>Statut</Th><Th>Mis à jour</Th>
+          <th className="px-4 py-3" />
+        </tr>
+      </thead>
+      <tbody>
+        {all.map((b) => (
+          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+            <td className="px-4 py-3 font-medium text-sm">{`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}</td>
+            <Td>{b.hospital.name}</Td>
+            <td className="px-4 py-3"><StatusBadge status={b.status} /></td>
+            <Td>{formatDate(b.updatedAt)}</Td>
+            <td className="px-4 py-3 text-right">
+              {b.status === "SUBMITTED" && <ClaimButton birthId={b.id} />}
+              {b.status === "PROCESSING" && (
+                <Link href={`/dashboard/city-hall/births/${b.id}`} className="text-xs font-semibold text-primary hover:underline">
+                  Compléter
+                </Link>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+function CopiesTable({ copies }: { copies: any[] }) {
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b border-border bg-muted/40">
+          <Th>Enfant</Th><Th>Mairie d'origine</Th><Th>N° acte</Th><Th>Disponible depuis</Th>
+        </tr>
+      </thead>
+      <tbody>
+        {copies.map((copy) => (
+          <tr key={copy.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+            <td className="px-4 py-3 font-medium text-sm">
+              {`${copy.birthRecord.babyFirstName ?? ""} ${copy.birthRecord.babyLastName ?? ""}`.trim() || "—"}
+              <span className="block font-normal text-muted-foreground text-[10px] mt-0.5">
+                Né(e) le {formatDate(copy.birthRecord.birthDate)}
+              </span>
+            </td>
+            <Td>{copy.birthRecord.cityHall ? `${copy.birthRecord.cityHall.name} · ${copy.birthRecord.cityHall.city}` : "—"}</Td>
+            <Td mono>{copy.birthRecord.certificateNumber ?? "—"}</Td>
+            <Td>{formatDate(copy.createdAt)}</Td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }

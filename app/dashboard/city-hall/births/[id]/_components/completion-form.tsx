@@ -11,6 +11,7 @@ import { MarriageFields } from "./marriage-fields"
 import { DocumentPreview, type PreviewData } from "@/components/form/document-preview"
 import Link from "next/link"
 import { ArrowLeftIcon } from "lucide-react"
+import { getBaseUrl } from "@/lib/utils"
 
 interface CompletionData {
   motherCni: string
@@ -126,7 +127,7 @@ export function CompletionForm({ birth }: { birth: any }) {
     cityHallCity: birth.cityHall?.city || "Yaoundé",
     maireName: birth.maireName || "SIMON BIYA",
     secretaireName: birth.secretaireName || "MBUYI CECILE",
-    qrCodeUrl: birth.citizenAccessId ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`/verify/${birth.citizenAccessId}`)}` : null,
+    qrCodeUrl: birth.citizenAccessId ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${getBaseUrl()}/verify/${birth.citizenAccessId}`)}` : null,
     declarationRef: birth.declarationRef,
     citizenTrackingCode: birth.citizenTrackingCode,
   }
