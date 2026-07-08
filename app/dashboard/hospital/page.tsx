@@ -2,10 +2,10 @@ import { redirect } from "next/navigation"
 import { getSession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { DashboardContent } from "@/app/dashboard/_components/content"
-import type { StatCard } from "@/app/dashboard/_components/content"
-import { getMonthlyStats } from "@/lib/stats"
-import { DashboardChart } from "@/app/dashboard/_components/dashboard-chart"
 import { BirthsTable } from "./_components/births-table"
+import { Button } from "@/components/ui/button"
+import { PlusIcon, FileTextIcon } from "lucide-react"
+import Link from "next/link"
 
 export default async function HospitalDashboard({
   searchParams,
@@ -16,80 +16,58 @@ export default async function HospitalDashboard({
   const session = await getSession()
   if (!session || session.role !== "DOCTOR") redirect("/dashboard")
 
+  // Charge uniquement les dossiers de statut DRAFT et DECLINED associés au médecin connecté
   const births = await prisma.birthRecord.findMany({
-    where: { doctorId: session.userId },
+    where: {
+      doctorId: session.userId,
+      status: { in: ["DRAFT", "DECLINED"] },
+    },
     orderBy: { updatedAt: "desc" },
     include: { cityHall: { select: { name: true } } },
   })
 
-  const stats = {
-    total: births.length,
-    draft: births.filter((b) => b.status === "DRAFT").length,
-    inProgress: births.filter((b) =>
-      ["SUBMITTED", "PROCESSING", "PENDING_APPROVAL"].includes(b.status)
-    ).length,
-    approved: births.filter((b) => b.status === "APPROVED").length,
-    declined: births.filter((b) => b.status === "DECLINED").length,
-  }
-
-  const statsCards: StatCard[] = [
-    {
-      title: "Total déclarations",
-      value: String(stats.total),
-      subtitle: `Brouillons : ${stats.draft}`,
-      icon: "baby",
-      subtitleIcon: "filetext",
-    },
-    {
-      title: "En attente mairie",
-      value: String(stats.inProgress),
-      subtitle: "En cours de traitement",
-      icon: "clock",
-      subtitleIcon: "inbox",
-    },
-    {
-      title: "Actes approuvés",
-      value: String(stats.approved),
-      subtitle: "Certificats signés",
-      icon: "check",
-      subtitleIcon: "file",
-    },
-    {
-      title: "Refusés",
-      value: String(stats.declined),
-      subtitle: "À corriger",
-      icon: "x",
-      subtitleIcon: "filetext",
-    },
-  ]
+  const draftsCount = births.filter((b) => b.status === "DRAFT").length
+  const declinedCount = births.filter((b) => b.status === "DECLINED").length
 
   const alertMessage =
-    stats.draft > 0
-      ? `Vous avez ${stats.draft} déclaration${stats.draft > 1 ? "s" : ""} en brouillon — pensez à les soumettre à la mairie.`
-      : stats.inProgress > 0
-      ? `${stats.inProgress} déclaration${stats.inProgress > 1 ? "s sont" : " est"} en cours de traitement à la mairie.`
+    declinedCount > 0
+      ? `Vous avez ${declinedCount} déclaration(s) rejetée(s) par la mairie. Veuillez effectuer les corrections demandées.`
+      : draftsCount > 0
+      ? `Vous avez ${draftsCount} déclaration(s) en cours de saisie (brouillon) — pensez à les finaliser.`
       : null
 
-  const chartData = getMonthlyStats(
-    births,
-    () => true,
-    (b) => b.status !== "DRAFT"
-  )
-
   return (
-    <DashboardContent
-      alertMessage={alertMessage}
-      statsCards={statsCards}
-      chart={
-        <DashboardChart
-          title="Flux des déclarations"
-          series1Label="Déclarations créées"
-          series2Label="Soumises à la mairie"
-          data={chartData}
-        />
-      }
-      table={<BirthsTable births={births as any} initialStatusFilter={filter} />}
-    />
+    <DashboardContent alertMessage={alertMessage}>
+      <div className="space-y-6">
+        {/* En-tête simplifié avec raccourci de création direct */}
+        <div className="bg-white border border-neutral-200 rounded-lg p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-xs text-left">
+          <div className="space-y-1">
+            <h2 className="text-base font-bold uppercase tracking-wider text-neutral-800">
+              Saisie et Enregistrement des Naissances
+            </h2>
+            <p className="text-xs text-neutral-500 max-w-xl leading-relaxed">
+              Déclarez officiellement les naissances survenues au sein de votre établissement hospitalier et transmettez-les au Bureau National de l'État Civil (BUNEC).
+            </p>
+          </div>
+          <Button asChild size="lg" className="bg-[#007A5E] hover:bg-[#00664f] active:scale-98 text-white flex items-center gap-2 px-6 rounded-md font-bold uppercase tracking-wider text-xs h-12 shadow-xs shrink-0 cursor-pointer transition-all duration-300">
+            <Link href="/dashboard/hospital/births/new">
+              <PlusIcon className="size-4.5" />
+              Déclarer une naissance
+            </Link>
+          </Button>
+        </div>
+
+        {/* Section de suivi des brouillons */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 px-1">
+            <FileTextIcon className="size-4 text-neutral-500" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-700">
+              Déclarations en attente d'action
+            </h3>
+          </div>
+          <BirthsTable births={births as any} initialStatusFilter={filter} />
+        </div>
+      </div>
+    </DashboardContent>
   )
 }
-

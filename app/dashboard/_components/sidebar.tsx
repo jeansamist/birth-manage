@@ -258,23 +258,14 @@ export function DashboardSidebar({
 
         {/* ── DOCTOR ──────────────────────────────────────────────────── */}
         {session.role === "DOCTOR" && (
-          <>
-            <SidebarGroup className="p-0">
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <NavLink href="/dashboard/hospital" icon={HomeIcon} label="Tableau de bord" exact />
-                  <NavLink href="/dashboard/hospital/births/new" icon={PlusIcon} label="Nouvelle naissance" />
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-
-            <CollapsibleSection label="MES DÉCLARATIONS">
-              <NavLink href="/dashboard/hospital?filter=draft" icon={FileTextIcon} label="Brouillons" />
-              <NavLink href="/dashboard/hospital?filter=submitted" icon={ClockIcon} label="En attente mairie" />
-              <NavLink href="/dashboard/hospital?filter=approved" icon={CheckCircleIcon} label="Approuvées" />
-              <NavLink href="/dashboard/hospital?filter=declined" icon={XCircleIcon} label="Refusées" />
-            </CollapsibleSection>
-          </>
+          <SidebarGroup className="p-0">
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <NavLink href="/dashboard/hospital/births/new" icon={PlusIcon} label="Déclarer une naissance" />
+                <NavLink href="/dashboard/hospital" icon={FileTextIcon} label="Brouillons & Corrections" exact />
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
         )}
 
         {/* ── SECRETAIRE ────────────────────────────────────────────── */}
