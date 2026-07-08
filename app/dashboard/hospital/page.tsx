@@ -2,9 +2,12 @@ import { redirect } from "next/navigation"
 import { getSession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { DashboardContent } from "@/app/dashboard/_components/content"
+import type { StatCard } from "@/app/dashboard/_components/content"
+import { getMonthlyStats } from "@/lib/stats"
+import { DashboardChart } from "@/app/dashboard/_components/dashboard-chart"
 import { BirthsTable } from "./_components/births-table"
 import { Button } from "@/components/ui/button"
-import { PlusIcon, FileTextIcon } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 import Link from "next/link"
 
 export default async function HospitalDashboard({
@@ -16,58 +19,99 @@ export default async function HospitalDashboard({
   const session = await getSession()
   if (!session || session.role !== "DOCTOR") redirect("/dashboard")
 
-  // Charge uniquement les dossiers de statut DRAFT et DECLINED associés au médecin connecté
-  const births = await prisma.birthRecord.findMany({
-    where: {
-      doctorId: session.userId,
-      status: { in: ["DRAFT", "DECLINED"] },
-    },
+  // Toutes les déclarations du médecin (pour stats & graph)
+  const allBirths = await prisma.birthRecord.findMany({
+    where: { doctorId: session.userId },
     orderBy: { updatedAt: "desc" },
     include: { cityHall: { select: { name: true } } },
   })
 
-  const draftsCount = births.filter((b) => b.status === "DRAFT").length
-  const declinedCount = births.filter((b) => b.status === "DECLINED").length
+  // Table : uniquement DRAFT et DECLINED
+  const actionableBirths = allBirths.filter((b) =>
+    ["DRAFT", "DECLINED"].includes(b.status)
+  )
+
+  const stats = {
+    draft: allBirths.filter((b) => b.status === "DRAFT").length,
+    submitted: allBirths.filter((b) =>
+      ["SUBMITTED", "PROCESSING", "PENDING_APPROVAL"].includes(b.status)
+    ).length,
+    approved: allBirths.filter((b) => b.status === "APPROVED").length,
+    declined: allBirths.filter((b) => b.status === "DECLINED").length,
+  }
+
+  const statsCards: StatCard[] = [
+    {
+      title: "Brouillons",
+      value: String(stats.draft),
+      subtitle: "À finaliser et soumettre",
+      icon: "filetext",
+      subtitleIcon: "clock",
+    },
+    {
+      title: "En traitement mairie",
+      value: String(stats.submitted),
+      subtitle: "En cours d'instruction",
+      icon: "send",
+      subtitleIcon: "inbox",
+    },
+    {
+      title: "Actes signés",
+      value: String(stats.approved),
+      subtitle: "Certificats validés",
+      icon: "check",
+      subtitleIcon: "file",
+    },
+    {
+      title: "À corriger",
+      value: String(stats.declined),
+      subtitle: "Renvoyés par la mairie",
+      icon: "x",
+      subtitleIcon: "alert",
+    },
+  ]
 
   const alertMessage =
-    declinedCount > 0
-      ? `Vous avez ${declinedCount} déclaration(s) rejetée(s) par la mairie. Veuillez effectuer les corrections demandées.`
-      : draftsCount > 0
-      ? `Vous avez ${draftsCount} déclaration(s) en cours de saisie (brouillon) — pensez à les finaliser.`
+    stats.declined > 0
+      ? `${stats.declined} déclaration(s) rejetée(s) par la mairie — corrections requises.`
+      : stats.draft > 0
+      ? `${stats.draft} brouillon(s) en cours — pensez à les finaliser.`
       : null
 
-  return (
-    <DashboardContent alertMessage={alertMessage}>
-      <div className="space-y-6">
-        {/* En-tête simplifié avec raccourci de création direct */}
-        <div className="bg-white border border-neutral-200 rounded-lg p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-xs text-left">
-          <div className="space-y-1">
-            <h2 className="text-base font-bold uppercase tracking-wider text-neutral-800">
-              Saisie et Enregistrement des Naissances
-            </h2>
-            <p className="text-xs text-neutral-500 max-w-xl leading-relaxed">
-              Déclarez officiellement les naissances survenues au sein de votre établissement hospitalier et transmettez-les au Bureau National de l'État Civil (BUNEC).
-            </p>
-          </div>
-          <Button asChild size="lg" className="bg-[#007A5E] hover:bg-[#00664f] active:scale-98 text-white flex items-center gap-2 px-6 rounded-md font-bold uppercase tracking-wider text-xs h-12 shadow-xs shrink-0 cursor-pointer transition-all duration-300">
-            <Link href="/dashboard/hospital/births/new">
-              <PlusIcon className="size-4.5" />
-              Déclarer une naissance
-            </Link>
-          </Button>
-        </div>
+  const chartData = getMonthlyStats(
+    allBirths,
+    () => true,
+    (b) => b.status !== "DRAFT"
+  )
 
-        {/* Section de suivi des brouillons */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 px-1">
-            <FileTextIcon className="size-4 text-neutral-500" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-700">
-              Déclarations en attente d'action
-            </h3>
+  return (
+    <DashboardContent
+      alertMessage={alertMessage}
+      statsCards={statsCards}
+      chart={
+        <DashboardChart
+          title="Mes déclarations de naissance"
+          series1Label="Déclarations créées"
+          series2Label="Soumises à la mairie"
+          data={chartData}
+        />
+      }
+      table={
+        <div className="rounded-xl border bg-card overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b">
+            <span className="font-medium text-muted-foreground text-sm">
+              Brouillons & Corrections à traiter
+            </span>
+            <Button asChild size="sm" className="gap-2 h-8 text-xs cursor-pointer">
+              <Link href="/dashboard/hospital/births/new">
+                <PlusIcon className="size-3.5" />
+                Déclarer
+              </Link>
+            </Button>
           </div>
-          <BirthsTable births={births as any} initialStatusFilter={filter} />
+          <BirthsTable births={actionableBirths as any} initialStatusFilter={filter} />
         </div>
-      </div>
-    </DashboardContent>
+      }
+    />
   )
 }

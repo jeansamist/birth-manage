@@ -26,6 +26,17 @@ import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { cn } from "@/lib/utils"
 import type { SessionPayload } from "@/types/auth"
 import {
@@ -37,7 +48,6 @@ import {
   XCircleIcon,
   SendIcon,
   ArrowRightLeftIcon,
-  ShieldCheckIcon,
   Building2Icon,
   LandmarkIcon,
   UsersIcon,
@@ -326,40 +336,22 @@ export function DashboardSidebar({
 
         {/* ── ADMIN ─────────────────────────────────────────────────── */}
         {session.role === "ADMIN" && (
-          <>
-            <SidebarGroup className="p-0">
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <NavLink href="/dashboard" icon={HomeIcon} label="Administration" exact />
-                  <NavLink href="/dashboard" icon={Building2Icon} label="Hôpitaux" />
-                  <NavLink href="/dashboard" icon={LandmarkIcon} label="Mairies" />
-                  <NavLink href="/dashboard" icon={UsersIcon} label="Utilisateurs" />
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-
-            <CollapsibleSection label="SYSTÈME">
-              <NavLink href="/dashboard" icon={BarChart2Icon} label="Rapports" />
-            </CollapsibleSection>
-          </>
+          <SidebarGroup className="p-0">
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <NavLink href="/dashboard" icon={HomeIcon} label="Administration" exact />
+                <NavLink href="/dashboard/settings" icon={SettingsIcon} label="Paramètres système" />
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
         )}
 
         {/* Système footer links */}
         <SidebarGroup className="p-0 mt-auto">
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton className="h-[38px]">
-                  <SettingsIcon className="size-4" />
-                  <span>Paramètres</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton className="h-[38px]">
-                  <HelpCircleIcon className="size-4" />
-                  <span>Aide</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <NavLink href="/dashboard/settings" icon={SettingsIcon} label="Paramètres" />
+              <NavLink href="https://bunec.cm" icon={HelpCircleIcon} label="Aide / Documentation" />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -367,15 +359,30 @@ export function DashboardSidebar({
 
       {/* ── Footer ──────────────────────────────────────────────────────── */}
       <SidebarFooter className="px-5 pb-5">
-        <form action="/api/auth/signout" method="POST">
-          <button
-            type="submit"
-            className="inline-flex w-full items-center justify-center gap-2 h-9 px-4 rounded-md border border-border bg-background hover:bg-muted shadow-xs text-sm font-medium transition-colors"
-          >
-            <LogOutIcon className="size-4" />
-            Se déconnecter
-          </button>
-        </form>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button className="inline-flex w-full items-center justify-center gap-2 h-9 px-4 rounded-md border border-border bg-background hover:bg-muted shadow-xs text-sm font-medium transition-colors cursor-pointer">
+              <LogOutIcon className="size-4" />
+              Se déconnecter
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirmer la déconnexion</AlertDialogTitle>
+              <AlertDialogDescription>
+                Votre session sera immédiatement invalidée. Vous devrez vous reconnecter pour accéder à nouveau au système.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <form action="/api/auth/signout" method="POST">
+                <AlertDialogAction type="submit" className="w-full cursor-pointer">
+                  Confirmer la déconnexion
+                </AlertDialogAction>
+              </form>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </SidebarFooter>
     </Sidebar>
   )
