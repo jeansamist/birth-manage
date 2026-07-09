@@ -38,7 +38,7 @@ export default async function CitizenPortal({
   const [rawBirth, cityHalls] = await Promise.all([
     accessId
       ? prisma.birthRecord.findUnique({
-          where: { citizenAccessId: accessId },
+          where: { certificateNumber: accessId },
           include: {
             cityHall: {
               select: { id: true, name: true, city: true, address: true },
@@ -227,11 +227,11 @@ function getSuccessMsg(code: string) {
 
 function getErrorMsg(code: string) {
   if (code === "missing-code")
-    return "Veuillez saisir votre identifiant unique citoyen pour lancer la recherche."
+    return "Veuillez saisir votre numéro de certificat pour lancer la recherche."
   if (code === "missing-fields")
     return "Veuillez renseigner tous les champs requis pour lancer la recherche."
   if (code === "not-found")
-    return "Aucun dossier trouvé pour cet identifiant et ce nom de mère."
+    return "Aucun dossier trouvé pour ce numéro de certificat et ce nom de mère."
   if (code === "same-city-hall")
     return "Cet acte est déjà présent dans cette mairie d'origine."
   if (code === "target-not-found")

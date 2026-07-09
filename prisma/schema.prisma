@@ -229,7 +229,11 @@ model TransferRequest {
 
   requesterName  String
   requesterPhone String?
+  requesterCni   String?
+  idCardRecto    String? // Photo front of ID card (base64 / text)
+  idCardVerso    String? // Photo back of ID card (base64 / text)
   reason         String?
+  message        String? // Message for the mayor
   decisionNote   String?
   decidedAt      DateTime?
 

@@ -44,6 +44,48 @@ export function TransferRequestForm({
             />
           </div>
 
+          <div className="space-y-1.5">
+            <Label htmlFor="requesterCni" className="text-xs font-semibold text-muted-foreground uppercase">
+              Numéro de CNI du demandeur <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="requesterCni"
+              name="requesterCni"
+              placeholder="Ex. 1234567890"
+              required
+              className="h-12 text-base rounded-xl"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="idCardRecto" className="text-xs font-semibold text-muted-foreground uppercase">
+                Photo CNI (Recto) <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="idCardRecto"
+                name="idCardRecto"
+                type="file"
+                accept="image/*"
+                required
+                className="h-12 text-base rounded-xl"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="idCardVerso" className="text-xs font-semibold text-muted-foreground uppercase">
+                Photo CNI (Verso) <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="idCardVerso"
+                name="idCardVerso"
+                type="file"
+                accept="image/*"
+                required
+                className="h-12 text-base rounded-xl"
+              />
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="requesterPhone" className="text-xs font-semibold text-muted-foreground uppercase">
@@ -88,8 +130,21 @@ export function TransferRequestForm({
             <textarea
               id="reason"
               name="reason"
-              rows={3}
+              rows={2}
               placeholder="Ex. Rapprochement de mon lieu de résidence actuel..."
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-base shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none resize-none"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="message" className="text-xs font-semibold text-muted-foreground uppercase">
+              Message pour le Maire
+            </Label>
+            <textarea
+              id="message"
+              name="message"
+              rows={2}
+              placeholder="Ex. Monsieur le Maire, veuillez agréer..."
               className="w-full rounded-xl border border-border bg-background px-4 py-3 text-base shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none resize-none"
             />
           </div>

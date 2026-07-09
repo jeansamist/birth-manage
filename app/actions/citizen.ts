@@ -28,26 +28,30 @@ export async function findCitizenRecord(formData: FormData): Promise<void> {
 }
 
 export async function requestBirthTransfer(formData: FormData): Promise<void> {
-  const accessId = normalizeAccessId(formData.get("accessId"))
+  const certificateNumber = normalizeAccessId(formData.get("accessId"))
   const targetCityHallId = String(formData.get("targetCityHallId") ?? "").trim()
   const requesterName = String(formData.get("requesterName") ?? "").trim()
+  const requesterCni = String(formData.get("requesterCni") ?? "").trim()
+  const idCardRecto = String(formData.get("idCardRecto") ?? "").trim()
+  const idCardVerso = String(formData.get("idCardVerso") ?? "").trim()
   const requesterPhone = String(formData.get("requesterPhone") ?? "").trim()
   const reason = String(formData.get("reason") ?? "").trim()
+  const message = String(formData.get("message") ?? "").trim()
 
-  if (!accessId || !targetCityHallId || !requesterName) {
-    redirectToPortal(accessId, { error: "missing-fields" })
+  if (!certificateNumber || !targetCityHallId || !requesterName || !requesterCni || !idCardRecto || !idCardVerso) {
+    redirectToPortal(certificateNumber, { error: "missing-fields" })
   }
 
   const birth = await prisma.birthRecord.findUnique({
-    where: { citizenAccessId: accessId },
+    where: { certificateNumber },
     include: { copies: true },
   })
   if (!birth || birth.status !== "APPROVED" || !birth.cityHallId) {
-    redirectToPortal(accessId, { error: "not-found" })
+    redirectToPortal(certificateNumber, { error: "not-found" })
   }
 
   if (targetCityHallId === birth.cityHallId) {
-    redirectToPortal(accessId, { error: "same-city-hall" })
+    redirectToPortal(certificateNumber, { error: "same-city-hall" })
   }
 
   const targetCityHall = await prisma.cityHall.findUnique({
@@ -55,14 +59,14 @@ export async function requestBirthTransfer(formData: FormData): Promise<void> {
     select: { id: true, isActive: true },
   })
   if (!targetCityHall?.isActive) {
-    redirectToPortal(accessId, { error: "target-not-found" })
+    redirectToPortal(certificateNumber, { error: "target-not-found" })
   }
 
   const alreadyAvailable = birth.copies.some(
     (copy) => copy.cityHallId === targetCityHallId
   )
   if (alreadyAvailable) {
-    redirectToPortal(accessId, { success: "already-available" })
+    redirectToPortal(certificateNumber, { success: "already-available" })
   }
 
   const pendingRequest = await prisma.transferRequest.findFirst({
@@ -74,7 +78,7 @@ export async function requestBirthTransfer(formData: FormData): Promise<void> {
     select: { id: true },
   })
   if (pendingRequest) {
-    redirectToPortal(accessId, { success: "pending" })
+    redirectToPortal(certificateNumber, { success: "pending" })
   }
 
   await prisma.transferRequest.create({
@@ -84,11 +88,15 @@ export async function requestBirthTransfer(formData: FormData): Promise<void> {
       targetCityHallId,
       requesterName,
       requesterPhone: requesterPhone || null,
+      requesterCni,
+      idCardRecto,
+      idCardVerso,
       reason: reason || null,
+      message: message || null,
     },
   })
 
-  redirectToPortal(accessId, { success: "request-created" })
+  redirectToPortal(certificateNumber, { success: "request-created" })
 }
 
 export async function finalizeCitizenDeclaration(id: string, data: any): Promise<void> {
