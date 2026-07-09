@@ -97,7 +97,7 @@ export async function GET(
   const fontSerifItalic = await doc.embedFont(StandardFonts.TimesRomanBoldItalic)
   const fontMono = await doc.embedFont(StandardFonts.CourierBold)
 
-  const M = 32 // padding du document (p-8 de l'aperçu)
+  const M = 22
   const contentLeft = M
   const contentRight = width - M
 
@@ -148,76 +148,78 @@ export async function GET(
   // 3. En-tête bilingue officiel
   const hy = height - M - 8
   // Gauche (FR)
-  page.drawText("RÉPUBLIQUE DU CAMEROUN", { x: contentLeft, y: hy, font: fontBold, size: 7, color: NEUTRAL_900 })
-  page.drawText("Paix-Travail-Patrie", { x: contentLeft, y: hy - 9, font: fontItalic, size: 5.5, color: NEUTRAL_600 })
-  page.drawText("------------------", { x: contentLeft, y: hy - 17, font, size: 5.5, color: NEUTRAL_400 })
-  page.drawText("Région : ", { x: contentLeft, y: hy - 27, font, size: 5.5, color: NEUTRAL_800 })
-  page.drawText("LITTORAL", { x: contentLeft + font.widthOfTextAtSize("Région : ", 5.5), y: hy - 27, font: fontBold, size: 5.5, color: NEUTRAL_800 })
-  page.drawText("Département : ", { x: contentLeft, y: hy - 35, font, size: 5.5, color: NEUTRAL_800 })
-  page.drawText("WOURI", { x: contentLeft + font.widthOfTextAtSize("Département : ", 5.5), y: hy - 35, font: fontBold, size: 5.5, color: NEUTRAL_800 })
-  page.drawText("Arrondissement : ", { x: contentLeft, y: hy - 43, font, size: 5.5, color: NEUTRAL_800 })
-  page.drawText("DOUALA V", { x: contentLeft + font.widthOfTextAtSize("Arrondissement : ", 5.5), y: hy - 43, font: fontBold, size: 5.5, color: NEUTRAL_800 })
+  const HEADER_TITLE_SIZE = 9.5
+  const HEADER_TEXT_SIZE = 7.2
+  page.drawText("RÉPUBLIQUE DU CAMEROUN", { x: contentLeft, y: hy, font: fontBold, size: HEADER_TITLE_SIZE, color: NEUTRAL_900 })
+  page.drawText("Paix-Travail-Patrie", { x: contentLeft, y: hy - 11, font: fontItalic, size: HEADER_TEXT_SIZE, color: NEUTRAL_600 })
+  page.drawText("------------------", { x: contentLeft, y: hy - 21, font, size: HEADER_TEXT_SIZE, color: NEUTRAL_400 })
+  page.drawText("Région : ", { x: contentLeft, y: hy - 33, font, size: HEADER_TEXT_SIZE, color: NEUTRAL_800 })
+  page.drawText("LITTORAL", { x: contentLeft + font.widthOfTextAtSize("Région : ", HEADER_TEXT_SIZE), y: hy - 33, font: fontBold, size: HEADER_TEXT_SIZE, color: NEUTRAL_800 })
+  page.drawText("Département : ", { x: contentLeft, y: hy - 43, font, size: HEADER_TEXT_SIZE, color: NEUTRAL_800 })
+  page.drawText("WOURI", { x: contentLeft + font.widthOfTextAtSize("Département : ", HEADER_TEXT_SIZE), y: hy - 43, font: fontBold, size: HEADER_TEXT_SIZE, color: NEUTRAL_800 })
+  page.drawText("Arrondissement : ", { x: contentLeft, y: hy - 53, font, size: HEADER_TEXT_SIZE, color: NEUTRAL_800 })
+  page.drawText("DOUALA V", { x: contentLeft + font.widthOfTextAtSize("Arrondissement : ", HEADER_TEXT_SIZE), y: hy - 53, font: fontBold, size: HEADER_TEXT_SIZE, color: NEUTRAL_800 })
 
   // Droite (EN) — alignée à droite
   function drawRight(text: string, y: number, f: PDFFont, size: number, color = NEUTRAL_800) {
     page.drawText(text, { x: contentRight - f.widthOfTextAtSize(text, size), y, font: f, size, color })
   }
-  drawRight("REPUBLIC OF CAMEROON", hy, fontBold, 7, NEUTRAL_900)
-  drawRight("Peace-Work-Fatherland", hy - 9, fontItalic, 5.5, NEUTRAL_600)
-  drawRight("------------------", hy - 17, font, 5.5, NEUTRAL_400)
+  drawRight("REPUBLIC OF CAMEROON", hy, fontBold, HEADER_TITLE_SIZE, NEUTRAL_900)
+  drawRight("Peace-Work-Fatherland", hy - 11, fontItalic, HEADER_TEXT_SIZE, NEUTRAL_600)
+  drawRight("------------------", hy - 21, font, HEADER_TEXT_SIZE, NEUTRAL_400)
   function drawRightPair(label: string, value: string, y: number) {
-    const labelW = font.widthOfTextAtSize(label, 5.5)
-    const valueW = fontBold.widthOfTextAtSize(value, 5.5)
-    page.drawText(label, { x: contentRight - labelW - valueW, y, font, size: 5.5, color: NEUTRAL_800 })
-    page.drawText(value, { x: contentRight - valueW, y, font: fontBold, size: 5.5, color: NEUTRAL_800 })
+    const labelW = font.widthOfTextAtSize(label, HEADER_TEXT_SIZE)
+    const valueW = fontBold.widthOfTextAtSize(value, HEADER_TEXT_SIZE)
+    page.drawText(label, { x: contentRight - labelW - valueW, y, font, size: HEADER_TEXT_SIZE, color: NEUTRAL_800 })
+    page.drawText(value, { x: contentRight - valueW, y, font: fontBold, size: HEADER_TEXT_SIZE, color: NEUTRAL_800 })
   }
-  drawRightPair("Region : ", "LITTORAL", hy - 27)
-  drawRightPair("Division : ", "WOURI", hy - 35)
-  drawRightPair("Subdivision : ", "DOUALA V", hy - 43)
+  drawRightPair("Region : ", "LITTORAL", hy - 33)
+  drawRightPair("Division : ", "WOURI", hy - 43)
+  drawRightPair("Subdivision : ", "DOUALA V", hy - 53)
 
   // Armoiries au centre de l'en-tête
   if (logoImage) {
     page.drawImage(logoImage, {
-      x: width / 2 - 18,
-      y: hy - 33,
-      width: 36,
-      height: 36,
+      x: width / 2 - 32,
+      y: hy - 58,
+      width: 64,
+      height: 64,
     })
   }
 
   // Ligne sous l'en-tête
   page.drawLine({
-    start: { x: contentLeft, y: hy - 52 },
-    end: { x: contentRight, y: hy - 52 },
+    start: { x: contentLeft, y: hy - 72 },
+    end: { x: contentRight, y: hy - 72 },
     thickness: 0.5,
     color: NEUTRAL_200,
   })
 
   // 4. Titre central
-  let cy = hy - 68
+  const cy = hy - 88
   function drawCentered(text: string, y: number, f: PDFFont, size: number, color = NEUTRAL_900) {
     page.drawText(text, { x: width / 2 - f.widthOfTextAtSize(text, size) / 2, y, font: f, size, color })
   }
-  drawCentered("CENTRE D'ÉTAT CIVIL / CIVIL STATUS REGISTRATION CENTRE", cy, fontBold, 6, NEUTRAL_700)
+  drawCentered("CENTRE D'ÉTAT CIVIL / CIVIL STATUS REGISTRATION CENTRE", cy, fontBold, 8.6, NEUTRAL_700)
   const cityHallLine = cleanText(`De / of : ${(birth.cityHall?.name || "MAIRIE DE DOUALA 5EME").toUpperCase()}`)
-  drawCentered(cityHallLine, cy - 10, fontBold, 6.5, NEUTRAL_900)
+  drawCentered(cityHallLine, cy - 14, fontBold, 9.2, NEUTRAL_900)
 
   const mainTitle = "ACTE DE NAISSANCE / BIRTH CERTIFICATE"
-  drawCentered(mainTitle, cy - 28, fontBold, 9.5, NEUTRAL_900)
-  const titleW = fontBold.widthOfTextAtSize(mainTitle, 9.5)
+  drawCentered(mainTitle, cy - 36, fontBold, 14, NEUTRAL_900)
+  const titleW = fontBold.widthOfTextAtSize(mainTitle, 14)
   page.drawLine({
-    start: { x: width / 2 - titleW / 2 - 36, y: cy - 32 },
-    end: { x: width / 2 + titleW / 2 + 36, y: cy - 32 },
+    start: { x: width / 2 - titleW / 2 - 28, y: cy - 41 },
+    end: { x: width / 2 + titleW / 2 + 28, y: cy - 41 },
     thickness: 1.5,
     color: NEUTRAL_900,
   })
-  drawCentered(`N°: ${birth.certificateNumber}`, cy - 45, fontMono, 8, RED_600)
+  drawCentered(`N°: ${birth.certificateNumber}`, cy - 58, fontMono, 11, RED_600)
 
   // 5. Corps de l'acte — lignes label + valeur sur pointillés
-  const LABEL_SIZE = 6.4
-  const VALUE_SIZE = 7.2
-  const NAME_SIZE = 8 // valeurs nom/prénom, légèrement plus grandes (comme l'aperçu)
-  const spacing = 16.2
+  const LABEL_SIZE = 8.7
+  const VALUE_SIZE = 9.8
+  const NAME_SIZE = 11 // valeurs nom/prénom, légèrement plus grandes (comme l'aperçu)
+  const spacing = 23.3
 
   function drawDots(x1: number, x2: number, y: number) {
     if (x2 <= x1) return
@@ -301,7 +303,7 @@ export async function GET(
   const W56 = 168
   const W64 = 192
 
-  let y = cy - 66
+  let y = cy - 76
 
   drawRow("Nom de l'enfant / Surname of the Child :", birth.babyLastName, y, { valueSize: NAME_SIZE }); y -= spacing
   drawRow("Prénoms de l'enfant / Given name of the Child :", birth.babyFirstName, y, { valueSize: NAME_SIZE }); y -= spacing
@@ -329,7 +331,7 @@ export async function GET(
 
   // Ligne de certification en italique
   page.drawText(cleanText("lesquels ont certifie la sincerite de la presente declaration - Who attested to the truth of this declaration"), {
-    x: contentLeft + 2, y, font: fontItalic, size: 5.6, color: NEUTRAL_500,
+    x: contentLeft + 2, y, font: fontItalic, size: 7.8, color: NEUTRAL_500,
   }); y -= spacing
 
   const maireName = birth.maire ? `${birth.maire.firstName} ${birth.maire.lastName}` : "BIYA SIMON"
@@ -339,7 +341,7 @@ export async function GET(
   drawRow("Assiste de - In the presence of :", `${secretaireName} (Secretaire d'état Civil / Civil Status Secretary)`, y); y -= spacing
 
   // 6. Bloc signatures (border-top + 3 colonnes, comme l'aperçu)
-  const sigTop = Math.min(y - 6, 168)
+  const sigTop = y - 8
   page.drawLine({
     start: { x: contentLeft, y: sigTop },
     end: { x: contentRight, y: sigTop },
@@ -347,7 +349,7 @@ export async function GET(
     color: NEUTRAL_300,
   })
 
-  const sy = sigTop - 16
+  const sy = sigTop - 18
   const colW = (contentRight - contentLeft) * 0.3
   const leftColCenter = contentLeft + colW / 2
   const rightColCenter = contentRight - colW / 2
@@ -356,20 +358,22 @@ export async function GET(
     page.drawText(text, { x: cx - f.widthOfTextAtSize(text, size) / 2, y: yPos, font: f, size, color })
   }
 
+  const signatureNameY = sy - 96
+
   // Secrétaire (gauche)
-  drawCenteredAt("LE SECRÉTAIRE / SECRETARY", leftColCenter, sy, fontBold, 5.6)
-  drawCenteredAt(cleanText(secretaireName.toUpperCase()), leftColCenter, sy - 34, fontSerifItalic, 6.75, BLUE_900)
+  drawCenteredAt("LE SECRÉTAIRE / SECRETARY", leftColCenter, sy, fontBold, 7)
+  drawCenteredAt(cleanText(secretaireName.toUpperCase()), leftColCenter, signatureNameY, fontSerifItalic, 8.4, BLUE_900)
 
   // Officier (droite) — signature manuscrite du maire au-dessus du nom
-  drawCenteredAt("L'OFFICIER / REGISTRAR", rightColCenter, sy, fontBold, 5.6)
+  drawCenteredAt("L'OFFICIER / REGISTRAR", rightColCenter, sy, fontBold, 7)
   if (birth.maireSignature?.startsWith("data:image/png;base64,")) {
     try {
       const sigBytes = Buffer.from(birth.maireSignature.split(",")[1], "base64")
       const sigImage = await doc.embedPng(sigBytes)
-      const sigDims = sigImage.scaleToFit(colW * 0.8, 26)
+      const sigDims = sigImage.scaleToFit(colW * 1.36, 82)
       page.drawImage(sigImage, {
         x: rightColCenter - sigDims.width / 2,
-        y: sy - 30,
+        y: sy - 88,
         width: sigDims.width,
         height: sigDims.height,
       })
@@ -377,7 +381,7 @@ export async function GET(
       console.error("Failed to embed maire signature", e)
     }
   }
-  drawCenteredAt(cleanText(maireName.toUpperCase()), rightColCenter, sy - 34, fontSerifItalic, 6.75, BLUE_900)
+  drawCenteredAt(cleanText(maireName.toUpperCase()), rightColCenter, signatureNameY, fontSerifItalic, 8.4, BLUE_900)
 
   // QR de vérification (centre)
   if (birth.citizenAccessId) {
@@ -390,19 +394,19 @@ export async function GET(
 
         // Cadre blanc du QR (comme l'aperçu)
         page.drawRectangle({
-          x: width / 2 - 26,
-          y: sy - 46,
-          width: 52,
-          height: 52,
+          x: width / 2 - 48,
+          y: sy - 96,
+          width: 96,
+          height: 96,
           color: rgb(1, 1, 1),
           borderColor: NEUTRAL_200,
           borderWidth: 0.5,
         })
         page.drawImage(qrImage, {
-          x: width / 2 - 23,
-          y: sy - 43,
-          width: 46,
-          height: 46,
+          x: width / 2 - 43,
+          y: sy - 91,
+          width: 86,
+          height: 86,
         })
       }
     } catch (e) {
@@ -411,12 +415,12 @@ export async function GET(
   }
 
   // Numéro d'acte sous le QR
-  drawCenteredAt(cleanText(birth.certificateNumber), width / 2, sy - 54, fontMono, 4.5, NEUTRAL_400)
+  drawCenteredAt(cleanText(birth.certificateNumber), width / 2, sy - 106, fontMono, 6, NEUTRAL_400)
 
   // 7. Pied de page discret
   page.drawText(
     cleanText(`Document généré le ${fmt(new Date())} · ${birth.certificateNumber}`),
-    { x: contentLeft, y: 16, font, size: 5, color: NEUTRAL_400 },
+    { x: contentLeft, y: 16, font, size: 5.5, color: NEUTRAL_400 },
   )
 
   const pdfBytes = await doc.save()
