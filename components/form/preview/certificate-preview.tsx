@@ -36,9 +36,10 @@ export function CertificatePreview({ data }: CertificatePreviewProps) {
 
       <CertificateBody data={data} />
 
-      <CertificateSignatures 
+      <CertificateSignatures
         secretaireName={data.secretaireName}
         maireName={data.maireName}
+        maireSignatureUrl={data.maireSignatureUrl}
         qrCodeUrl={data.qrCodeUrl}
         certificateNumber={data.certificateNumber}
       />

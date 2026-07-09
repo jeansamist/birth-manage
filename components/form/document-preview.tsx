@@ -66,6 +66,7 @@ export interface PreviewData {
   approvedAt?: string | Date | null
   maireName?: string | null
   secretaireName?: string | null
+  maireSignatureUrl?: string | null
   qrCodeUrl?: string | null
   citizenTrackingCode?: string | null
 }

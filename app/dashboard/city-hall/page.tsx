@@ -44,6 +44,17 @@ function Td({ children, mono = false }: { children: React.ReactNode; mono?: bool
   return <td className={`px-4 py-3 text-xs text-muted-foreground ${mono ? "font-mono" : ""}`}>{children}</td>
 }
 
+function DetailsLink({ birthId }: { birthId: string }) {
+  return (
+    <Link
+      href={`/dashboard/city-hall/births/${birthId}/details`}
+      className="text-xs font-semibold text-muted-foreground hover:text-primary hover:underline"
+    >
+      Détails
+    </Link>
+  )
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function CityHallDashboard({
@@ -322,7 +333,12 @@ function SubmittedTable({ births }: { births: any[] }) {
             <Td>{b.hospital.name}</Td>
             <Td>{formatDate(b.birthDate)}</Td>
             <Td>{formatDate(b.updatedAt)}</Td>
-            <td className="px-4 py-3 text-right"><ClaimButton birthId={b.id} /></td>
+            <td className="px-4 py-3 text-right">
+              <div className="flex items-center justify-end gap-3">
+                <DetailsLink birthId={b.id} />
+                <ClaimButton birthId={b.id} />
+              </div>
+            </td>
           </tr>
         ))}
       </tbody>
@@ -346,11 +362,14 @@ function MineTable({ births }: { births: any[] }) {
             <Td>{b.hospital.name}</Td>
             <td className="px-4 py-3"><StatusBadge status={b.status} /></td>
             <td className="px-4 py-3 text-right">
-              {b.status === "PROCESSING" && (
-                <Link href={`/dashboard/city-hall/births/${b.id}`} className="text-xs font-semibold text-primary hover:underline">
-                  Compléter
-                </Link>
-              )}
+              <div className="flex items-center justify-end gap-3">
+                {b.status === "PROCESSING" && (
+                  <Link href={`/dashboard/city-hall/births/${b.id}`} className="text-xs font-semibold text-primary hover:underline">
+                    Compléter
+                  </Link>
+                )}
+                <DetailsLink birthId={b.id} />
+              </div>
             </td>
           </tr>
         ))}
@@ -371,22 +390,29 @@ function AllBirthsTable({ births, currentUserId }: { births: any[]; currentUserI
       <tbody>
         {births.map((b) => (
           <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
-            <td className="px-4 py-3 font-medium text-sm">{`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}</td>
+            <td className="px-4 py-3 font-medium text-sm">
+              <Link href={`/dashboard/city-hall/births/${b.id}/details`} className="hover:text-primary hover:underline">
+                {`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}
+              </Link>
+            </td>
             <Td>{b.hospital.name}</Td>
             <td className="px-4 py-3"><StatusBadge status={b.status} /></td>
             <Td>{formatDate(b.updatedAt)}</Td>
             <td className="px-4 py-3 text-right">
-              {b.status === "SUBMITTED" && <ClaimButton birthId={b.id} />}
-              {b.status === "PROCESSING" && b.secretaireId === currentUserId && (
-                <Link href={`/dashboard/city-hall/births/${b.id}`} className="text-xs font-semibold text-primary hover:underline">
-                  Compléter
-                </Link>
-              )}
-              {b.status === "APPROVED" && (
-                <Link href={`/dashboard/city-hall/births/${b.id}/view`} className="text-xs font-semibold text-primary hover:underline">
-                  Consulter
-                </Link>
-              )}
+              <div className="flex items-center justify-end gap-3">
+                {b.status === "SUBMITTED" && <ClaimButton birthId={b.id} />}
+                {b.status === "PROCESSING" && b.secretaireId === currentUserId && (
+                  <Link href={`/dashboard/city-hall/births/${b.id}`} className="text-xs font-semibold text-primary hover:underline">
+                    Compléter
+                  </Link>
+                )}
+                {b.status === "APPROVED" && (
+                  <Link href={`/dashboard/city-hall/births/${b.id}/view`} className="text-xs font-semibold text-primary hover:underline">
+                    Consulter
+                  </Link>
+                )}
+                <DetailsLink birthId={b.id} />
+              </div>
             </td>
           </tr>
         ))}

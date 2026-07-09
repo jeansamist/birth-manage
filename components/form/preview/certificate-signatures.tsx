@@ -4,6 +4,7 @@ import Image from "next/image"
 interface CertificateSignaturesProps {
   secretaireName?: string | null
   maireName?: string | null
+  maireSignatureUrl?: string | null
   qrCodeUrl?: string | null
   certificateNumber?: string | null
 }
@@ -11,6 +12,7 @@ interface CertificateSignaturesProps {
 export function CertificateSignatures({
   secretaireName,
   maireName,
+  maireSignatureUrl,
   qrCodeUrl,
   certificateNumber,
 }: CertificateSignaturesProps) {
@@ -47,7 +49,15 @@ export function CertificateSignatures({
         {/* Officier */}
         <div className="w-[30%] text-center">
           <p className="font-bold text-neutral-500 uppercase tracking-wider text-[7.5px]">L'Officier / Registrar</p>
-          <p className="mt-8 font-serif italic text-blue-900 uppercase font-bold text-[9px]">{maireName || "BIYA SIMON"}</p>
+          {maireSignatureUrl ? (
+            <div className="h-8 flex items-end justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={maireSignatureUrl} alt="Signature du maire" className="max-h-8 max-w-[80%] object-contain" />
+            </div>
+          ) : (
+            <div className="h-8" />
+          )}
+          <p className="font-serif italic text-blue-900 uppercase font-bold text-[9px]">{maireName || "BIYA SIMON"}</p>
         </div>
       </div>
     </div>

@@ -7,7 +7,6 @@ export type UserRole =
   | "SECRETAIRE"
   | "MAINTAINER"
 
-export type LoginType = "hospital" | "city-hall" | "admin"
 
 // ─── Session ──────────────────────────────────────────────────────────────────
 
@@ -44,4 +43,7 @@ export interface AuthError {
 export interface LoginResult {
   success: boolean
   error?: AuthError
+  /** Médecin rattaché à plusieurs hôpitaux : il doit en choisir un */
+  requiresHospitalChoice?: boolean
+  hospitals?: HospitalOption[]
 }

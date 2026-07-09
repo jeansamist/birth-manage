@@ -6,17 +6,26 @@ import type { DeclineInput } from "@/lib/schemas/birth"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { DeclineForm } from "./decline-form"
+import { SignaturePadDialog } from "./signature-pad-dialog"
 
-export function ApproveDeclinePanel({ birthId }: { birthId: string }) {
+export function ApproveDeclinePanel({
+  birthId,
+  savedSignature,
+}: {
+  birthId: string
+  savedSignature: string | null
+}) {
   const [showDeclineForm, setShowDeclineForm] = useState(false)
+  const [showSignatureDialog, setShowSignatureDialog] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
-  function onApprove() {
+  function onApprove(signatureDataUrl: string | null) {
     setServerError(null)
     startTransition(async () => {
-      const result = await approveBirth(birthId)
+      const result = await approveBirth(birthId, signatureDataUrl ?? undefined)
       if (result && !result.success) {
+        setShowSignatureDialog(false)
         setServerError(result.error ?? "Erreur lors de l'approbation.")
       }
     })
@@ -49,7 +58,7 @@ export function ApproveDeclinePanel({ birthId }: { birthId: string }) {
           <div className="flex items-center gap-3">
             <Button
               className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider bg-neutral-800 hover:bg-neutral-900 text-white shadow-sm transition-all cursor-pointer"
-              onClick={onApprove}
+              onClick={() => setShowSignatureDialog(true)}
               disabled={isPending}
             >
               {isPending ? "Signature…" : "Approuver et signer"}
@@ -71,6 +80,14 @@ export function ApproveDeclinePanel({ birthId }: { birthId: string }) {
           />
         )}
       </div>
+
+      <SignaturePadDialog
+        open={showSignatureDialog}
+        onOpenChange={setShowSignatureDialog}
+        savedSignature={savedSignature}
+        isPending={isPending}
+        onConfirm={onApprove}
+      />
     </div>
   )
 }

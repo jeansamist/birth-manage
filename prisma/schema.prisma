@@ -93,6 +93,7 @@ model User {
   lastName  String
   role      UserRole
   isActive  Boolean  @default(true)
+  signature String? // PNG data URL — signature manuscrite (maire)
 
   cityHallId String?
   cityHall   CityHall? @relation(fields: [cityHallId], references: [id])
@@ -174,6 +175,7 @@ model BirthRecord {
   // ── Approval ──────────────────────────────────────
   declineReason     String?
   approvedAt        DateTime?
+  maireSignature    String? // PNG data URL — snapshot de la signature du maire au moment de la signature
   declinedAt        DateTime?
   certificateNumber String?   @unique
   citizenAccessId   String?   @unique

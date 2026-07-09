@@ -3,19 +3,21 @@ import { getSession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { DocumentPreview, type PreviewData } from "@/components/form/document-preview"
 import { PrintButton } from "@/components/print-button"
-import { ArrowLeftIcon, Download } from "lucide-react"
+import { ArrowLeftIcon, EditIcon, FileCheckIcon } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { getBaseUrl } from "@/lib/utils"
+import { StatusBadge } from "@/app/dashboard/_components/status-badge"
+import { ClaimButton } from "../../../_components/claim-button"
 
-export default async function ViewBirthCertificatePage({
+export default async function CityHallBirthDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
   const session = await getSession()
-  if (!session || !["SECRETAIRE", "MAINTAINER", "MAIRE"].includes(session.role)) {
+  if (!session || !["SECRETAIRE", "MAINTAINER"].includes(session.role)) {
     redirect("/dashboard")
   }
 
@@ -27,17 +29,10 @@ export default async function ViewBirthCertificatePage({
       cityHall: { select: { name: true, city: true } },
       secretaire: { select: { firstName: true, lastName: true } },
       maire: { select: { firstName: true, lastName: true } },
-      copies: {
-        where: { cityHallId: session.institutionId || "" }
-      }
     },
   })
 
-  // Must be approved to consult it, and belong to the same city hall (or have a copy)
-  const isOwner = birth?.cityHallId === session.institutionId
-  const hasCopy = birth?.copies && birth.copies.length > 0
-
-  if (!birth || birth.status !== "APPROVED" || (!isOwner && !hasCopy)) {
+  if (!birth || birth.cityHallId !== session.institutionId) {
     notFound()
   }
 
@@ -50,11 +45,11 @@ export default async function ViewBirthCertificatePage({
     babyGender: birth.babyGender,
     birthDate: birth.birthDate,
     birthTime: birth.birthTime,
-    birthPlace: birth.birthPlace || (birth.hospital ? `${birth.hospital.name}, ${birth.hospital.city}` : null),
+    birthPlace: birth.birthPlace,
     weightGrams: birth.weightGrams,
     apgarScore: birth.apgarScore,
     deliveryType: birth.deliveryType,
-    
+
     motherFirstName: birth.motherFirstName,
     motherLastName: birth.motherLastName,
     motherBirthDate: birth.motherBirthDate,
@@ -64,7 +59,7 @@ export default async function ViewBirthCertificatePage({
     motherAddress: birth.motherAddress,
     motherPhone: birth.motherPhone,
     motherEmail: birth.motherEmail,
-    
+
     fatherFirstName: birth.fatherFirstName,
     fatherLastName: birth.fatherLastName,
     fatherBirthDate: birth.fatherBirthDate,
@@ -73,11 +68,11 @@ export default async function ViewBirthCertificatePage({
     fatherProfession: birth.fatherProfession,
     fatherAddress: birth.fatherAddress,
     fatherPhone: birth.fatherPhone,
-    
+
     parentsMarried: birth.parentsMarried,
     marriageCertNumber: birth.marriageCertNumber,
     marriageDate: birth.marriageDate,
-    
+
     certificateNumber: birth.certificateNumber || "ACN-2026-LA-PENDING",
     cityHallName: birth.cityHall?.name || "Mairie de Yaoundé I",
     cityHallCity: birth.cityHall?.city || "Yaoundé",
@@ -86,12 +81,11 @@ export default async function ViewBirthCertificatePage({
     qrCodeUrl: birth.citizenAccessId ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${getBaseUrl()}/verify/${birth.citizenAccessId}`)}` : null,
     declarationRef: birth.declarationRef,
     citizenTrackingCode: birth.citizenTrackingCode,
-    hospitalName: birth.hospital?.name,
-    approvedAt: birth.approvedAt,
-    maireSignatureUrl: birth.maireSignature,
   }
 
-  const backUrl = session.role === "MAIRE" ? "/dashboard/maire?filter=approved" : "/dashboard/city-hall?filter=all"
+  const canClaim = birth.status === "SUBMITTED"
+  const canComplete = birth.status === "PROCESSING" && birth.secretaireId === session.userId
+  const canViewCertificate = birth.status === "APPROVED"
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-[#f3f3f3] h-full overflow-y-auto">
@@ -99,36 +93,43 @@ export default async function ViewBirthCertificatePage({
       <header className="px-6 py-4 flex items-center justify-between border-b border-neutral-200 bg-white shrink-0 print:hidden shadow-xs">
         <div className="flex items-center gap-4">
           <Button asChild variant="ghost" size="sm" className="gap-1.5 h-8">
-            <Link href={backUrl}>
+            <Link href="/dashboard/city-hall?filter=all">
               <ArrowLeftIcon className="size-3.5" />
               Retour
             </Link>
           </Button>
           <div className="h-4 w-px bg-neutral-200" />
           <h1 className="text-sm font-bold uppercase tracking-wider text-neutral-800">
-            Consultation d'Acte
+            Détails du Dossier
           </h1>
+          <StatusBadge status={birth.status} />
         </div>
-        <div className="flex items-center gap-3">
-          {/* Seule la secrétaire d'état civil peut imprimer et télécharger l'acte signé */}
-          {session.role === "SECRETAIRE" && (
-            <>
-              <PrintButton />
-              <Button asChild variant="outline" size="sm" className="gap-2 h-9 text-xs font-bold uppercase tracking-wider cursor-pointer">
-                <a href={`/api/certificate/${id}`} target="_blank" rel="noopener noreferrer">
-                  <Download className="size-4" />
-                  Télécharger l&apos;acte signé (PDF)
-                </a>
-              </Button>
-            </>
+        <div className="flex items-center gap-2">
+          {canClaim && <ClaimButton birthId={birth.id} />}
+          {canComplete && (
+            <Button asChild size="sm" variant="outline" className="gap-1.5 h-9 text-xs font-bold uppercase tracking-wider cursor-pointer border-neutral-300">
+              <Link href={`/dashboard/city-hall/births/${birth.id}`}>
+                <EditIcon className="size-3.5" />
+                Compléter
+              </Link>
+            </Button>
           )}
+          {canViewCertificate && (
+            <Button asChild size="sm" variant="outline" className="gap-1.5 h-9 text-xs font-bold uppercase tracking-wider cursor-pointer border-neutral-300">
+              <Link href={`/dashboard/city-hall/births/${birth.id}/view`}>
+                <FileCheckIcon className="size-3.5" />
+                Consulter l&apos;acte
+              </Link>
+            </Button>
+          )}
+          <PrintButton />
         </div>
       </header>
 
       {/* Rendu A4 physique */}
       <main className="flex-1 flex items-start justify-center p-6 md:p-8 overflow-y-auto">
         <div id="print-area" className="w-full max-w-[820px] bg-white rounded-lg border border-neutral-200 shadow-xl p-8 md:p-12">
-          <DocumentPreview type="certificate" data={previewData} />
+          <DocumentPreview type="declaration" data={previewData} />
         </div>
       </main>
     </div>

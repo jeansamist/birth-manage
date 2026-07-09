@@ -318,20 +318,45 @@ export async function submitToMaire(birthId: string): Promise<ActionResult> {
 
 // ─── Maire actions ────────────────────────────────────────────────────────────
 
-export async function approveBirth(birthId: string): Promise<ActionResult> {
+const MAX_SIGNATURE_LENGTH = 500_000 // ~370 Ko de PNG encodé en base64
+
+function isValidSignatureDataUrl(value: string): boolean {
+  return value.startsWith("data:image/png;base64,") && value.length <= MAX_SIGNATURE_LENGTH
+}
+
+export async function approveBirth(
+  birthId: string,
+  signatureDataUrl?: string
+): Promise<ActionResult> {
   const session = await getSession()
   if (!session || session.role !== "MAIRE") {
     return { success: false, error: "Non autorisé." }
   }
 
-  const birth = await prisma.birthRecord.findUnique({
-    where: { id: birthId },
-    include: { cityHall: true },
-  })
+  if (signatureDataUrl && !isValidSignatureDataUrl(signatureDataUrl)) {
+    return { success: false, error: "Signature invalide." }
+  }
+
+  const [birth, maire] = await Promise.all([
+    prisma.birthRecord.findUnique({
+      where: { id: birthId },
+      include: { cityHall: true },
+    }),
+    prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { signature: true },
+    }),
+  ])
   if (!birth) return { success: false, error: "Dossier introuvable." }
 
   if (!birth.cityHallId || birth.cityHallId !== session.institutionId) {
     return { success: false, error: "Dossier introuvable dans votre mairie." }
+  }
+
+  // La signature dessinée maintenant, sinon celle enregistrée sur le profil
+  const signature = signatureDataUrl ?? maire?.signature
+  if (!signature) {
+    return { success: false, error: "Veuillez dessiner votre signature avant de signer l'acte." }
   }
 
   const certificateNumber =
@@ -340,16 +365,23 @@ export async function approveBirth(birthId: string): Promise<ActionResult> {
     birth.citizenAccessId ??
     (await generateUniqueCitizenAccessId(birth.cityHallId))
 
-  await prisma.birthRecord.update({
-    where: { id: birthId },
-    data: {
-      status: "APPROVED",
-      maireId: session.userId,
-      approvedAt: new Date(),
-      certificateNumber,
-      citizenAccessId,
-    },
-  })
+  await prisma.$transaction([
+    prisma.birthRecord.update({
+      where: { id: birthId },
+      data: {
+        status: "APPROVED",
+        maireId: session.userId,
+        approvedAt: new Date(),
+        certificateNumber,
+        citizenAccessId,
+        maireSignature: signature,
+      },
+    }),
+    // La nouvelle signature devient celle du profil, réutilisée aux prochaines signatures
+    ...(signatureDataUrl
+      ? [prisma.user.update({ where: { id: session.userId }, data: { signature: signatureDataUrl } })]
+      : []),
+  ])
 
   redirect("/dashboard/maire")
 }
