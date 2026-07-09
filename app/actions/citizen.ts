@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
+import { notifyTransferRequested } from "@/lib/notifications"
 function normalizeAccessId(value: FormDataEntryValue | null): string {
   return String(value ?? "")
     .trim()
@@ -56,7 +57,7 @@ export async function requestBirthTransfer(formData: FormData): Promise<void> {
 
   const targetCityHall = await prisma.cityHall.findUnique({
     where: { id: targetCityHallId },
-    select: { id: true, isActive: true },
+    select: { id: true, isActive: true, name: true },
   })
   if (!targetCityHall?.isActive) {
     redirectToPortal(certificateNumber, { error: "target-not-found" })
@@ -95,6 +96,12 @@ export async function requestBirthTransfer(formData: FormData): Promise<void> {
       message: message || null,
     },
   })
+
+  await notifyTransferRequested({
+    sourceCityHallId: birth.cityHallId,
+    childLabel: `${birth.babyFirstName ?? ""} ${birth.babyLastName ?? ""}`.trim() || "un enfant sans nom",
+    targetCityHallName: targetCityHall.name,
+  }).catch(() => {})
 
   redirectToPortal(certificateNumber, { success: "request-created" })
 }

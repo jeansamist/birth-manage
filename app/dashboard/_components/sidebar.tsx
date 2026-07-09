@@ -62,6 +62,7 @@ import {
   BookOpenIcon,
   BarChart2Icon,
   AlertCircleIcon,
+  StethoscopeIcon,
 } from "lucide-react"
 
 interface NavProps {
@@ -344,14 +345,23 @@ export function DashboardSidebar({
 
         {/* ── ADMIN ─────────────────────────────────────────────────── */}
         {session.role === "ADMIN" && (
-          <SidebarGroup className="p-0">
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <NavLink href="/dashboard" icon={HomeIcon} label="Administration" exact />
-                <NavLink href="/dashboard/settings" icon={SettingsIcon} label="Paramètres système" />
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+          <>
+            <SidebarGroup className="p-0">
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <NavLink href="/dashboard" icon={HomeIcon} label="Administration" exact />
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            <CollapsibleSection label="GESTION">
+              <NavLink href="/dashboard/admin/mairies" icon={LandmarkIcon} label="Mairies" />
+              <NavLink href="/dashboard/admin/hopitaux" icon={Building2Icon} label="Hôpitaux" />
+              <NavLink href="/dashboard/admin/maires" icon={UsersIcon} label="Maires" />
+              <NavLink href="/dashboard/admin/secretaires" icon={UsersIcon} label="Secrétaires" />
+              <NavLink href="/dashboard/admin/medecins" icon={StethoscopeIcon} label="Médecins" />
+            </CollapsibleSection>
+          </>
         )}
 
         {/* Système footer links */}

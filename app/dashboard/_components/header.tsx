@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { NotificationBell } from "./notification-bell"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -74,6 +75,7 @@ export function DashboardHeader() {
 
       <div className="hidden sm:block h-5 w-px bg-border" />
 
+      <NotificationBell />
       <ThemeToggle />
 
       <DropdownMenu>

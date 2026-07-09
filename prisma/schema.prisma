@@ -45,6 +45,15 @@ enum TransferRequestStatus {
   DECLINED
 }
 
+enum NotificationType {
+  BIRTH_SUBMITTED
+  BIRTH_PENDING_APPROVAL
+  BIRTH_APPROVED
+  BIRTH_DECLINED
+  TRANSFER_REQUESTED
+  TRANSFER_APPROVED
+}
+
 // ─── Institutions ─────────────────────────────────────────────────────────────
 
 model Hospital {
@@ -104,9 +113,31 @@ model User {
   birthsAsSecretaire      BirthRecord[]     @relation("BirthSecretaire")
   birthsAsMaire           BirthRecord[]     @relation("BirthMaire")
   decidedTransferRequests TransferRequest[] @relation("TransferDecidedByMaire")
+  notifications           Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+
+model Notification {
+  id      String           @id @default(cuid())
+  type    NotificationType
+  title   String
+  message String
+  link    String? // route interne vers le dossier concerné
+
+  read   Boolean   @default(false)
+  readAt DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
 }
 
 // ─── Doctor–Hospital assignment ───────────────────────────────────────────────
