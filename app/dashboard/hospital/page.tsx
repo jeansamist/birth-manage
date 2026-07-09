@@ -100,7 +100,7 @@ export default async function HospitalDashboard({
         <div className="rounded-xl border bg-card overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b">
             <span className="font-medium text-muted-foreground text-sm">
-              Brouillons & Corrections à traiter
+              Historique & Gestion des Déclarations
             </span>
             <Button asChild size="sm" className="gap-2 h-8 text-xs cursor-pointer">
               <Link href="/dashboard/hospital/births/new">
@@ -109,7 +109,7 @@ export default async function HospitalDashboard({
               </Link>
             </Button>
           </div>
-          <BirthsTable births={actionableBirths as any} initialStatusFilter={filter} />
+          <BirthsTable births={allBirths as any} initialStatusFilter={filter} />
         </div>
       }
     />

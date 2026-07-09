@@ -1,4 +1,4 @@
-# 📋 PLAN D'IMPLÉMENTATION TECHNIQUE — birth-manage
+# 📋 PLAN D'IMPLÉMENTATION TECHNIQUE SECURE — birth-manage
 
 > **Cible :** Guide pas-à-pas détaillé pour l'écriture du code (AI-ready).
 > **Axe Principal :** Charte graphique **Split-Screen Live Preview** et **Portail Citoyen**.
@@ -48,39 +48,49 @@ Créer un composant réutilisable de rendu A4 : `components/document-preview.tsx
 
 ---
 
-## 🌐 PARTIE 2 — Le Portail Citoyen Sécurisé
+## 🌐 PARTIE 2 — Le Portail Citoyen Sécurisé & Restrictions Hôpital
 
-Mise en œuvre du modèle Zero-Trust avec authentification contextuelle par étapes.
+Mise en œuvre du modèle Zero-Trust, de la restriction du rôle médecin à la déclaration pure, et de la validation universelle par QR Code.
 
-### Étape 2.1 — Chemin 1 : Consultation et Téléchargement Sécurisé (Niveau 1, 2, 3)
-*   **Fichiers :**
-    *   `app/citizen/page.tsx` (Page d'accueil portail / Recherche).
-    *   `app/actions/citizen.ts` (Server Actions d'auth).
-*   **Flux de vérification sécurisé :**
-    1.  **Niveau 1 :** Saisie du code `CID-YYYY-XXX-XXXXXXXX`.
-    2.  **Niveau 2 :** Saisie du nom de famille de la mère.
-        *   *Sécurité :* Si le code ou le nom est incorrect, renvoyer la même erreur générique ("Aucun dossier trouvé") pour bloquer les scans de brute-force.
-    3.  **Niveau 3 :** Clic sur "Télécharger l'acte" ➔ envoi OTP SMS à la mère ➔ validation ➔ génération du PDF avec le QR code d'authenticité intégré à la volée.
+### Étape 2.1 — Restriction Strict du Rôle Médecin (Hôpital)
+*   **Objectif :** Un médecin (DOCTOR) doit uniquement déclarer les naissances et ne doit pas avoir accès aux outils de consultation globale, aux statistiques des actes signés, ni à la recherche d'actes d'autres enfants.
+*   **Modifications Moteur de Recherche & Dashboard Hôpital (`app/dashboard/hospital/page.tsx`) :**
+    1.  Modifier la requête Prisma pour ne remonter que les dossiers de statut `DRAFT` et `DECLINED` associés à son identifiant (`doctorId: session.userId`).
+    2.  Désactiver l'affichage des graphiques de flux globaux et des compteurs d'actes approuvés (`APPROVED`), en cours de traitement, etc.
+    3.  Remplacer l'interface par un tableau de bord ultra-simplifié : un bouton d'action principal bien visible **[Déclarer une nouvelle naissance]** et un tableau listant uniquement ses brouillons en cours et les dossiers refusés par la mairie en attente de correction.
+*   **Mise à jour de la Sidebar (`app/dashboard/_components/sidebar.tsx`) :**
+    1.  Pour le rôle `DOCTOR`, retirer complètement la section rétractable "MES DÉCLARATIONS" (qui contient les filtres "En attente", "Approuvées", etc.).
+    2.  Ne conserver que les deux liens essentiels : **[Déclarer une naissance]** et **[Brouillons & Corrections]**.
 
-### Étape 2.2 — Chemin 2 : Suivi du Dossier en Ligne
-*   **Fichier :** `app/citizen/track/page.tsx`.
-*   **Action :** Le citoyen entre le code de suivi `TRK-A8K2-X9QP` ou `REQ-2026-XXXXXX`.
-    *   Affiche la timeline de traitement (`StatusTimeline`).
-    *   Si le statut est `DRAFT` (médical uniquement), le bouton **[Finaliser ma déclaration]** apparaît pour basculer vers la complétion civile (Partie 1.3).
+### Étape 2.2 — Génération Dynamique de QR Codes Absolus (Acte & Déclaration)
+*   **Objectif :** Intégrer de vrais QR Codes scannables par smartphone, avec des URLs absolues qui dirigent vers la plateforme d'authentification et de suivi.
+*   **Mécanisme URL de base :**
+    *   Créer une fonction utilitaire `getBaseUrl()` dans `lib/utils.ts` pour récupérer de manière dynamique le protocole et l'hôte (`window.location.origin` côté client, `process.env.NEXT_PUBLIC_APP_URL` ou `process.env.VERCEL_URL` côté serveur, avec un fallback vers `http://localhost:3000`).
+*   **QR Code dans la Déclaration Médicale (`components/form/preview/section-registrar.tsx`) :**
+    1.  Ajouter un bloc QR Code visuel dans la **Section 5 (Accusé de réception)** de la déclaration.
+    2.  Données du QR Code : `${getBaseUrl()}/verify/${citizenTrackingCode}`.
+    3.  L'utilisateur scanne la déclaration papier et accède instantanément à l'état d'avancement de son dossier en ligne.
+*   **QR Code dans l'Acte de Naissance (`components/form/preview/certificate-signatures.tsx`) :**
+    1.  Assurer que la signature de l'Officier contient le QR Code absolu : `${getBaseUrl()}/verify/${citizenAccessId}`.
+    2.  L'utilisateur ou l'administration scanne l'acte de naissance A4 et accède à la page publique de certification de l'acte.
 
-### Étape 2.3 — Chemin 3 : Déclaration En Ligne (Clinique Hors-Système)
-*   **Fichier :** `app/citizen/submit/page.tsx`.
-*   **Action :** Pour les naissances avec formulaire FNU papier.
-    *   Le parent scanne le QR code du FNU papier.
-    *   Le serveur valide le HMAC du code FNU pour s'assurer que c'est un formulaire BUNEC officiel.
-    *   Le citoyen saisit toutes les informations, choisit sa mairie et soumet.
-    *   Crée une demande `CitizenDeclarationRequest` pour validation manuelle par la mairie.
-
-### Étape 2.4 — Chemin 4 : Vérification d'Authenticité Publique (Sans authentification)
-*   **Fichiers :**
-    *   `app/verify/[token]/page.tsx`
-    *   `app/api/verify/[token]/route.ts`
-*   **Action :** Page publique accessible en scannant le QR code d'un acte officiel.
-    *   Décoder le JWT sécurisé (HS256) du token.
-    *   Vérifier le `contentHash` avec celui en base de données.
-    *   Affiche le statut vert "ACTE AUTHENTIQUE" ou rouge "ACTE INCORRECT" avec les données de base pour comparaison visuelle rapide.
+### Étape 2.3 — Route Unifiée de Suivi et de Vérification (`app/verify/[token]/page.tsx`)
+*   **Objectif :** Unifier la page de vérification pour traiter à la fois les codes d'accès citoyen (`CID-...`) et les codes de suivi de déclaration (`TRK-...`).
+*   **Modifications Logique de Recherche (`page.tsx`) :**
+    1.  Modifier la requête Prisma pour rechercher un enregistrement où `citizenAccessId == token` OU `citizenTrackingCode == token`.
+*   **Gestion Dynamique des Écrans selon le Statut :**
+    *   **Cas 1 : Acte Approuvé (`status === "APPROVED"`) :**
+        *   Afficher le badge vert **"ACTE DE NAISSANCE AUTHENTIQUE"**.
+        *   Afficher le tableau de comparaison des données d'état civil (Nom, Prénom, Mère, Père, Mairie, Date) pour vérification visuelle.
+    *   **Cas 2 : Brouillon Citoyen (`status === "DRAFT"` et non complété) :**
+        *   Afficher le badge orange **"DÉCLARATION MÉDICALE ENREGISTRÉE"**.
+        *   Expliquer aux parents qu'ils doivent finaliser la déclaration civile.
+        *   Afficher un bouton d'action proéminent **[Compléter ma déclaration en ligne]** renvoyant vers `/citizen/declare?code=${citizenTrackingCode}`.
+    *   **Cas 3 : En Cours de Traitement (`SUBMITTED`, `PROCESSING`, `PENDING_APPROVAL`) :**
+        *   Afficher le badge bleu **"DÉCLARATION EN COURS D'INSTRUCTION"**.
+        *   Afficher une timeline visuelle interactive montrant l'état actuel de validation à la mairie d'origine.
+    *   **Cas 4 : Rejeté par la Mairie (`status === "DECLINED"`) :**
+        *   Afficher le badge rouge **"DOSSIER À CORRIGER"**.
+        *   Afficher clairement le motif de rejet saisi par l'Officier de mairie pour que l'utilisateur puisse corriger le tir.
+    *   **Cas 5 : Inconnu :**
+        *   Afficher le message d'erreur **"DOCUMENT NON AUTHENTIFIÉ"** standard.

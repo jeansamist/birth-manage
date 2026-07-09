@@ -124,3 +124,24 @@
     @apply bg-[#f3f3f3] text-foreground dark:bg-background font-sans antialiased;
   }
 }
+
+/* ── Impression / Téléchargement PDF ─────────────────────────────────────── */
+@media print {
+  /* Masquer tout sauf la zone d'impression */
+  body > * {
+    display: none !important;
+  }
+
+  #print-area {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    background: white;
+  }
+
+  /* Pas de marges navigateur — le composant A4 gère ses propres paddings */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
