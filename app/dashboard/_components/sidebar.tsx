@@ -288,6 +288,7 @@ export function DashboardSidebar({
                   <NavLink href="/dashboard/city-hall?filter=submitted" icon={InboxIcon} label="Dossiers reçus" />
                   <NavLink href="/dashboard/city-hall?filter=processing" icon={ClockIcon} label="En traitement" />
                   <NavLink href="/dashboard/city-hall?filter=pending_approval" icon={SendIcon} label="Soumis au maire" />
+                  <NavLink href="/dashboard/city-hall?filter=copies" icon={ArrowRightLeftIcon} label="Copies reçues" />
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>

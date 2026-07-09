@@ -109,6 +109,8 @@ export function BirthsTable({ births, initialStatusFilter }: BirthsTableProps) {
     if (initialStatusFilter) {
       setStatusFilter(
         initialStatusFilter === "draft" ? "DRAFT" :
+        initialStatusFilter === "submitted" ? "in_progress" :
+        initialStatusFilter === "approved" ? "APPROVED" :
         initialStatusFilter === "declined" ? "DECLINED" : "all"
       )
     } else {
@@ -247,6 +249,18 @@ export function BirthsTable({ births, initialStatusFilter }: BirthsTableProps) {
                 onCheckedChange={() => setStatusFilter("DRAFT")}
               >
                 Brouillons
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={statusFilter === "in_progress"}
+                onCheckedChange={() => setStatusFilter("in_progress")}
+              >
+                En cours de traitement
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                checked={statusFilter === "APPROVED"}
+                onCheckedChange={() => setStatusFilter("APPROVED")}
+              >
+                Actes approuvés
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem
                 checked={statusFilter === "DECLINED"}
@@ -415,25 +429,22 @@ export function BirthsTable({ births, initialStatusFilter }: BirthsTableProps) {
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      {birth.status === "DRAFT" && (
+                      <div className="flex items-center justify-end gap-3">
+                        {["DRAFT", "DECLINED"].includes(birth.status) && (
+                          <Link
+                            href={`/dashboard/hospital/births/${birth.id}/edit`}
+                            className="text-xs font-semibold text-primary hover:underline"
+                          >
+                            Modifier
+                          </Link>
+                        )}
                         <Link
-                          href={`/dashboard/hospital/births/${birth.id}/edit`}
+                          href={`/dashboard/hospital/births/${birth.id}`}
                           className="text-xs font-semibold text-primary hover:underline"
                         >
-                          Modifier
+                          Consulter
                         </Link>
-                      )}
-                      {birth.status === "APPROVED" && birth.certificateNumber && (
-                        <a
-                          href={`/api/certificate/${birth.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
-                        >
-                          <FileDown className="size-3.5" />
-                          Acte
-                        </a>
-                      )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 )

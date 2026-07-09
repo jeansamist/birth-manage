@@ -12,7 +12,7 @@ import { FileTextIcon, InboxIcon, ClockIcon, CheckCircleIcon, ArrowRightLeftIcon
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-type FilterKey = "submitted" | "processing" | "pending_approval" | "all" | null
+type FilterKey = "submitted" | "processing" | "pending_approval" | "all" | "copies" | null
 
 function formatDate(date: Date | null) {
   if (!date) return "—"
@@ -64,6 +64,7 @@ export default async function CityHallDashboard({
     filter === "processing" ? "processing" :
     filter === "pending_approval" ? "pending_approval" :
     filter === "all" ? "all" :
+    filter === "copies" ? "copies" :
     null
 
   const [submitted, mine, transferredCopies, allCityHallBirths] = await Promise.all([
@@ -98,7 +99,8 @@ export default async function CityHallDashboard({
     }),
     prisma.birthRecord.findMany({
       where: { cityHallId },
-      select: { createdAt: true, status: true },
+      orderBy: { updatedAt: "desc" },
+      include: { hospital: { select: { name: true, city: true } } },
     }),
   ])
 
@@ -202,6 +204,23 @@ export default async function CityHallDashboard({
     )
   }
 
+  if (activeFilter === "copies") {
+    return (
+      <DashboardContent>
+        <div className="rounded-xl border bg-card overflow-hidden">
+          <SectionTitle icon={ArrowRightLeftIcon} title={`Copies d'actes transférées reçues (${transferredCopies.length})`} />
+          <div className="overflow-x-auto">
+            {transferredCopies.length === 0 ? (
+              <EmptyState message="Aucune copie d'acte reçue." />
+            ) : (
+              <CopiesTable copies={transferredCopies} />
+            )}
+          </div>
+        </div>
+      </DashboardContent>
+    )
+  }
+
   if (activeFilter === "all") {
     return (
       <DashboardContent statsCards={statsCards}>
@@ -209,10 +228,10 @@ export default async function CityHallDashboard({
           <div className="rounded-xl border bg-card overflow-hidden">
             <SectionTitle icon={BookOpenIcon} title={`Tous les dossiers de la mairie — ${allCityHallBirths.length} au total`} />
             <div className="overflow-x-auto">
-              {submitted.length === 0 && mine.length === 0 ? (
+              {allCityHallBirths.length === 0 ? (
                 <EmptyState message="Aucun dossier pour cette mairie." />
               ) : (
-                <AllBirthsTable submitted={submitted} mine={mine} />
+                <AllBirthsTable births={allCityHallBirths} currentUserId={session.userId} />
               )}
             </div>
           </div>
@@ -340,8 +359,7 @@ function MineTable({ births }: { births: any[] }) {
   )
 }
 
-function AllBirthsTable({ submitted, mine }: { submitted: any[]; mine: any[] }) {
-  const all = [...submitted, ...mine]
+function AllBirthsTable({ births, currentUserId }: { births: any[]; currentUserId: string }) {
   return (
     <table className="w-full text-sm">
       <thead>
@@ -351,7 +369,7 @@ function AllBirthsTable({ submitted, mine }: { submitted: any[]; mine: any[] }) 
         </tr>
       </thead>
       <tbody>
-        {all.map((b) => (
+        {births.map((b) => (
           <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
             <td className="px-4 py-3 font-medium text-sm">{`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}</td>
             <Td>{b.hospital.name}</Td>
@@ -359,9 +377,14 @@ function AllBirthsTable({ submitted, mine }: { submitted: any[]; mine: any[] }) 
             <Td>{formatDate(b.updatedAt)}</Td>
             <td className="px-4 py-3 text-right">
               {b.status === "SUBMITTED" && <ClaimButton birthId={b.id} />}
-              {b.status === "PROCESSING" && (
+              {b.status === "PROCESSING" && b.secretaireId === currentUserId && (
                 <Link href={`/dashboard/city-hall/births/${b.id}`} className="text-xs font-semibold text-primary hover:underline">
                   Compléter
+                </Link>
+              )}
+              {b.status === "APPROVED" && (
+                <Link href={`/dashboard/city-hall/births/${b.id}/view`} className="text-xs font-semibold text-primary hover:underline">
+                  Consulter
                 </Link>
               )}
             </td>
@@ -377,7 +400,7 @@ function CopiesTable({ copies }: { copies: any[] }) {
     <table className="w-full text-sm">
       <thead>
         <tr className="border-b border-border bg-muted/40">
-          <Th>Enfant</Th><Th>Mairie d'origine</Th><Th>N° acte</Th><Th>Disponible depuis</Th>
+          <Th>Enfant</Th><Th>Mairie d'origine</Th><Th>N° acte</Th><Th>Disponible depuis</Th><th className="px-4 py-3" />
         </tr>
       </thead>
       <tbody>
@@ -392,6 +415,11 @@ function CopiesTable({ copies }: { copies: any[] }) {
             <Td>{copy.birthRecord.cityHall ? `${copy.birthRecord.cityHall.name} · ${copy.birthRecord.cityHall.city}` : "—"}</Td>
             <Td mono>{copy.birthRecord.certificateNumber ?? "—"}</Td>
             <Td>{formatDate(copy.createdAt)}</Td>
+            <td className="px-4 py-3 text-right">
+              <Link href={`/dashboard/city-hall/births/${copy.birthRecordId}/view`} className="text-xs font-semibold text-primary hover:underline">
+                Consulter
+              </Link>
+            </td>
           </tr>
         ))}
       </tbody>
