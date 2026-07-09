@@ -45,6 +45,15 @@ enum TransferRequestStatus {
   DECLINED
 }
 
+enum NotificationType {
+  BIRTH_SUBMITTED
+  BIRTH_PENDING_APPROVAL
+  BIRTH_APPROVED
+  BIRTH_DECLINED
+  TRANSFER_REQUESTED
+  TRANSFER_APPROVED
+}
+
 // ─── Institutions ─────────────────────────────────────────────────────────────
 
 model Hospital {
@@ -93,6 +102,7 @@ model User {
   lastName  String
   role      UserRole
   isActive  Boolean  @default(true)
+  signature String? // PNG data URL — signature manuscrite (maire)
 
   cityHallId String?
   cityHall   CityHall? @relation(fields: [cityHallId], references: [id])
@@ -103,9 +113,31 @@ model User {
   birthsAsSecretaire      BirthRecord[]     @relation("BirthSecretaire")
   birthsAsMaire           BirthRecord[]     @relation("BirthMaire")
   decidedTransferRequests TransferRequest[] @relation("TransferDecidedByMaire")
+  notifications           Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+
+model Notification {
+  id      String           @id @default(cuid())
+  type    NotificationType
+  title   String
+  message String
+  link    String? // route interne vers le dossier concerné
+
+  read   Boolean   @default(false)
+  readAt DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
 }
 
 // ─── Doctor–Hospital assignment ───────────────────────────────────────────────
@@ -174,6 +206,7 @@ model BirthRecord {
   // ── Approval ──────────────────────────────────────
   declineReason     String?
   approvedAt        DateTime?
+  maireSignature    String? // PNG data URL — snapshot de la signature du maire au moment de la signature
   declinedAt        DateTime?
   certificateNumber String?   @unique
   citizenAccessId   String?   @unique
@@ -227,7 +260,11 @@ model TransferRequest {
 
   requesterName  String
   requesterPhone String?
+  requesterCni   String?
+  idCardRecto    String? // Photo front of ID card (base64 / text)
+  idCardVerso    String? // Photo back of ID card (base64 / text)
   reason         String?
+  message        String? // Message for the mayor
   decisionNote   String?
   decidedAt      DateTime?
 

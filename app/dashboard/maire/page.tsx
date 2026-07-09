@@ -2,7 +2,6 @@ import { redirect } from "next/navigation"
 import Link from "next/link"
 import { getSession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { approveTransferRequest, declineTransferRequest } from "@/app/actions/birth"
 import { StatusBadge } from "@/app/dashboard/_components/status-badge"
 import { DashboardContent } from "@/app/dashboard/_components/content"
 import type { StatCard } from "@/app/dashboard/_components/content"
@@ -368,7 +367,7 @@ function TransferTable({ requests }: { requests: any[] }) {
     <table className="w-full text-sm">
       <thead>
         <tr className="border-b border-border bg-muted/40">
-          <Th>Acte</Th><Th>Demandeur</Th><Th>Mairie cible</Th><Th>Reçu le</Th>
+          <Th>Acte</Th><Th>Demandeur</Th><Th>Mairie cible</Th><Th>Motif</Th><Th>Reçu le</Th>
           <th className="px-4 py-3" />
         </tr>
       </thead>
@@ -384,20 +383,15 @@ function TransferTable({ requests }: { requests: any[] }) {
               <p className="text-muted-foreground">{req.requesterPhone || "—"}</p>
             </td>
             <Td>{req.targetCityHall.name} · {req.targetCityHall.city}</Td>
+            <Td>{req.reason || "—"}</Td>
             <Td>{formatDate(req.createdAt)}</Td>
             <td className="px-4 py-3 text-right">
-              <div className="flex justify-end gap-2">
-                <form action={approveTransferRequest.bind(null, req.id)}>
-                  <button type="submit" className="inline-flex h-8 items-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90 cursor-pointer">
-                    Accepter
-                  </button>
-                </form>
-                <form action={declineTransferRequest.bind(null, req.id)}>
-                  <button type="submit" className="inline-flex h-8 items-center rounded-md border border-border bg-background px-3 text-xs font-medium text-muted-foreground hover:bg-muted cursor-pointer">
-                    Refuser
-                  </button>
-                </form>
-              </div>
+              <Link
+                href={`/dashboard/maire/transfers/${req.id}`}
+                className="inline-flex h-8 items-center rounded-md bg-primary px-3 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                Examiner
+              </Link>
             </td>
           </tr>
         ))}

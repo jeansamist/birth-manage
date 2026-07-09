@@ -7,31 +7,16 @@ const credentials = {
   password: z.string().min(1, "Le mot de passe est requis"),
 }
 
-// ─── Hospital (Doctor) login ──────────────────────────────────────────────────
+// ─── Unified login ────────────────────────────────────────────────────────────
+// hospitalId n'est fourni que lorsqu'un médecin rattaché à plusieurs hôpitaux
+// choisit son établissement après vérification de ses identifiants.
 
-export const hospitalLoginSchema = z.object({
-  hospitalId: z.string().min(1, "Veuillez sélectionner un hôpital"),
+export const loginSchema = z.object({
   ...credentials,
+  hospitalId: z.string().optional(),
 })
 
-export type HospitalLoginInput = z.infer<typeof hospitalLoginSchema>
-
-// ─── City Hall login ──────────────────────────────────────────────────────────
-
-export const cityHallLoginSchema = z.object({
-  cityHallId: z.string().min(1, "Veuillez sélectionner une mairie"),
-  ...credentials,
-})
-
-export type CityHallLoginInput = z.infer<typeof cityHallLoginSchema>
-
-// ─── Admin login ──────────────────────────────────────────────────────────────
-
-export const adminLoginSchema = z.object({
-  ...credentials,
-})
-
-export type AdminLoginInput = z.infer<typeof adminLoginSchema>
+export type LoginInput = z.infer<typeof loginSchema>
 
 // ─── Shared credentials schema (client-side form) ─────────────────────────────
 

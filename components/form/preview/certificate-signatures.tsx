@@ -4,6 +4,7 @@ import Image from "next/image"
 interface CertificateSignaturesProps {
   secretaireName?: string | null
   maireName?: string | null
+  maireSignatureUrl?: string | null
   qrCodeUrl?: string | null
   certificateNumber?: string | null
 }
@@ -11,16 +12,17 @@ interface CertificateSignaturesProps {
 export function CertificateSignatures({
   secretaireName,
   maireName,
+  maireSignatureUrl,
   qrCodeUrl,
   certificateNumber,
 }: CertificateSignaturesProps) {
   return (
     <div className="border-t border-neutral-300 pt-4 mt-6 shrink-0 w-full select-none">
-      <div className="flex justify-between text-[8px] relative min-h-[85px]">
+      <div className="flex justify-between text-[8px] relative min-h-[105px]">
         {/* Secrétaire */}
         <div className="w-[30%] text-center">
           <p className="font-bold text-neutral-500 uppercase tracking-wider text-[7.5px]">Le Secrétaire / Secretary</p>
-          <p className="mt-8 font-serif italic text-blue-900 uppercase font-bold text-[9px]">{secretaireName || "MBUYI CECILE"}</p>
+          <p className="mt-12 font-serif italic text-blue-900 uppercase font-bold text-[9px]">{secretaireName || "MBUYI CECILE"}</p>
         </div>
 
         {/* QR Verification */}
@@ -46,8 +48,16 @@ export function CertificateSignatures({
 
         {/* Officier */}
         <div className="w-[30%] text-center">
-          <p className="font-bold text-neutral-500 uppercase tracking-wider text-[7.5px]">L'Officier / Registrar</p>
-          <p className="mt-8 font-serif italic text-blue-900 uppercase font-bold text-[9px]">{maireName || "BIYA SIMON"}</p>
+          <p className="font-bold text-neutral-500 uppercase tracking-wider text-[7.5px]">L&apos;Officier / Registrar</p>
+          {maireSignatureUrl ? (
+            <div className="h-12 flex items-end justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={maireSignatureUrl} alt="Signature du maire" className="max-h-12 max-w-full object-contain" />
+            </div>
+          ) : (
+            <div className="h-12" />
+          )}
+          <p className="font-serif italic text-blue-900 uppercase font-bold text-[9px]">{maireName || "BIYA SIMON"}</p>
         </div>
       </div>
     </div>

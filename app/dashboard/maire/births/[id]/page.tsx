@@ -33,7 +33,7 @@ export default async function MaireReviewPage({
     }),
     prisma.user.findUnique({
       where: { id: session.userId },
-      select: { firstName: true, lastName: true },
+      select: { firstName: true, lastName: true, signature: true },
     })
   ])
 
@@ -91,6 +91,8 @@ export default async function MaireReviewPage({
     qrCodeUrl: birth.citizenAccessId ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${getBaseUrl()}/verify/${birth.citizenAccessId}`)}` : null,
     declarationRef: birth.declarationRef,
     citizenTrackingCode: birth.citizenTrackingCode,
+    hospitalName: birth.hospital?.name,
+    maireSignatureUrl: user?.signature ?? null,
   }
 
   return (
@@ -138,7 +140,7 @@ export default async function MaireReviewPage({
               <MarriageSummary birth={birth} />
             </div>
 
-            <ApproveDeclinePanel birthId={birth.id} />
+            <ApproveDeclinePanel birthId={birth.id} savedSignature={user?.signature ?? null} />
           </div>
         </main>
 

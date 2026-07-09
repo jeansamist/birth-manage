@@ -5,6 +5,17 @@ import { prisma } from "@/lib/prisma"
 import { getSession } from "@/lib/auth"
 import { birthFormSchema, type BirthFormInput } from "@/lib/schemas/birth"
 import type { ActionResult, DeliveryType } from "@/types/birth"
+import {
+  notifyBirthApproved,
+  notifyBirthDeclined,
+  notifyBirthPendingApproval,
+  notifyBirthSubmitted,
+  notifyTransferApproved,
+} from "@/lib/notifications"
+
+function childLabel(firstName: string | null | undefined, lastName: string | null | undefined): string {
+  return `${firstName ?? ""} ${lastName ?? ""}`.trim() || "un enfant sans nom"
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -222,21 +233,27 @@ export async function submitBirthToCityHall(
     cityHallId,
   }
 
+  let hospitalName: string
+  let recordId: string
   if (existingId) {
-    await prisma.birthRecord.update({
+    const updated = await prisma.birthRecord.update({
       where: { id: existingId },
       data: payload,
+      include: { hospital: { select: { name: true } } },
     })
+    hospitalName = updated.hospital.name
+    recordId = updated.id
   } else {
     const assignment = await prisma.doctorHospitalAssignment.findFirst({
       where: { userId: session.userId, isApproved: true },
+      include: { hospital: { select: { name: true } } },
     })
     if (!assignment) {
       return { success: false, error: "Aucun hôpital approuvé trouvé." }
     }
     const declarationRef = await generateUniqueDeclarationRef(assignment.hospitalId)
     const citizenTrackingCode = await generateUniqueCitizenTrackingCode()
-    await prisma.birthRecord.create({
+    const created = await prisma.birthRecord.create({
       data: {
         ...payload,
         doctorId: session.userId,
@@ -245,6 +262,17 @@ export async function submitBirthToCityHall(
         citizenTrackingCode,
       },
     })
+    hospitalName = assignment.hospital.name
+    recordId = created.id
+  }
+
+  if (cityHallId) {
+    await notifyBirthSubmitted({
+      cityHallId,
+      hospitalName,
+      childLabel: childLabel(payload.babyFirstName, payload.babyLastName),
+      birthId: recordId,
+    }).catch(() => {})
   }
 
   redirect("/dashboard/hospital")
@@ -313,25 +341,57 @@ export async function submitToMaire(birthId: string): Promise<ActionResult> {
     data: { status: "PENDING_APPROVAL", secretaireId: session.userId },
   })
 
+  await notifyBirthPendingApproval({
+    cityHallId: birth.cityHallId!,
+    secretaireName: session.username,
+    childLabel: childLabel(birth.babyFirstName, birth.babyLastName),
+    birthId,
+  }).catch(() => {})
+
   redirect("/dashboard/city-hall")
 }
 
 // ─── Maire actions ────────────────────────────────────────────────────────────
 
-export async function approveBirth(birthId: string): Promise<ActionResult> {
+const MAX_SIGNATURE_LENGTH = 500_000 // ~370 Ko de PNG encodé en base64
+
+function isValidSignatureDataUrl(value: string): boolean {
+  return value.startsWith("data:image/png;base64,") && value.length <= MAX_SIGNATURE_LENGTH
+}
+
+export async function approveBirth(
+  birthId: string,
+  signatureDataUrl?: string
+): Promise<ActionResult> {
   const session = await getSession()
   if (!session || session.role !== "MAIRE") {
     return { success: false, error: "Non autorisé." }
   }
 
-  const birth = await prisma.birthRecord.findUnique({
-    where: { id: birthId },
-    include: { cityHall: true },
-  })
+  if (signatureDataUrl && !isValidSignatureDataUrl(signatureDataUrl)) {
+    return { success: false, error: "Signature invalide." }
+  }
+
+  const [birth, maire] = await Promise.all([
+    prisma.birthRecord.findUnique({
+      where: { id: birthId },
+      include: { cityHall: true },
+    }),
+    prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { signature: true },
+    }),
+  ])
   if (!birth) return { success: false, error: "Dossier introuvable." }
 
   if (!birth.cityHallId || birth.cityHallId !== session.institutionId) {
     return { success: false, error: "Dossier introuvable dans votre mairie." }
+  }
+
+  // La signature dessinée maintenant, sinon celle enregistrée sur le profil
+  const signature = signatureDataUrl ?? maire?.signature
+  if (!signature) {
+    return { success: false, error: "Veuillez dessiner votre signature avant de signer l'acte." }
   }
 
   const certificateNumber =
@@ -340,16 +400,30 @@ export async function approveBirth(birthId: string): Promise<ActionResult> {
     birth.citizenAccessId ??
     (await generateUniqueCitizenAccessId(birth.cityHallId))
 
-  await prisma.birthRecord.update({
-    where: { id: birthId },
-    data: {
-      status: "APPROVED",
-      maireId: session.userId,
-      approvedAt: new Date(),
-      certificateNumber,
-      citizenAccessId,
-    },
-  })
+  await prisma.$transaction([
+    prisma.birthRecord.update({
+      where: { id: birthId },
+      data: {
+        status: "APPROVED",
+        maireId: session.userId,
+        approvedAt: new Date(),
+        certificateNumber,
+        citizenAccessId,
+        maireSignature: signature,
+      },
+    }),
+    // La nouvelle signature devient celle du profil, réutilisée aux prochaines signatures
+    ...(signatureDataUrl
+      ? [prisma.user.update({ where: { id: session.userId }, data: { signature: signatureDataUrl } })]
+      : []),
+  ])
+
+  await notifyBirthApproved({
+    cityHallId: birth.cityHallId,
+    secretaireId: birth.secretaireId,
+    childLabel: childLabel(birth.babyFirstName, birth.babyLastName),
+    birthId,
+  }).catch(() => {})
 
   redirect("/dashboard/maire")
 }
@@ -363,6 +437,13 @@ export async function declineBirth(
     return { success: false, error: "Non autorisé." }
   }
 
+  const birth = await prisma.birthRecord.findUnique({ where: { id: birthId } })
+  if (!birth) return { success: false, error: "Dossier introuvable." }
+
+  if (!birth.cityHallId || birth.cityHallId !== session.institutionId) {
+    return { success: false, error: "Dossier introuvable dans votre mairie." }
+  }
+
   await prisma.birthRecord.update({
     where: { id: birthId },
     data: {
@@ -372,6 +453,14 @@ export async function declineBirth(
       declineReason: reason,
     },
   })
+
+  await notifyBirthDeclined({
+    cityHallId: birth.cityHallId,
+    secretaireId: birth.secretaireId,
+    childLabel: childLabel(birth.babyFirstName, birth.babyLastName),
+    birthId,
+    reason,
+  }).catch(() => {})
 
   redirect("/dashboard/maire")
 }
@@ -422,6 +511,12 @@ export async function approveTransferRequest(requestId: string): Promise<void> {
       },
     }),
   ])
+
+  await notifyTransferApproved({
+    targetCityHallId: request.targetCityHallId,
+    childLabel: childLabel(request.birthRecord.babyFirstName, request.birthRecord.babyLastName),
+    birthId: request.birthRecordId,
+  }).catch(() => {})
 
   redirect("/dashboard/maire")
 }

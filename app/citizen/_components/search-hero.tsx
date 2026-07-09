@@ -1,11 +1,18 @@
 "use client"
 
-import { useState } from "react"
-import { SearchIcon, FileSearchIcon, AlertCircleIcon } from "lucide-react"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/utils"
+import {
+  AlertCircleIcon,
+  BadgeCheckIcon,
+  CheckCircle2Icon,
+  FileTextIcon,
+  SearchIcon,
+  ShieldCheckIcon,
+  UserIcon,
+  ZapIcon,
+} from "lucide-react"
+import type { ComponentType } from "react"
 
 interface SearchHeroProps {
   defaultValue: string
@@ -15,8 +22,6 @@ interface SearchHeroProps {
   errorMessage?: string | null
 }
 
-type SearchMode = "id" | "cert" | "name"
-
 export function SearchHero({
   defaultValue,
   defaultMotherValue = "",
@@ -24,122 +29,127 @@ export function SearchHero({
   successMessage,
   errorMessage,
 }: SearchHeroProps) {
-  const [mode, setMode] = useState<SearchMode>("id")
-
   return (
-    <div className="rounded-xl border border-neutral-800 bg-neutral-950 text-white shadow-2xl relative overflow-hidden select-none">
-      {/* Premium Dark Bento Glows */}
-      <div className="absolute -top-28 -left-28 w-56 h-56 rounded-full bg-[#007A5E]/15 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-28 -right-28 w-56 h-56 rounded-full bg-[#CE1126]/10 blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-48 h-48 rounded-full bg-[#FCD116]/5 blur-3xl pointer-events-none" />
+    <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-b from-card to-muted/30 shadow-lg shadow-primary/5">
+      {/* Tricolor top edge */}
+      <div className="absolute inset-x-0 top-0 z-10 flex h-1.5">
+        <div className="flex-1 bg-[#007A5E]" />
+        <div className="flex-1 bg-[#CE1126]" />
+        <div className="flex-1 bg-[#FCD116]" />
+      </div>
 
-      <div className="p-8 md:p-12 space-y-8 relative z-10">
-        <div className="space-y-3 text-left">
-          <div className="flex items-center gap-2 text-neutral-400">
-            <FileSearchIcon className="size-4.5 text-[#FCD116]" />
-            <span className="text-[9px] font-black tracking-widest uppercase text-neutral-400">
-              République du Cameroun · Système d'État Civil Sécurisé
+      {/* Soft brand glows */}
+      <div className="pointer-events-none absolute -top-32 -right-32 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -left-32 h-72 w-72 rounded-full bg-secondary/10 blur-3xl" />
+
+      <div className="relative space-y-8 p-6 sm:p-10 md:p-12">
+        <div className="mx-auto max-w-2xl space-y-3 text-center">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5">
+            <ShieldCheckIcon className="size-3.5 text-primary" />
+            <span className="text-[11px] font-bold tracking-wide text-primary uppercase">
+              République du Cameroun · État Civil
             </span>
           </div>
-          <h1 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase leading-tight">
-            Recherche & Vérification Instantanée d'Actes
+          <h1 className="text-2xl leading-tight font-extrabold tracking-tight text-foreground sm:text-3xl">
+            Retrouvez votre acte de naissance
           </h1>
-          <p className="text-xs text-neutral-400 max-w-2xl leading-relaxed">
-            Consultez les informations en temps réel sur le traitement de votre acte de naissance, téléchargez votre copie officielle signée ou initiez des demandes de transfert.
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Entrez le numéro de certificat et le nom de la mère pour consulter
+            votre dossier et demander un transfert vers une autre mairie.
           </p>
         </div>
 
-        {/* Modern Segmented Control for Tabs - Dark Styled */}
-        <div className="flex p-1 bg-white/5 rounded-lg border border-white/5 w-full sm:w-fit gap-1">
-          {(["id", "cert", "name"] as const).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => setMode(m)}
-              className={cn(
-                "flex-1 sm:flex-initial px-4 py-2 text-[10px] font-black uppercase tracking-wider rounded-md transition-all duration-300 cursor-pointer text-center",
-                mode === m
-                  ? "bg-white text-neutral-950 shadow-md font-bold"
-                  : "text-neutral-400 hover:text-white hover:bg-white/5"
-              )}
+        <form
+          action={action}
+          className="mx-auto grid w-full max-w-3xl gap-4 sm:grid-cols-2"
+        >
+          {/* Input Certificat */}
+          <div className="space-y-1.5 text-left">
+            <Label
+              htmlFor="accessId"
+              className="text-xs font-semibold text-foreground"
             >
-              {m === "id" && "Identifiant CID"}
-              {m === "cert" && "N° Certificat"}
-              {m === "name" && "Nom Enfant"}
-            </button>
-          ))}
+              Numéro de certificat
+            </Label>
+            <div className="relative">
+              <FileTextIcon className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                id="accessId"
+                name="accessId"
+                defaultValue={defaultValue}
+                placeholder="Ex: ACN-2026-ABC-12345678"
+                className="h-14 w-full rounded-2xl border border-input bg-background pr-4 pl-11 font-mono text-sm font-semibold tracking-wide text-foreground uppercase shadow-xs transition-all outline-none placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:text-muted-foreground/50 placeholder:normal-case focus:border-primary focus:ring-4 focus:ring-primary/10"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Input Nom Mère */}
+          <div className="space-y-1.5 text-left">
+            <Label
+              htmlFor="motherLastName"
+              className="text-xs font-semibold text-foreground"
+            >
+              Nom de famille de la mère
+            </Label>
+            <div className="relative">
+              <UserIcon className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                id="motherLastName"
+                name="motherLastName"
+                defaultValue={defaultMotherValue}
+                placeholder="Ex: MBALLA"
+                className="h-14 w-full rounded-2xl border border-input bg-background pr-4 pl-11 text-sm font-semibold text-foreground uppercase shadow-xs transition-all outline-none placeholder:font-normal placeholder:text-muted-foreground/50 placeholder:normal-case focus:border-primary focus:ring-4 focus:ring-primary/10"
+                required
+              />
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            size="lg"
+            className="h-14 rounded-2xl text-sm font-bold tracking-wide sm:col-span-2"
+          >
+            <SearchIcon className="size-4.5" />
+            Rechercher mon acte
+          </Button>
+        </form>
+
+        {/* Trust indicators */}
+        <div className="mx-auto flex max-w-2xl flex-wrap items-center justify-center gap-x-8 gap-y-3 border-t border-border/60 pt-6">
+          <TrustItem icon={ShieldCheckIcon} label="Données sécurisées" />
+          <TrustItem icon={ZapIcon} label="Résultat instantané" />
+          <TrustItem icon={BadgeCheckIcon} label="Document officiel" />
         </div>
 
-        {mode === "id" ? (
-          <form action={action} className="grid gap-6 md:grid-cols-[1fr_1fr_auto] items-end text-left">
-            {/* Input CID */}
-            <div className="space-y-2">
-              <Label htmlFor="accessId" className="text-[9px] font-black text-neutral-400 uppercase tracking-widest block">
-                Identifiant Unique Citoyen (CID)
-              </Label>
-              <div className="relative group/input">
-                <input
-                  id="accessId"
-                  name="accessId"
-                  defaultValue={defaultValue}
-                  placeholder="Ex: CID-2026-ABC-12345678"
-                  className="w-full uppercase h-14 text-sm rounded-md pl-4 pr-12 border border-white/10 bg-white/5 text-white placeholder-white/30 outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20 focus:bg-white/10 transition-all duration-300 font-mono tracking-wider font-semibold placeholder:font-sans"
-                  required
-                />
-                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-500 font-mono text-[9px] font-black group-focus-within/input:text-white">
-                  CID
-                </span>
-              </div>
-              <p className="text-[9px] text-neutral-500 leading-none">Format unique BUNEC délivré à l'accouchement.</p>
-            </div>
-
-            {/* Input Nom Mère */}
-            <div className="space-y-2">
-              <Label htmlFor="motherLastName" className="text-[9px] font-black text-neutral-400 uppercase tracking-widest block">
-                Nom de famille de la Mère / Mother's Surname
-              </Label>
-              <div className="relative group/input">
-                <input
-                  id="motherLastName"
-                  name="motherLastName"
-                  defaultValue={defaultMotherValue}
-                  placeholder="Ex: MBALLA"
-                  className="w-full uppercase h-14 text-sm rounded-md pl-4 border border-white/10 bg-white/5 text-white placeholder-white/30 outline-none focus:border-white/20 focus:ring-1 focus:ring-white/20 focus:bg-white/10 transition-all duration-300 font-semibold"
-                  required
-                />
-              </div>
-              <p className="text-[9px] text-neutral-500 leading-none">Validation. Nom de jeune fille requis.</p>
-            </div>
-
-            {/* Search Button */}
-            <Button
-              type="submit"
-              className="h-14 px-10 rounded-md text-xs font-black uppercase tracking-wider cursor-pointer bg-white hover:bg-neutral-100 text-neutral-900 active:scale-98 transition-all duration-300 flex items-center justify-center gap-2 shadow-sm w-full md:w-auto shrink-0"
-            >
-              <SearchIcon className="size-4" />
-              Rechercher l'acte
-            </Button>
-          </form>
-        ) : (
-          <div className="flex gap-3 items-center bg-amber-500/5 border border-amber-500/20 text-amber-500 p-4 rounded-md text-xs leading-relaxed font-medium text-left">
-            <AlertCircleIcon className="size-4.5 shrink-0 text-amber-500" />
-            <span>
-              La recherche par {mode === "cert" ? "numéro de certificat" : "nom d'enfant"} est en cours de déploiement sécurisé. Veuillez effectuer votre recherche à l'aide de l'<strong>Identifiant Unique Citoyen (CID)</strong> et du nom de famille de la mère.
-            </span>
-          </div>
-        )}
-
         {successMessage && (
-          <div className="rounded-md bg-green-500/10 px-4 py-3 text-xs font-semibold text-green-400 text-left border border-green-500/20">
-            {successMessage}
+          <div className="mx-auto flex max-w-2xl items-start gap-2.5 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-left text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+            <CheckCircle2Icon className="size-4.5 shrink-0" />
+            <span>{successMessage}</span>
           </div>
         )}
         {errorMessage && (
-          <div className="rounded-md bg-destructive/10 px-4 py-3 text-xs font-semibold text-destructive-foreground text-left border border-destructive/20">
-            {errorMessage}
+          <div className="mx-auto flex max-w-2xl items-start gap-2.5 rounded-2xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-left text-xs font-semibold text-destructive">
+            <AlertCircleIcon className="size-4.5 shrink-0" />
+            <span>{errorMessage}</span>
           </div>
         )}
       </div>
+    </div>
+  )
+}
+
+function TrustItem({
+  icon: Icon,
+  label,
+}: {
+  icon: ComponentType<{ className?: string }>
+  label: string
+}) {
+  return (
+    <div className="flex items-center gap-1.5 text-muted-foreground">
+      <Icon className="size-4 text-primary" />
+      <span className="text-[11px] font-semibold">{label}</span>
     </div>
   )
 }

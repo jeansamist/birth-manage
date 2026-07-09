@@ -3,6 +3,7 @@ import { getSession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { DocumentPreview, type PreviewData } from "@/components/form/document-preview"
 import { PrintButton } from "@/components/print-button"
+import { PrintArea } from "@/components/print-area"
 import { ArrowLeftIcon, Download } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -50,7 +51,7 @@ export default async function ViewBirthCertificatePage({
     babyGender: birth.babyGender,
     birthDate: birth.birthDate,
     birthTime: birth.birthTime,
-    birthPlace: birth.birthPlace,
+    birthPlace: birth.birthPlace || (birth.hospital ? `${birth.hospital.name}, ${birth.hospital.city}` : null),
     weightGrams: birth.weightGrams,
     apgarScore: birth.apgarScore,
     deliveryType: birth.deliveryType,
@@ -86,6 +87,9 @@ export default async function ViewBirthCertificatePage({
     qrCodeUrl: birth.citizenAccessId ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${getBaseUrl()}/verify/${birth.citizenAccessId}`)}` : null,
     declarationRef: birth.declarationRef,
     citizenTrackingCode: birth.citizenTrackingCode,
+    hospitalName: birth.hospital?.name,
+    approvedAt: birth.approvedAt,
+    maireSignatureUrl: birth.maireSignature,
   }
 
   const backUrl = session.role === "MAIRE" ? "/dashboard/maire?filter=approved" : "/dashboard/city-hall?filter=all"
@@ -107,22 +111,34 @@ export default async function ViewBirthCertificatePage({
           </h1>
         </div>
         <div className="flex items-center gap-3">
-          <PrintButton />
-          <Button asChild variant="outline" size="sm" className="gap-2 h-9 text-xs font-bold uppercase tracking-wider cursor-pointer">
-            <a href={`/api/certificate/${id}`} target="_blank" rel="noopener noreferrer">
-              <Download className="size-4" />
-              Ouvrir le PDF officiel
-            </a>
-          </Button>
+          {/* Seule la secrétaire d'état civil peut imprimer et télécharger l'acte signé */}
+          {session.role === "SECRETAIRE" && (
+            <>
+              <PrintButton />
+              <Button asChild variant="outline" size="sm" className="gap-2 h-9 text-xs font-bold uppercase tracking-wider cursor-pointer">
+                <a href={`/api/certificate/${id}`} target="_blank" rel="noopener noreferrer">
+                  <Download className="size-4" />
+                  Télécharger l&apos;acte signé (PDF)
+                </a>
+              </Button>
+            </>
+          )}
         </div>
       </header>
 
       {/* Rendu A4 physique */}
       <main className="flex-1 flex items-start justify-center p-6 md:p-8 overflow-y-auto">
-        <div id="print-area" className="w-full max-w-[820px] bg-white rounded-lg border border-neutral-200 shadow-xl p-8 md:p-12">
+        <div className="w-full max-w-[820px] bg-white rounded-lg border border-neutral-200 shadow-xl p-8 md:p-12">
           <DocumentPreview type="certificate" data={previewData} />
         </div>
       </main>
+
+      {/* Copie dédiée à l'impression, portée directement sous <body> pour
+          échapper au shell du dashboard (sidebar, overflow-hidden...) qui
+          empêchait le rendu papier de s'afficher correctement. */}
+      <PrintArea>
+        <DocumentPreview type="certificate" data={previewData} />
+      </PrintArea>
     </div>
   )
 }

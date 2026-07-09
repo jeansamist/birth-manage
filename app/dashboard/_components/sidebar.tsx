@@ -38,6 +38,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { cn } from "@/lib/utils"
+import { QuickSearch } from "./quick-search"
 import type { SessionPayload } from "@/types/auth"
 import {
   HomeIcon,
@@ -61,6 +62,7 @@ import {
   BookOpenIcon,
   BarChart2Icon,
   AlertCircleIcon,
+  StethoscopeIcon,
 } from "lucide-react"
 
 interface NavProps {
@@ -254,17 +256,21 @@ export function DashboardSidebar({
       {/* ── Content ─────────────────────────────────────────────────────── */}
       <SidebarContent className="px-5 pt-5 gap-4">
         {/* Search */}
-        <div className="relative">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-          <Input
-            placeholder="Rechercher..."
-            className="pl-8 pr-10 h-9 bg-background text-sm"
-            readOnly
-          />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-muted px-1.5 py-0.5 rounded text-[10px] text-muted-foreground font-medium">
-            ⌘K
+        {session.role === "SECRETAIRE" || session.role === "MAINTAINER" ? (
+          <QuickSearch />
+        ) : (
+          <div className="relative">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher..."
+              className="pl-8 pr-10 h-9 bg-background text-sm"
+              readOnly
+            />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-muted px-1.5 py-0.5 rounded text-[10px] text-muted-foreground font-medium">
+              ⌘K
+            </div>
           </div>
-        </div>
+        )}
 
         {/* ── DOCTOR ──────────────────────────────────────────────────── */}
         {session.role === "DOCTOR" && (
@@ -288,6 +294,7 @@ export function DashboardSidebar({
                   <NavLink href="/dashboard/city-hall?filter=submitted" icon={InboxIcon} label="Dossiers reçus" />
                   <NavLink href="/dashboard/city-hall?filter=processing" icon={ClockIcon} label="En traitement" />
                   <NavLink href="/dashboard/city-hall?filter=pending_approval" icon={SendIcon} label="Soumis au maire" />
+                  <NavLink href="/dashboard/city-hall?filter=approved" icon={CheckCircleIcon} label="Actes Approuvés" />
                   <NavLink href="/dashboard/city-hall?filter=copies" icon={ArrowRightLeftIcon} label="Copies reçues" />
                 </SidebarMenu>
               </SidebarGroupContent>
@@ -295,6 +302,7 @@ export function DashboardSidebar({
 
             <CollapsibleSection label="RACCOURCIS">
               <NavLink href="/dashboard/city-hall?filter=all" icon={BookOpenIcon} label="Tous les dossiers" />
+              <NavLink href="/dashboard/city-hall/search" icon={SearchIcon} label="Recherche avancée" />
             </CollapsibleSection>
           </>
         )}
@@ -337,14 +345,23 @@ export function DashboardSidebar({
 
         {/* ── ADMIN ─────────────────────────────────────────────────── */}
         {session.role === "ADMIN" && (
-          <SidebarGroup className="p-0">
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <NavLink href="/dashboard" icon={HomeIcon} label="Administration" exact />
-                <NavLink href="/dashboard/settings" icon={SettingsIcon} label="Paramètres système" />
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+          <>
+            <SidebarGroup className="p-0">
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <NavLink href="/dashboard" icon={HomeIcon} label="Administration" exact />
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+
+            <CollapsibleSection label="GESTION">
+              <NavLink href="/dashboard/admin/mairies" icon={LandmarkIcon} label="Mairies" />
+              <NavLink href="/dashboard/admin/hopitaux" icon={Building2Icon} label="Hôpitaux" />
+              <NavLink href="/dashboard/admin/maires" icon={UsersIcon} label="Maires" />
+              <NavLink href="/dashboard/admin/secretaires" icon={UsersIcon} label="Secrétaires" />
+              <NavLink href="/dashboard/admin/medecins" icon={StethoscopeIcon} label="Médecins" />
+            </CollapsibleSection>
+          </>
         )}
 
         {/* Système footer links */}
