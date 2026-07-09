@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -9,8 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { EraserIcon, PenLineIcon } from "lucide-react"
+import { EraserIcon } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
 interface SignaturePadDialogProps {
   open: boolean
@@ -204,7 +204,7 @@ export function SignaturePadDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[580px]">
         <DialogHeader>
-          <DialogTitle className="uppercase tracking-wider text-sm">
+          <DialogTitle className="text-sm tracking-wider uppercase">
             Signature de l&apos;Officier d&apos;État Civil
           </DialogTitle>
           <DialogDescription className="text-xs">
@@ -219,7 +219,7 @@ export function SignaturePadDialog({
             <canvas
               ref={canvasRef}
               style={{ touchAction: "none" }}
-              className="block w-full h-[180px] rounded-md border border-dashed border-neutral-300 bg-neutral-50 cursor-crosshair"
+              className="block h-[180px] w-full cursor-crosshair rounded-md border border-dashed border-neutral-300 bg-neutral-50"
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
@@ -233,7 +233,7 @@ export function SignaturePadDialog({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-7 text-xs gap-1.5"
+                className="h-7 gap-1.5 text-xs"
                 onClick={clearPad}
                 disabled={!hasDrawn || isPending}
               >
@@ -244,11 +244,15 @@ export function SignaturePadDialog({
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="rounded-md border border-neutral-200 bg-neutral-50 flex items-center justify-center p-4">
+            <div className="flex items-center justify-center rounded-md border border-neutral-200 bg-neutral-50 p-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={savedSignature!} alt="Signature enregistrée" className="max-h-28 object-contain" />
+              <img
+                src={savedSignature!}
+                alt="Signature enregistrée"
+                className="max-h-28 object-contain"
+              />
             </div>
-            <Button
+            {/* <Button
               type="button"
               variant="ghost"
               size="sm"
@@ -258,7 +262,7 @@ export function SignaturePadDialog({
             >
               <PenLineIcon className="size-3.5" />
               Redessiner ma signature
-            </Button>
+            </Button> */}
           </div>
         )}
 
@@ -266,7 +270,7 @@ export function SignaturePadDialog({
           <Button
             type="button"
             variant="outline"
-            className="h-9 text-xs font-semibold uppercase tracking-wider"
+            className="h-9 text-xs font-semibold tracking-wider uppercase"
             onClick={() => handleOpenChange(false)}
             disabled={isPending}
           >
@@ -274,7 +278,7 @@ export function SignaturePadDialog({
           </Button>
           <Button
             type="button"
-            className="h-9 px-5 text-xs font-semibold uppercase tracking-wider bg-neutral-800 hover:bg-neutral-900 text-white"
+            className="h-9 bg-neutral-800 px-5 text-xs font-semibold tracking-wider text-white uppercase hover:bg-neutral-900"
             onClick={confirm}
             disabled={isPending || (showPad && !hasDrawn)}
           >

@@ -90,126 +90,99 @@ export default async function CitizenPortal({
   )
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-4 md:px-6 pb-8 md:pb-12 flex-1 flex flex-col justify-start">
-      <div className={cn("space-y-12 w-full", {
-        "min-h-[60vh] flex flex-col justify-center": !accessId
-      })}>
-      {/* Hero Section & Search Form */}
-      <div className={cn("space-y-6 w-full animate-in fade-in slide-in-from-bottom-4 duration-500", {
-        "max-w-2xl mx-auto my-auto": !accessId
-      })}>
-        <SearchHero
-          defaultValue={accessId}
-          defaultMotherValue={motherLastName}
-          action={findCitizenRecord}
-          successMessage={successMessage}
-          errorMessage={errorMessage}
-        />
-      </div>
-
-      {/* Searched Record Content */}
-      {accessId && birth && (
-        <div className="animate-in space-y-6 duration-300 fade-in">
-          {birth.status !== "APPROVED" ? (
-            <div className="mx-auto max-w-2xl">
-              <TimelineSection birth={birth} />
+    <div className="w-full min-h-screen bg-muted/20 flex flex-col">
+      <div className="flex-1 w-full max-w-6xl mx-auto px-4 md:px-8 py-12">
+        <div className={cn("space-y-16 w-full", {
+          "min-h-[70vh] flex flex-col justify-center": !accessId
+        })}>
+          {/* Hero Section & Search Form */}
+          <div className={cn("space-y-8 w-full animate-in fade-in slide-in-from-bottom-6 duration-700", {
+            "max-w-3xl mx-auto": !accessId
+          })}>
+            <div className="space-y-2 text-center">
+              <h2 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
+                Portail Citoyen
+              </h2>
+              <p className="text-muted-foreground text-sm max-w-lg mx-auto">
+                Gestion sécurisée et vérification de vos documents d'état civil.
+              </p>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
-              <div className="space-y-6">
-                <RecordDetails birth={approvedBirth!} />
-                <AvailabilityList birth={approvedBirth!} />
-              </div>
-              <div className="space-y-6">
-                <TransferRequestForm
-                  accessId={accessId}
-                  action={requestBirthTransfer}
-                  cityHalls={cityHalls}
-                  unavailableTargetIds={unavailableTargetIds}
-                />
-                <RecentTransfers
-                  transferRequests={approvedBirth!.transferRequests}
-                />
+            <SearchHero
+              defaultValue={accessId}
+              defaultMotherValue={motherLastName}
+              action={findCitizenRecord}
+              successMessage={successMessage}
+              errorMessage={errorMessage}
+            />
+          </div>
+
+          {/* Searched Record Content */}
+          {accessId && birth && (
+            <div className="animate-in space-y-12 duration-500 fade-in zoom-in-95">
+              {birth.status !== "APPROVED" ? (
+                <div className="mx-auto max-w-2xl bg-card rounded-3xl p-8 border border-border shadow-sm">
+                  <TimelineSection birth={birth} />
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2">
+                  <div className="space-y-8">
+                    <div className="bg-card rounded-3xl p-8 border border-border shadow-sm">
+                      <RecordDetails birth={approvedBirth!} />
+                    </div>
+                    <div className="bg-card rounded-3xl p-8 border border-border shadow-sm">
+                      <AvailabilityList birth={approvedBirth!} />
+                    </div>
+                  </div>
+                  <div className="space-y-8">
+                    <div className="bg-card rounded-3xl p-8 border border-border shadow-sm">
+                      <TransferRequestForm
+                        accessId={accessId}
+                        action={requestBirthTransfer}
+                        cityHalls={cityHalls}
+                        unavailableTargetIds={unavailableTargetIds}
+                      />
+                    </div>
+                    <div className="bg-card rounded-3xl p-8 border border-border shadow-sm">
+                      <RecentTransfers
+                        transferRequests={approvedBirth!.transferRequests}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Institutional Partners / Logo section */}
+          {!accessId && (
+            <div className="space-y-8 border-t border-border pt-16 text-center">
+              <p className="text-[11px] font-black tracking-[0.2em] text-muted-foreground uppercase">
+                Partenaires Institutionnels
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-16 opacity-60 select-none">
+                {/* [Logos remain the same, just keeping the structure] */}
+                {[
+                  { src: "/bunec-logo.png", alt: "BUNEC Logo", label: "BUNEC" },
+                  { src: "/logo-minat.jpg", alt: "MINAT Logo", label: "MINAT" },
+                  { src: "/logo-minsante.jpg", alt: "MINSANTE Logo", label: "MINSANTE" },
+                  { src: "/cameroon-logo.png", alt: "DGSN / Cameroun Logo", label: "DGSN / PR" },
+                ].map((logo) => (
+                  <div key={logo.label} className="flex flex-col items-center gap-3">
+                    <div className="relative h-14 w-14 grayscale hover:grayscale-0 transition-all duration-500">
+                      <Image src={logo.src} alt={logo.alt} fill className="object-contain" />
+                    </div>
+                    <span className="text-[9px] font-bold tracking-widest text-foreground/60 uppercase">
+                      {logo.label}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           )}
+
+          {/* FAQ Section */}
+          {!accessId && <FaqSection />}
         </div>
-      )}
-
-      {/* Info & Stats Section (Bento layout) */}
-
-      {/* Institutional Partners / Logo section */}
-      {!accessId && (
-        <div className="space-y-6 border-t border-neutral-200 pt-12 text-center">
-          <p className="text-[10px] font-black tracking-widest text-neutral-400 uppercase">
-            Partenaires Institutionnels / Institutional Partners
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-12 opacity-75 select-none md:gap-16">
-            {/* BUNEC */}
-            <div className="flex flex-col items-center gap-2">
-              <div className="relative h-12 w-12 grayscale transition-all duration-300 hover:grayscale-0">
-                <Image
-                  src="/bunec-logo.png"
-                  alt="BUNEC Logo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-[8px] font-black tracking-wider text-neutral-600 uppercase">
-                BUNEC
-              </span>
-            </div>
-
-            {/* MINAT */}
-            <div className="flex flex-col items-center gap-2">
-              <div className="relative h-12 w-12 grayscale transition-all duration-300 hover:grayscale-0">
-                <Image
-                  src="/logo-minat.jpg"
-                  alt="MINAT Logo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-[8px] font-black tracking-wider text-neutral-600 uppercase">
-                MINAT
-              </span>
-            </div>
-
-            {/* MINSANTE */}
-            <div className="flex flex-col items-center gap-2">
-              <div className="relative h-12 w-12 grayscale transition-all duration-300 hover:grayscale-0">
-                <Image
-                  src="/logo-minsante.jpg"
-                  alt="MINSANTE Logo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-[8px] font-black tracking-wider text-neutral-600 uppercase">
-                MINSANTE
-              </span>
-            </div>
-
-            {/* DGSN */}
-            <div className="flex flex-col items-center gap-2">
-              <div className="relative h-12 w-12 grayscale transition-all duration-300 hover:grayscale-0">
-                <Image
-                  src="/cameroon-logo.png"
-                  alt="DGSN / Cameroun Logo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-[8px] font-black tracking-wider text-neutral-600 uppercase">
-                DGSN / PR
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* FAQ Section */}
-      <FaqSection />
       </div>
     </div>
   )
