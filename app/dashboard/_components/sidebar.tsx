@@ -38,6 +38,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { cn } from "@/lib/utils"
+import { QuickSearch } from "./quick-search"
 import type { SessionPayload } from "@/types/auth"
 import {
   HomeIcon,
@@ -254,17 +255,21 @@ export function DashboardSidebar({
       {/* ── Content ─────────────────────────────────────────────────────── */}
       <SidebarContent className="px-5 pt-5 gap-4">
         {/* Search */}
-        <div className="relative">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-          <Input
-            placeholder="Rechercher..."
-            className="pl-8 pr-10 h-9 bg-background text-sm"
-            readOnly
-          />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-muted px-1.5 py-0.5 rounded text-[10px] text-muted-foreground font-medium">
-            ⌘K
+        {session.role === "SECRETAIRE" || session.role === "MAINTAINER" ? (
+          <QuickSearch />
+        ) : (
+          <div className="relative">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher..."
+              className="pl-8 pr-10 h-9 bg-background text-sm"
+              readOnly
+            />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-muted px-1.5 py-0.5 rounded text-[10px] text-muted-foreground font-medium">
+              ⌘K
+            </div>
           </div>
-        </div>
+        )}
 
         {/* ── DOCTOR ──────────────────────────────────────────────────── */}
         {session.role === "DOCTOR" && (
@@ -296,6 +301,7 @@ export function DashboardSidebar({
 
             <CollapsibleSection label="RACCOURCIS">
               <NavLink href="/dashboard/city-hall?filter=all" icon={BookOpenIcon} label="Tous les dossiers" />
+              <NavLink href="/dashboard/city-hall/search" icon={SearchIcon} label="Recherche avancée" />
             </CollapsibleSection>
           </>
         )}
