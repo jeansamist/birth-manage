@@ -1,5 +1,6 @@
 "use client"
 
+import { ArrowRightLeftIcon } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 
@@ -24,24 +25,34 @@ interface RecentTransfersProps {
 
 export function RecentTransfers({ transferRequests }: RecentTransfersProps) {
   return (
-    <Card className="rounded-2xl border border-border overflow-hidden">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-base font-bold">Demandes de transfert récentes</CardTitle>
+    <Card className="rounded-3xl border border-border overflow-hidden shadow-sm">
+      <CardHeader className="border-b border-border/60 bg-muted/20 pb-5">
+        <CardTitle className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <ArrowRightLeftIcon className="size-5" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-foreground">Demandes de transfert récentes</p>
+            <p className="text-xs font-normal text-muted-foreground">Suivi de vos requêtes envoyées</p>
+          </div>
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 p-6">
         {transferRequests.length === 0 ? (
-          <p className="text-xs text-muted-foreground italic">Aucune demande de transfert effectuée pour le moment.</p>
+          <p className="rounded-2xl border border-dashed border-border/60 bg-muted/10 p-6 text-center text-xs text-muted-foreground italic">
+            Aucune demande de transfert effectuée pour le moment.
+          </p>
         ) : (
           transferRequests.map((request) => (
             <div
               key={request.id}
-              className="rounded-xl border border-border/60 bg-muted/10 p-4 flex items-center justify-between gap-4"
+              className="flex items-center justify-between gap-4 rounded-2xl border border-border/50 bg-muted/15 p-4"
             >
               <div className="min-w-0">
-                <span className="font-semibold text-sm text-foreground truncate block">
+                <span className="block truncate text-sm font-bold text-foreground">
                   {request.targetCityHall.name}
                 </span>
-                <span className="text-xs text-muted-foreground block mt-0.5">
+                <span className="mt-0.5 block text-xs text-muted-foreground">
                   {request.targetCityHall.city} · Demande du {formatDate(request.createdAt)}
                 </span>
               </div>
@@ -57,20 +68,20 @@ export function RecentTransfers({ transferRequests }: RecentTransfersProps) {
 function TransferBadge({ status }: { status: string }) {
   if (status === "APPROVED") {
     return (
-      <Badge className="bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full px-2.5 py-0.5 text-[10px]">
+      <Badge className="shrink-0 rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-semibold text-white hover:bg-emerald-600">
         Approuvée
       </Badge>
     )
   }
   if (status === "DECLINED") {
     return (
-      <Badge className="bg-destructive text-destructive-foreground font-semibold rounded-full px-2.5 py-0.5 text-[10px]" variant="destructive">
+      <Badge className="shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold" variant="destructive">
         Refusée
       </Badge>
     )
   }
   return (
-    <Badge className="border-amber-500/30 text-amber-600 bg-amber-500/5 font-semibold rounded-full px-2.5 py-0.5 text-[10px]" variant="outline">
+    <Badge className="shrink-0 rounded-full border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-amber-600" variant="outline">
       En attente
     </Badge>
   )

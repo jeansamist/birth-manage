@@ -1,18 +1,32 @@
 "use client"
 
-import { useState } from "react"
-import { BadgeCheckIcon, DownloadIcon, PrinterIcon, XIcon, ShieldAlertIcon, LockIcon } from "lucide-react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
 import { DocumentPreview } from "@/components/form/document-preview"
-import { cn, getBaseUrl } from "@/lib/utils"
+import { PrintArea } from "@/components/print-area"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { getBaseUrl } from "@/lib/utils"
+import {
+  BadgeCheckIcon,
+  CalendarIcon,
+  FingerprintIcon,
+  HashIcon,
+  HospitalIcon,
+  LandmarkIcon,
+  PrinterIcon,
+  ShieldAlertIcon,
+  UserRoundIcon,
+  XIcon,
+} from "lucide-react"
+import { useState, type ComponentType } from "react"
 
 function formatDate(date: Date | null | undefined) {
   if (!date) return "—"
-  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(new Date(date))
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(
+    new Date(date)
+  )
 }
 
 interface RecordDetailsProps {
@@ -50,12 +64,16 @@ export function RecordDetails({ birth }: RecordDetailsProps) {
     babyGender: birth.babyGender,
     birthDate: birth.birthDate,
     birthTime: birth.birthTime,
-    birthPlace: birth.birthPlace || (birth.hospital ? `${birth.hospital.name}, ${birth.hospital.city}` : null),
+    birthPlace:
+      birth.birthPlace ||
+      (birth.hospital
+        ? `${birth.hospital.name}, ${birth.hospital.city}`
+        : null),
     weightGrams: birth.weightGrams,
     heightCm: birth.heightCm,
     apgarScore: birth.apgarScore,
     deliveryType: birth.deliveryType,
-    
+
     motherFirstName: birth.motherFirstName,
     motherLastName: birth.motherLastName,
     motherBirthDate: birth.motherBirthDate,
@@ -65,7 +83,7 @@ export function RecordDetails({ birth }: RecordDetailsProps) {
     motherAddress: birth.motherAddress,
     motherPhone: birth.motherPhone,
     motherEmail: birth.motherEmail,
-    
+
     fatherFirstName: birth.fatherFirstName,
     fatherLastName: birth.fatherLastName,
     fatherBirthDate: birth.fatherBirthDate,
@@ -74,136 +92,186 @@ export function RecordDetails({ birth }: RecordDetailsProps) {
     fatherProfession: birth.fatherProfession,
     fatherAddress: birth.fatherAddress,
     fatherPhone: birth.fatherPhone,
-    
+
     parentsMarried: birth.parentsMarried,
     marriageCertNumber: birth.marriageCertNumber,
     marriageDate: birth.marriageDate,
-    
+
     certificateNumber: birth.certificateNumber || "ACN-2026-LA-PENDING",
     cityHallName: birth.cityHall?.name || "Mairie de Yaoundé I",
     cityHallCity: birth.cityHall?.city || "Yaoundé",
     maireName: birth.maireName || "SIMON BIYA",
     secretaireName: birth.secretaireName || "MBUYI CECILE",
-    qrCodeUrl: birth.citizenAccessId ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${getBaseUrl()}/verify/${birth.citizenAccessId}`)}` : null,
+    qrCodeUrl: birth.citizenAccessId
+      ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${getBaseUrl()}/verify/${birth.citizenAccessId}`)}`
+      : null,
     declarationRef: birth.declarationRef,
     citizenTrackingCode: birth.citizenTrackingCode,
   }
 
   return (
     <>
-      <Card className="rounded-md border border-border overflow-hidden bg-card shadow-xs print:hidden">
-        <CardHeader className="pb-4 border-b border-border bg-neutral-50/50">
-          <CardTitle className="flex items-center justify-between gap-3 text-sm font-bold uppercase tracking-wider text-neutral-800">
-            Dossier d'Acte de Naissance
-            <Badge className="bg-green-700 text-white font-semibold flex items-center gap-1 py-1 px-2.5 rounded-sm uppercase text-[9px] tracking-wider">
-              <BadgeCheckIcon className="size-3.5" /> Acte Signé & Officiel
+      <Card className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm print:hidden">
+        <CardHeader className="gap-4 border-b border-border/60 bg-muted/20 pb-5">
+          <CardTitle className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <UserRoundIcon className="size-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground">
+                  Dossier d&apos;acte de naissance
+                </p>
+                <p className="text-xs font-normal text-muted-foreground">
+                  Informations officielles enregistrées
+                </p>
+              </div>
+            </div>
+            <Badge className="flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1 text-[10px] font-semibold tracking-wide text-white uppercase hover:bg-emerald-600">
+              <BadgeCheckIcon className="size-3.5" /> Acte signé & officiel
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2">
+        <CardContent className="space-y-6 p-6">
+          <div className="grid gap-3 sm:grid-cols-2">
             <Info
-              label="Enfant / Child"
-              value={`${birth.babyFirstName ?? ""} ${birth.babyLastName ?? ""}`.trim() || "—"}
+              icon={UserRoundIcon}
+              label="Enfant"
+              value={
+                `${birth.babyFirstName ?? ""} ${birth.babyLastName ?? ""}`.trim() ||
+                "—"
+              }
             />
             <Info
-              label="Date de naissance / Date of birth"
+              icon={CalendarIcon}
+              label="Date de naissance"
               value={formatDate(birth.birthDate)}
             />
             <Info
-              label="N° d’acte / Certificate No."
+              icon={HashIcon}
+              label="N° d'acte"
               value={birth.certificateNumber ?? "—"}
             />
             <Info
-              label="Identifiant citoyen / CID"
+              icon={FingerprintIcon}
+              label="Identifiant citoyen (CID)"
               value={birth.citizenAccessId ?? "—"}
             />
             <Info
-              label="Hôpital déclarant / Hospital"
-              value={birth.hospital ? `${birth.hospital.name} · ${birth.hospital.city}` : "—"}
+              icon={HospitalIcon}
+              label="Hôpital déclarant"
+              value={
+                birth.hospital
+                  ? `${birth.hospital.name} · ${birth.hospital.city}`
+                  : "—"
+              }
             />
             <Info
-              label="Mairie d’origine / City Hall"
-              value={birth.cityHall ? `${birth.cityHall.name} · ${birth.cityHall.city}` : "—"}
+              icon={LandmarkIcon}
+              label="Mairie d'origine"
+              value={
+                birth.cityHall
+                  ? `${birth.cityHall.name} · ${birth.cityHall.city}`
+                  : "—"
+              }
             />
           </div>
 
-          <Separator className="border-border" />
-
           {/* Secure Verification Flow UI */}
-          {otpStep === "none" && (
-            <div className="flex flex-col gap-3">
-              <p className="text-[10px] text-neutral-500 leading-relaxed">
-                Pour des raisons de confidentialité Zero-Trust, le téléchargement ou l'impression de l'acte officiel requiert une authentification contextuelle par code de sécurité OTP à 6 chiffres envoyé aux coordonnées de la mère.
-              </p>
-              <Button
-                onClick={handleStartVerification}
-                className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider bg-neutral-800 hover:bg-neutral-900 text-white cursor-pointer flex items-center justify-center gap-2"
-              >
-                <LockIcon className="size-3.5" />
-                Démarrer la vérification sécurisée / Unlock download
+          {/* {otpStep === "none" && (
+            <div className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-muted/20 p-5">
+              <div className="flex items-start gap-3">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <LockIcon className="size-4" />
+                </div>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Pour protéger vos données, le téléchargement ou l&apos;impression
+                  de l&apos;acte officiel requiert une vérification par code de
+                  sécurité (OTP) à 6 chiffres envoyé aux coordonnées de la mère.
+                </p>
+              </div>
+              <Button onClick={handleStartVerification} className="h-11 w-full gap-2 rounded-xl text-sm font-semibold sm:w-auto">
+                <LockIcon className="size-4" />
+                Démarrer la vérification sécurisée
               </Button>
             </div>
-          )}
+          )} */}
 
           {otpStep === "sent" && (
-            <div className="space-y-4 border border-neutral-200 bg-neutral-50/50 p-4 rounded-md">
-              <div className="flex items-start gap-2 text-amber-700 text-xs font-semibold">
-                <ShieldAlertIcon className="size-4 shrink-0 text-amber-500 mt-0.5" />
-                <div>
-                  <p className="uppercase text-[9px] tracking-wider">Simulé / Test Mode</p>
-                  <p className="text-[10px] text-neutral-500 font-normal mt-0.5">
-                    Un code de sécurité OTP a été envoyé par SMS au <span className="font-semibold">{birth.motherPhone ? `+237 ${birth.motherPhone}` : "téléphone de la mère"}</span>.
+            <div className="space-y-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5">
+              <div className="flex items-start gap-3">
+                <ShieldAlertIcon className="mt-0.5 size-4.5 shrink-0 text-amber-500" />
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-bold tracking-wide text-amber-700 uppercase dark:text-amber-400">
+                    Mode simulation / test
                   </p>
-                  <p className="text-[10px] text-amber-800 font-bold mt-1 bg-amber-500/10 inline-block px-2 py-0.5 rounded-sm">
-                    CODE DE TEST OTP : {generatedCode}
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    Un code de sécurité a été envoyé par SMS au{" "}
+                    <span className="font-semibold text-foreground">
+                      {birth.motherPhone
+                        ? `+237 ${birth.motherPhone}`
+                        : "téléphone de la mère"}
+                    </span>
+                    .
+                  </p>
+                  <p className="inline-block rounded-lg bg-amber-500/15 px-2.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-400">
+                    Code de test : {generatedCode}
                   </p>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="otpCode" className="text-[10px] font-bold text-neutral-700 uppercase tracking-wider">
+                <Label
+                  htmlFor="otpCode"
+                  className="text-xs font-semibold text-muted-foreground uppercase"
+                >
                   Code OTP à 6 chiffres
                 </Label>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Input
                     id="otpCode"
                     type="text"
                     maxLength={6}
                     value={otpInput}
-                    onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, ""))}
+                    onChange={(e) =>
+                      setOtpInput(e.target.value.replace(/\D/g, ""))
+                    }
                     placeholder="123456"
-                    className="h-10 text-center tracking-widest text-base font-bold rounded-md bg-white border-neutral-300 w-32"
+                    className="h-11 w-32 rounded-xl bg-background text-center text-base font-bold tracking-widest"
                   />
                   <Button
                     onClick={handleVerifyOtp}
-                    className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider bg-neutral-800 hover:bg-neutral-900 text-white cursor-pointer"
+                    className="h-11 rounded-xl px-5 text-sm font-semibold"
                   >
                     Vérifier
                   </Button>
                 </div>
-                {otpError && <p className="text-[10px] text-destructive font-semibold mt-1">{otpError}</p>}
+                {otpError && (
+                  <p className="mt-1 text-xs font-semibold text-destructive">
+                    {otpError}
+                  </p>
+                )}
               </div>
             </div>
           )}
 
           {otpStep === "verified" && (
-            <div className="space-y-4 border border-green-200 bg-green-500/5 p-4 rounded-md">
-              <p className="text-[10px] text-green-800 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <BadgeCheckIcon className="size-4 text-green-600" /> Authentification réussie / Identity Verified
+            <div className="space-y-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+              <p className="flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-400">
+                <BadgeCheckIcon className="size-4.5" /> Authentification réussie
               </p>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   onClick={() => setShowPreviewModal(true)}
-                  className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider bg-neutral-800 hover:bg-neutral-900 text-white cursor-pointer flex items-center gap-1.5"
+                  className="h-11 gap-2 rounded-xl text-sm font-semibold"
                 >
-                  <PrinterIcon className="size-3.5" />
-                  Imprimer / Afficher l'acte
+                  <PrinterIcon className="size-4" />
+                  Imprimer / Afficher l&apos;acte
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setOtpStep("none")}
-                  className="h-10 px-4 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer border-neutral-300"
+                  className="h-11 rounded-xl px-4 text-sm font-semibold"
                 >
                   Verrouiller
                 </Button>
@@ -215,25 +283,27 @@ export function RecordDetails({ birth }: RecordDetailsProps) {
 
       {/* Printable Preview Modal */}
       {showPreviewModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto print:absolute print:inset-0 print:bg-white print:p-0">
-          <div className="bg-white w-full max-w-[840px] rounded-md shadow-2xl overflow-hidden flex flex-col my-8 print:my-0 print:shadow-none print:rounded-none">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4 print:absolute print:inset-0 print:bg-white print:p-0">
+          <div className="my-8 flex w-full max-w-[840px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl print:my-0 print:rounded-none print:shadow-none">
             {/* Modal header (hidden when printing) */}
-            <div className="px-6 py-4 bg-neutral-800 text-white flex justify-between items-center print:hidden">
+            <div className="flex items-center justify-between bg-neutral-900 px-6 py-4 text-white print:hidden">
               <div className="flex items-center gap-2">
                 <PrinterIcon className="size-4 text-neutral-400" />
-                <span className="text-xs font-bold uppercase tracking-wider">Aperçu officiel de l'Acte de Naissance</span>
+                <span className="text-xs font-bold tracking-wider uppercase">
+                  Aperçu officiel de l&apos;acte de naissance
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <Button
                   onClick={() => window.print()}
-                  className="h-8.5 px-4 bg-white hover:bg-neutral-100 text-neutral-900 text-xs font-bold uppercase tracking-wider rounded-md"
+                  className="h-9 rounded-lg bg-white px-4 text-xs font-bold tracking-wider text-neutral-900 uppercase hover:bg-neutral-100"
                 >
-                  <PrinterIcon className="size-3.5 mr-1" />
-                  Imprimer / Print
+                  <PrinterIcon className="mr-1 size-3.5" />
+                  Imprimer
                 </Button>
                 <button
                   onClick={() => setShowPreviewModal(false)}
-                  className="text-neutral-400 hover:text-white transition-colors"
+                  className="text-neutral-400 transition-colors hover:text-white"
                 >
                   <XIcon className="size-5" />
                 </button>
@@ -241,27 +311,47 @@ export function RecordDetails({ birth }: RecordDetailsProps) {
             </div>
 
             {/* Document display */}
-            <div className="p-6 md:p-12 overflow-y-auto flex justify-center bg-neutral-100 print:bg-white print:p-0">
-              <div className="w-full max-w-[760px] print:max-w-none">
+            <div className="flex justify-center overflow-y-auto bg-neutral-100 p-6 md:p-12 print:hidden">
+              <div className="w-full max-w-[760px]">
                 <DocumentPreview type="certificate" data={previewData} />
               </div>
             </div>
           </div>
+
+          {/* Copie dédiée à l'impression, portée directement sous <body> pour
+              échapper au layout citoyen (ruban fixe, watermark, header fixe...)
+              qui empêchait le rendu papier de s'afficher correctement. */}
+          <PrintArea>
+            <DocumentPreview type="certificate" data={previewData} />
+          </PrintArea>
         </div>
       )}
     </>
   )
 }
 
-function Info({ label, value }: { label: string; value: string }) {
+function Info({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: ComponentType<{ className?: string }>
+  label: string
+  value: string
+}) {
   return (
-    <div className="bg-muted/15 p-4 rounded-md border border-border/50">
-      <p className="text-[9px] font-bold uppercase tracking-wider text-neutral-500">{label}</p>
-      <p className="mt-1 font-bold text-sm text-neutral-800">{value}</p>
+    <div className="flex items-start gap-3 rounded-2xl border border-border/50 bg-muted/15 p-4">
+      <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-background text-muted-foreground">
+        <Icon className="size-4" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[10px] font-bold tracking-wide text-muted-foreground uppercase">
+          {label}
+        </p>
+        <p className="mt-0.5 truncate text-sm font-bold text-foreground">
+          {value}
+        </p>
+      </div>
     </div>
   )
-}
-
-function Separator({ className }: { className?: string }) {
-  return <div className={cn("h-px w-full bg-neutral-200", className)} />
 }

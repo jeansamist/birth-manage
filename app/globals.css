@@ -192,9 +192,16 @@
 }*/
 
 /* ── Impression / Téléchargement PDF ─────────────────────────────────────── */
+/* #print-area est monté via un portail (components/print-area.tsx) directement
+   sous <body>, donc caché par défaut à l'écran et affiché uniquement pour
+   l'impression. */
+#print-area {
+  display: none;
+}
+
 @media print {
-  /* Masquer tout sauf la zone d'impression */
-  body > * {
+  /* Masquer tout le reste de l'app (sidebar, header, etc.) */
+  body > *:not(#print-area) {
     display: none !important;
   }
 

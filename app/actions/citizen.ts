@@ -39,7 +39,7 @@ export async function requestBirthTransfer(formData: FormData): Promise<void> {
   const reason = String(formData.get("reason") ?? "").trim()
   const message = String(formData.get("message") ?? "").trim()
 
-  if (!certificateNumber || !targetCityHallId || !requesterName || !requesterCni || !idCardRecto || !idCardVerso) {
+  if (!certificateNumber || !targetCityHallId || !requesterName || !requesterCni || !idCardRecto || !idCardVerso || !reason) {
     redirectToPortal(certificateNumber, { error: "missing-fields" })
   }
 
