@@ -8,11 +8,11 @@ import { DashboardContent } from "@/app/dashboard/_components/content"
 import type { StatCard } from "@/app/dashboard/_components/content"
 import { getMonthlyStats } from "@/lib/stats"
 import { DashboardChart } from "@/app/dashboard/_components/dashboard-chart"
-import { FileTextIcon, InboxIcon, ClockIcon, CheckCircleIcon, ArrowRightLeftIcon, BookOpenIcon } from "lucide-react"
+import { FileTextIcon, InboxIcon, ClockIcon, CheckCircleIcon, ArrowRightLeftIcon, BookOpenIcon, DownloadIcon } from "lucide-react"
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-type FilterKey = "submitted" | "processing" | "pending_approval" | "all" | "copies" | null
+type FilterKey = "submitted" | "processing" | "pending_approval" | "all" | "copies" | "approved" | null
 
 function formatDate(date: Date | null) {
   if (!date) return "—"
@@ -76,6 +76,7 @@ export default async function CityHallDashboard({
     filter === "pending_approval" ? "pending_approval" :
     filter === "all" ? "all" :
     filter === "copies" ? "copies" :
+    filter === "approved" ? "approved" :
     null
 
   const [submitted, mine, transferredCopies, allCityHallBirths] = await Promise.all([
@@ -208,6 +209,24 @@ export default async function CityHallDashboard({
               <EmptyState message="Aucun dossier actuellement soumis au Maire." />
             ) : (
               <MineTable births={pendingApproval} />
+            )}
+          </div>
+        </div>
+      </DashboardContent>
+    )
+  }
+
+  if (activeFilter === "approved") {
+    const approvedBirths = allCityHallBirths.filter((b) => b.status === "APPROVED")
+    return (
+      <DashboardContent>
+        <div className="rounded-xl border bg-card overflow-hidden">
+          <SectionTitle icon={CheckCircleIcon} title={`Actes approuvés et signés par le Maire (${approvedBirths.length})`} />
+          <div className="overflow-x-auto">
+            {approvedBirths.length === 0 ? (
+              <EmptyState message="Aucun acte approuvé pour le moment." />
+            ) : (
+              <ApprovedTable births={approvedBirths} canDownload={session.role === "SECRETAIRE"} />
             )}
           </div>
         </div>
@@ -412,6 +431,51 @@ function AllBirthsTable({ births, currentUserId }: { births: any[]; currentUserI
                   </Link>
                 )}
                 <DetailsLink birthId={b.id} />
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+function ApprovedTable({ births, canDownload }: { births: any[]; canDownload: boolean }) {
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="border-b border-border bg-muted/40">
+          <Th>Enfant</Th><Th>N° acte</Th><Th>Hôpital</Th><Th>Approuvé le</Th>
+          <th className="px-4 py-3" />
+        </tr>
+      </thead>
+      <tbody>
+        {births.map((b) => (
+          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+            <td className="px-4 py-3 font-medium text-sm">
+              <Link href={`/dashboard/city-hall/births/${b.id}/view`} className="hover:text-primary hover:underline">
+                {`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}
+              </Link>
+            </td>
+            <Td mono>{b.certificateNumber ?? "—"}</Td>
+            <Td>{b.hospital.name}</Td>
+            <Td>{formatDate(b.approvedAt)}</Td>
+            <td className="px-4 py-3 text-right">
+              <div className="flex items-center justify-end gap-3">
+                <Link href={`/dashboard/city-hall/births/${b.id}/view`} className="text-xs font-semibold text-primary hover:underline">
+                  Consulter
+                </Link>
+                {canDownload && (
+                  <a
+                    href={`/api/certificate/${b.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                  >
+                    <DownloadIcon className="size-3" />
+                    PDF
+                  </a>
+                )}
               </div>
             </td>
           </tr>
