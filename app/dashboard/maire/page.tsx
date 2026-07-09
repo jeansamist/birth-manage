@@ -415,7 +415,7 @@ function HistoryTable({ births }: { births: any[] }) {
     <table className="w-full text-sm">
       <thead>
         <tr className="border-b border-border bg-muted/40">
-          <Th>Enfant</Th><Th>Hôpital</Th><Th>Statut</Th><Th>N° Certificat</Th><Th>ID citoyen</Th><Th>Date</Th>
+          <Th>Enfant</Th><Th>Hôpital</Th><Th>Statut</Th><Th>N° Certificat</Th><Th>ID citoyen</Th><Th>Date</Th><th className="px-4 py-3" />
         </tr>
       </thead>
       <tbody>
@@ -427,6 +427,13 @@ function HistoryTable({ births }: { births: any[] }) {
             <Td mono>{b.certificateNumber ?? "—"}</Td>
             <Td mono>{b.citizenAccessId ?? "—"}</Td>
             <Td>{formatDate(b.approvedAt ?? b.declinedAt)}</Td>
+            <td className="px-4 py-3 text-right">
+              {b.status === "APPROVED" && (
+                <Link href={`/dashboard/city-hall/births/${b.id}/view`} className="text-xs font-semibold text-primary hover:underline">
+                  Consulter
+                </Link>
+              )}
+            </td>
           </tr>
         ))}
       </tbody>
