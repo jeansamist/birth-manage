@@ -3,7 +3,7 @@ import { getSession } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { DocumentPreview, type PreviewData } from "@/components/form/document-preview"
 import { PrintButton } from "@/components/print-button"
-import { ArrowLeftIcon } from "lucide-react"
+import { ArrowLeftIcon, Download } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { getBaseUrl } from "@/lib/utils"
@@ -25,13 +25,24 @@ export default async function ViewBirthCertificatePage({
       hospital: { select: { name: true, city: true } },
       doctor: { select: { firstName: true, lastName: true } },
       cityHall: { select: { name: true, city: true } },
+      secretaire: { select: { firstName: true, lastName: true } },
+      maire: { select: { firstName: true, lastName: true } },
+      copies: {
+        where: { cityHallId: session.institutionId || "" }
+      }
     },
   })
 
-  // Must be approved to consult it, and belong to the same city hall
-  if (!birth || birth.status !== "APPROVED" || birth.cityHallId !== session.institutionId) {
+  // Must be approved to consult it, and belong to the same city hall (or have a copy)
+  const isOwner = birth?.cityHallId === session.institutionId
+  const hasCopy = birth?.copies && birth.copies.length > 0
+
+  if (!birth || birth.status !== "APPROVED" || (!isOwner && !hasCopy)) {
     notFound()
   }
+
+  const maireName = birth.maire ? `${birth.maire.firstName} ${birth.maire.lastName}` : null
+  const secretaireName = birth.secretaire ? `${birth.secretaire.firstName} ${birth.secretaire.lastName}` : null
 
   const previewData: PreviewData = {
     babyFirstName: birth.babyFirstName,
@@ -40,7 +51,7 @@ export default async function ViewBirthCertificatePage({
     birthDate: birth.birthDate,
     birthTime: birth.birthTime,
     birthPlace: birth.birthPlace,
-    babyWeight: birth.babyWeight,
+    weightGrams: birth.weightGrams,
     apgarScore: birth.apgarScore,
     deliveryType: birth.deliveryType,
     
@@ -70,8 +81,8 @@ export default async function ViewBirthCertificatePage({
     certificateNumber: birth.certificateNumber || "ACN-2026-LA-PENDING",
     cityHallName: birth.cityHall?.name || "Mairie de Yaoundé I",
     cityHallCity: birth.cityHall?.city || "Yaoundé",
-    maireName: birth.maireName || "SIMON BIYA",
-    secretaireName: birth.secretaireName || "MBUYI CECILE",
+    maireName: maireName || "SIMON BIYA",
+    secretaireName: secretaireName || "MBUYI CECILE",
     qrCodeUrl: birth.citizenAccessId ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${getBaseUrl()}/verify/${birth.citizenAccessId}`)}` : null,
     declarationRef: birth.declarationRef,
     citizenTrackingCode: birth.citizenTrackingCode,
@@ -95,7 +106,15 @@ export default async function ViewBirthCertificatePage({
             Consultation d'Acte
           </h1>
         </div>
-        <PrintButton />
+        <div className="flex items-center gap-3">
+          <PrintButton />
+          <Button asChild variant="outline" size="sm" className="gap-2 h-9 text-xs font-bold uppercase tracking-wider cursor-pointer">
+            <a href={`/api/certificate/${id}`} target="_blank" rel="noopener noreferrer">
+              <Download className="size-4" />
+              Ouvrir le PDF officiel
+            </a>
+          </Button>
+        </div>
       </header>
 
       {/* Rendu A4 physique */}

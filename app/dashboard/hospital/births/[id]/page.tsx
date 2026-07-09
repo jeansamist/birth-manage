@@ -25,12 +25,17 @@ export default async function ViewHospitalDeclarationPage({
       hospital: { select: { name: true, city: true } },
       doctor: { select: { firstName: true, lastName: true } },
       cityHall: { select: { name: true, city: true } },
+      secretaire: { select: { firstName: true, lastName: true } },
+      maire: { select: { firstName: true, lastName: true } },
     },
   })
 
   if (!birth || birth.doctorId !== session.userId) {
     notFound()
   }
+
+  const maireName = birth.maire ? `${birth.maire.firstName} ${birth.maire.lastName}` : null
+  const secretaireName = birth.secretaire ? `${birth.secretaire.firstName} ${birth.secretaire.lastName}` : null
 
   const previewData: PreviewData = {
     babyFirstName: birth.babyFirstName,
@@ -39,7 +44,7 @@ export default async function ViewHospitalDeclarationPage({
     birthDate: birth.birthDate,
     birthTime: birth.birthTime,
     birthPlace: birth.birthPlace,
-    babyWeight: birth.babyWeight,
+    weightGrams: birth.weightGrams,
     apgarScore: birth.apgarScore,
     deliveryType: birth.deliveryType,
     
@@ -69,8 +74,8 @@ export default async function ViewHospitalDeclarationPage({
     certificateNumber: birth.certificateNumber || "ACN-2026-LA-PENDING",
     cityHallName: birth.cityHall?.name || "Mairie de Yaoundé I",
     cityHallCity: birth.cityHall?.city || "Yaoundé",
-    maireName: birth.maireName || "SIMON BIYA",
-    secretaireName: birth.secretaireName || "MBUYI CECILE",
+    maireName: maireName || "SIMON BIYA",
+    secretaireName: secretaireName || "MBUYI CECILE",
     qrCodeUrl: birth.citizenAccessId ? `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${getBaseUrl()}/verify/${birth.citizenAccessId}`)}` : null,
     declarationRef: birth.declarationRef,
     citizenTrackingCode: birth.citizenTrackingCode,
