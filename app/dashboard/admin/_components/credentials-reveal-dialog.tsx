@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -9,8 +9,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { CheckIcon, CopyIcon } from "lucide-react"
+import * as React from "react"
 
 interface CredentialsRevealDialogProps {
   open: boolean
@@ -33,7 +33,7 @@ export function CredentialsRevealDialog({
 
   function handleCopy() {
     if (!username || !password) return
-    navigator.clipboard.writeText(`${username} / ${password}`)
+    navigator.clipboard.writeText(`${password}`)
     setCopied(true)
   }
 
@@ -43,23 +43,28 @@ export function CredentialsRevealDialog({
         <DialogHeader>
           <DialogTitle>Identifiants générés</DialogTitle>
           <DialogDescription>
-            Ce mot de passe ne sera plus affiché. Transmettez-le à l'intéressé(e) avant de fermer cette fenêtre.
+            Ce mot de passe ne sera plus affiché. Transmettez-le à
+            l'intéressé(e) avant de fermer cette fenêtre.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2 rounded-md border bg-muted/40 p-3 font-mono text-sm">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-muted-foreground text-xs">Identifiant</span>
+            <span className="text-xs text-muted-foreground">Identifiant</span>
             <span className="font-semibold">{username}</span>
           </div>
           <div className="flex items-center justify-between gap-2">
-            <span className="text-muted-foreground text-xs">Mot de passe</span>
+            <span className="text-xs text-muted-foreground">Mot de passe</span>
             <span className="font-semibold">{password}</span>
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={handleCopy} className="gap-2">
-            {copied ? <CheckIcon className="size-4" /> : <CopyIcon className="size-4" />}
-            {copied ? "Copié" : "Copier"}
+            {copied ? (
+              <CheckIcon className="size-4" />
+            ) : (
+              <CopyIcon className="size-4" />
+            )}
+            {copied ? "Copié" : "Copier le mot de passe"}
           </Button>
           <Button onClick={() => onOpenChange(false)}>Fermer</Button>
         </DialogFooter>
