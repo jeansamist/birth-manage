@@ -74,7 +74,7 @@ export default function FooterStandard() {
   if (!mounted) return null;
 
   return (
-    <footer className="mt-20 w-full border-t border-neutral-200 bg-white relative overflow-hidden">
+    <footer className="mt-20 w-full border-t border-border bg-background relative overflow-hidden">
       <div className="relative w-full px-5">
         {/* Top Section */}
         <div className="container m-auto grid grid-cols-1 gap-12 py-12 md:grid-cols-2 lg:grid-cols-5">
@@ -86,27 +86,27 @@ export default function FooterStandard() {
                   src="/bunec-logo.png"
                   alt="BUNEC Logo"
                   fill
-                  className="object-contain animate-pulse"
+                  className="object-contain"
                 />
               </div>
               <div className="flex flex-col text-left">
-                <span className="text-sm font-black uppercase tracking-wider text-neutral-800 leading-tight">BUNEC</span>
-                <span className="text-[7.5px] font-black text-neutral-500 uppercase tracking-widest leading-none">Bureau National de l'État Civil</span>
+                <span className="text-sm font-black uppercase tracking-wider text-foreground leading-tight">BUNEC</span>
+                <span className="text-[8px] font-black text-muted-foreground uppercase tracking-widest leading-none">Bureau National de l&apos;État Civil</span>
               </div>
             </Link>
             
-            <div className="space-y-2 text-xs text-neutral-500 max-w-sm leading-relaxed text-left">
+            <div className="space-y-2 text-sm text-muted-foreground max-w-sm leading-relaxed text-left">
               <p>
                 <strong>Système National d'Enregistrement de l'État Civil (SENEC)</strong>. Plateforme souveraine de l'État du Cameroun pour la numérisation, l'impression sécurisée et la vérification instantanée des actes de naissance.
               </p>
-              <div className="flex items-center gap-1 text-[#007A5E] font-bold text-[9px] uppercase tracking-wider">
+              <div className="flex items-center gap-1 text-primary font-bold text-xs uppercase tracking-wider">
                 <ShieldCheckIcon className="size-3.5" />
                 <span>Certification Cryptographique Zero-Trust</span>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 border border-neutral-200/80 bg-neutral-50/50 px-2.5 py-1 rounded-sm">
+              <div className="flex items-center gap-1.5 border border-border bg-muted/50 px-2.5 py-1 rounded-md">
                 <div className="relative w-4 h-3">
                   <div className="absolute inset-0 flex">
                     <div className="flex-1 bg-[#007A5E]" />
@@ -114,11 +114,11 @@ export default function FooterStandard() {
                     <div className="flex-1 bg-[#FCD116]" />
                   </div>
                 </div>
-                <span className="text-[8px] font-black uppercase text-neutral-600 tracking-wider">État Civil Camerounais</span>
+                <span className="text-[9px] font-black uppercase text-muted-foreground tracking-wider">État Civil Camerounais</span>
               </div>
             </div>
 
-            <h1 className="from-neutral-200 bg-gradient-to-b bg-clip-text text-5xl font-extrabold text-transparent lg:text-6xl uppercase tracking-widest text-left select-none opacity-40">
+            <h1 className="from-border bg-gradient-to-b bg-clip-text text-5xl font-extrabold text-transparent lg:text-6xl uppercase tracking-widest text-left select-none opacity-20">
               BUNEC
             </h1>
           </div>
@@ -128,7 +128,7 @@ export default function FooterStandard() {
             {(['services', 'gouvernement', 'securite', 'legal'] as const).map(
               (section) => (
                 <div key={section} className="w-full text-left">
-                  <h3 className="border-[#007A5E] mb-4 -ml-5 border-l-2 pl-5 text-[10px] font-black tracking-wider uppercase text-neutral-800">
+                  <h3 className="border-primary mb-4 -ml-5 border-l-2 pl-5 text-[11px] font-bold tracking-wider uppercase text-foreground">
                     {section === 'services' && 'Services Citoyens'}
                     {section === 'gouvernement' && 'Portails Étatiques'}
                     {section === 'securite' && 'Lois & Sécurité'}
@@ -139,9 +139,9 @@ export default function FooterStandard() {
                       <li key={item.name}>
                         <Link
                           href={item.href}
-                          className="group text-neutral-500 hover:text-neutral-900 text-xs decoration-[#007A5E] -ml-5 inline-flex items-center gap-1.5 underline-offset-4 transition-all duration-300 hover:pl-5 hover:underline"
+                          className="group text-muted-foreground hover:text-foreground text-sm decoration-primary -ml-5 inline-flex items-center gap-1.5 underline-offset-4 transition-all duration-300 hover:pl-5 hover:underline"
                         >
-                          <ArrowDownLeft className="text-[#007A5E] size-3 rotate-[225deg] opacity-40 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100" />
+                          <ArrowDownLeft className="text-primary size-3 rotate-[225deg] opacity-40 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100" />
                           {item.name}
                         </Link>
                       </li>
@@ -154,14 +154,14 @@ export default function FooterStandard() {
         </div>
 
         {/* Bottom Section */}
-        <div className="h-px w-full bg-neutral-100" />
-        <div className="text-neutral-400 container m-auto flex flex-col items-center justify-between gap-4 p-6 text-[10px] md:flex-row md:px-0 font-medium">
+        <div className="h-px w-full bg-border" />
+        <div className="text-muted-foreground container m-auto flex flex-col items-center justify-between gap-4 p-6 text-[11px] md:flex-row md:px-0 font-medium">
           <p className="uppercase tracking-wider">
             &copy; {currentYear} Bureau National de l'État Civil (BUNEC) · République du Cameroun | Tous droits réservés.
           </p>
           <div className="flex items-center gap-4">
             {data().bottomLinks.map(({ href, label }) => (
-              <Link key={label} href={href} className="hover:text-neutral-800 transition-colors uppercase tracking-wider text-[9px] font-bold">
+              <Link key={label} href={href} className="hover:text-foreground transition-colors uppercase tracking-wider text-[10px] font-bold">
                 {label}
               </Link>
             ))}
