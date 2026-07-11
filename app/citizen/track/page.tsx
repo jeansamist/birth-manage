@@ -33,17 +33,17 @@ export default async function TrackPage({ searchParams }: TrackPageProps) {
     <div className="w-full max-w-5xl mx-auto px-4 md:px-6 pb-8 md:pb-12">
       <div className="max-w-2xl mx-auto space-y-10">
       <div className="space-y-4">
-        <h1 className="text-xl font-bold uppercase tracking-wider text-neutral-800">
+        <h1 className="text-xl font-bold uppercase tracking-wider text-foreground">
           Suivi de Dossier en Ligne / Track Request
         </h1>
-        <p className="text-xs text-neutral-500 leading-relaxed">
+        <p className="text-xs text-muted-foreground leading-relaxed">
           Saisissez votre code de suivi (ex. TRK-...) ou votre identifiant unique citoyen (CID-...) pour consulter l'avancement de votre déclaration de naissance.
         </p>
 
         {/* Tracking Search Form */}
-        <form method="GET" className="flex gap-2 items-end bg-white border border-neutral-200 p-4 rounded-md shadow-xs">
+        <form method="GET" className="flex gap-2 items-end bg-card border border-border p-4 rounded-md shadow-xs">
           <div className="space-y-1.5 flex-1">
-            <Label htmlFor="code" className="text-[10px] font-bold text-neutral-700 uppercase tracking-wider">
+            <Label htmlFor="code" className="text-[10px] font-bold text-foreground uppercase tracking-wider">
               Code de suivi / Identifiant citoyen
             </Label>
             <Input
@@ -55,7 +55,7 @@ export default async function TrackPage({ searchParams }: TrackPageProps) {
               required
             />
           </div>
-          <Button type="submit" className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer bg-neutral-800 hover:bg-neutral-900 text-white">
+          <Button type="submit" className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground">
             <SearchIcon className="size-3.5 mr-1.5" />
             Rechercher
           </Button>
@@ -69,15 +69,15 @@ export default async function TrackPage({ searchParams }: TrackPageProps) {
       )}
 
       {birth && (
-        <div className="bg-white border border-neutral-200 p-6 rounded-md shadow-xs space-y-6">
-          <div className="flex justify-between items-start border-b border-neutral-100 pb-4">
+        <div className="bg-card border border-border p-6 rounded-md shadow-xs space-y-6">
+          <div className="flex justify-between items-start border-b border-border/50 pb-4">
             <div>
-              <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-wider">Dossier de déclaration</p>
-              <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-800 mt-0.5">
+              <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Dossier de déclaration</p>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-foreground mt-0.5">
                 {birth.babyFirstName ? `${birth.babyFirstName} ${birth.babyLastName}` : "Enfant non nommé"}
               </h2>
             </div>
-            <span className="text-[10px] font-bold font-mono bg-neutral-100 text-neutral-700 px-2 py-0.5 rounded-sm">
+            <span className="text-[10px] font-bold font-mono bg-muted text-foreground px-2 py-0.5 rounded-sm">
               {birth.citizenTrackingCode || "Dossier Médical"}
             </span>
           </div>
@@ -143,8 +143,8 @@ export default async function TrackPage({ searchParams }: TrackPageProps) {
 
           {/* Action button if draft (medical saved only) */}
           {birth.status === "DRAFT" && !birth.isCompletedByCitizen && (
-            <div className="border-t border-neutral-100 pt-6 flex justify-end">
-              <Button asChild className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer bg-neutral-800 hover:bg-neutral-900 text-white">
+            <div className="border-t border-border/50 pt-6 flex justify-end">
+              <Button asChild className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Link href={`/citizen/declare?code=${birth.citizenTrackingCode}`}>
                   Finaliser ma déclaration citoyenne
                 </Link>
@@ -173,12 +173,12 @@ function TimelineStep({
         <div
           className={`h-6 w-6 rounded-full flex items-center justify-center border text-xs font-bold shrink-0 ${
             status === "completed"
-              ? "bg-neutral-800 border-neutral-800 text-white"
+              ? "bg-primary border-primary text-white"
               : status === "active"
-              ? "bg-white border-neutral-800 text-neutral-800"
+              ? "bg-card border-primary text-foreground"
               : status === "failed"
               ? "bg-destructive border-destructive text-white"
-              : "bg-white border-neutral-200 text-neutral-300"
+              : "bg-card border-border text-muted-foreground"
           }`}
         >
           {status === "completed" ? (
@@ -191,15 +191,15 @@ function TimelineStep({
             <ClipboardIcon className="size-3.5" />
           )}
         </div>
-        <div className="w-0.5 bg-neutral-200 flex-1 my-1 min-h-[20px]" />
+        <div className="w-0.5 bg-muted flex-1 my-1 min-h-[20px]" />
       </div>
       <div className="space-y-0.5 pb-2">
         <h3 className={`text-xs font-bold uppercase tracking-wider ${
-          status === "pending" ? "text-neutral-400" : "text-neutral-800"
+          status === "pending" ? "text-muted-foreground" : "text-foreground"
         }`}>
           {title}
         </h3>
-        <p className="text-neutral-500 text-[11px] leading-relaxed">{description}</p>
+        <p className="text-muted-foreground text-[11px] leading-relaxed">{description}</p>
       </div>
     </div>
   )

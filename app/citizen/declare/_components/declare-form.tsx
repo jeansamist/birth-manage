@@ -132,11 +132,11 @@ export function DeclareForm({ birth }: DeclareFormProps) {
       <div className="w-full flex-1 flex flex-col xl:flex-row min-h-0 overflow-hidden bg-background">
         {/* Form panel (42%) */}
         <main className="flex-1 flex flex-col min-w-0 bg-background xl:border-r border-border xl:w-[42%] h-full overflow-y-auto">
-          <div className="w-full max-w-xl mx-auto px-6 py-6 border-b border-border bg-neutral-50/50">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-800">
+          <div className="w-full max-w-xl mx-auto px-6 py-6 border-b border-border bg-muted/50">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
               Complétion civile de la déclaration
             </h2>
-            <p className="text-[10px] text-neutral-500 mt-1 leading-relaxed">
+            <p className="text-[10px] text-muted-foreground mt-1 leading-relaxed">
               Veuillez compléter les informations civiles de l'acte de naissance de l'enfant. Les informations médicales saisies par le médecin sont verrouillées à droite.
             </p>
           </div>
@@ -149,7 +149,7 @@ export function DeclareForm({ birth }: DeclareFormProps) {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-10 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer bg-neutral-800 hover:bg-neutral-900 text-white flex items-center justify-center gap-2"
+              className="w-full h-10 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-2"
             >
               {isSubmitting ? "Enregistrement en cours..." : "Finaliser ma déclaration citoyenne"}
             </Button>
@@ -157,11 +157,11 @@ export function DeclareForm({ birth }: DeclareFormProps) {
         </main>
 
         {/* Live Preview panel (58%) - Large, spaced A4 with max-w-[820px] */}
-        <aside className="hidden xl:flex xl:w-[58%] flex-col min-w-0 bg-neutral-100 dark:bg-neutral-900/50 h-full overflow-y-auto p-10 md:p-12 items-center justify-start border-l border-neutral-200">
+        <aside className="hidden xl:flex xl:w-[58%] flex-col min-w-0 bg-muted/50 dark:bg-card h-full overflow-y-auto p-10 md:p-12 items-center justify-start border-l border-border">
           <div className="w-full max-w-[820px] space-y-4">
-            <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+            <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               <span>Aperçu de la déclaration (Section 3 & 4)</span>
-              <span className="text-green-600 bg-green-500/10 px-2 py-0.5 rounded-sm">Rendu dynamique</span>
+              <span className="text-primary bg-primary/10 px-2 py-0.5 rounded-sm">Rendu dynamique</span>
             </div>
             <DocumentPreview type="declaration" data={previewData} />
           </div>

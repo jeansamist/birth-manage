@@ -12,7 +12,7 @@ export function FatherFields({ form }: { form: UseFormReturn<any> }) {
 
   return (
     <div className="rounded-md border border-border p-4 space-y-4 bg-card shadow-xs">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
         Informations complémentaires — Père / Father's details
       </h3>
       <div className="grid grid-cols-2 gap-4">
@@ -42,7 +42,7 @@ export function FatherFields({ form }: { form: UseFormReturn<any> }) {
         </FormField>
         <FormField label="Téléphone / Phone">
           <div className="flex">
-            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-neutral-300 bg-muted text-neutral-600 text-xs">
+            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-border bg-muted text-muted-foreground text-xs">
               +237
             </span>
             <Input

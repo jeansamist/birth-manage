@@ -9,7 +9,7 @@ export default function CitizenLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen bg-neutral-50/30 flex flex-col font-sans antialiased text-neutral-800 relative overflow-x-hidden">
+    <div className="min-h-screen bg-muted/20 flex flex-col font-sans antialiased text-foreground relative overflow-x-hidden">
       {/* Cameroonian National Colors Ribbon */}
       <div className="fixed top-0 left-0 right-0 h-1 flex z-[60] select-none">
         <div className="flex-1 bg-[#007A5E]" />
@@ -26,6 +26,7 @@ export default function CitizenLayout({
             src="/cameroon-logo.png"
             alt="Armoiries de la République du Cameroun"
             fill
+            sizes="750px"
             className="object-contain"
             priority
           />

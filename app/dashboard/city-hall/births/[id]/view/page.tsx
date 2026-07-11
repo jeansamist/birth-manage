@@ -97,7 +97,7 @@ export default async function ViewBirthCertificatePage({
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-[#f3f3f3] h-full overflow-y-auto">
       {/* Barre d'actions supérieure cachée à l'impression */}
-      <header className="px-6 py-4 flex items-center justify-between border-b border-neutral-200 bg-white shrink-0 print:hidden shadow-xs">
+      <header className="px-6 py-4 flex items-center justify-between border-b border-border bg-card shrink-0 print:hidden shadow-sm">
         <div className="flex items-center gap-4">
           <Button asChild variant="ghost" size="sm" className="gap-1.5 h-8">
             <Link href={backUrl}>
@@ -105,8 +105,8 @@ export default async function ViewBirthCertificatePage({
               Retour
             </Link>
           </Button>
-          <div className="h-4 w-px bg-neutral-200" />
-          <h1 className="text-sm font-bold uppercase tracking-wider text-neutral-800">
+          <div className="h-4 w-px bg-border" />
+          <h1 className="text-sm font-bold uppercase tracking-wider text-foreground">
             Consultation d'Acte
           </h1>
         </div>
@@ -128,7 +128,7 @@ export default async function ViewBirthCertificatePage({
 
       {/* Rendu A4 physique */}
       <main className="flex-1 flex items-start justify-center p-6 md:p-8 overflow-y-auto">
-        <div className="w-full max-w-[820px] bg-white rounded-lg border border-neutral-200 shadow-xl p-8 md:p-12">
+        <div className="w-full max-w-[820px] bg-card rounded-lg border border-border shadow-xl p-8 md:p-12">
           <DocumentPreview type="certificate" data={previewData} />
         </div>
       </main>

@@ -91,7 +91,7 @@ export default async function CityHallBirthDetailsPage({
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-[#f3f3f3] h-full overflow-y-auto">
       {/* Barre d'actions supérieure cachée à l'impression */}
-      <header className="px-6 py-4 flex items-center justify-between border-b border-neutral-200 bg-white shrink-0 print:hidden shadow-xs">
+      <header className="px-6 py-4 flex items-center justify-between border-b border-border bg-card shrink-0 print:hidden shadow-sm">
         <div className="flex items-center gap-4">
           <Button asChild variant="ghost" size="sm" className="gap-1.5 h-8">
             <Link href="/dashboard/city-hall?filter=all">
@@ -99,8 +99,8 @@ export default async function CityHallBirthDetailsPage({
               Retour
             </Link>
           </Button>
-          <div className="h-4 w-px bg-neutral-200" />
-          <h1 className="text-sm font-bold uppercase tracking-wider text-neutral-800">
+          <div className="h-4 w-px bg-border" />
+          <h1 className="text-sm font-bold uppercase tracking-wider text-foreground">
             Détails du Dossier
           </h1>
           <StatusBadge status={birth.status} />
@@ -108,7 +108,7 @@ export default async function CityHallBirthDetailsPage({
         <div className="flex items-center gap-2">
           {canClaim && <ClaimButton birthId={birth.id} />}
           {canComplete && (
-            <Button asChild size="sm" variant="outline" className="gap-1.5 h-9 text-xs font-bold uppercase tracking-wider cursor-pointer border-neutral-300">
+            <Button asChild size="sm" variant="outline" className="gap-1.5 h-9 text-xs font-bold uppercase tracking-wider cursor-pointer border-border">
               <Link href={`/dashboard/city-hall/births/${birth.id}`}>
                 <EditIcon className="size-3.5" />
                 Compléter
@@ -116,7 +116,7 @@ export default async function CityHallBirthDetailsPage({
             </Button>
           )}
           {canViewCertificate && (
-            <Button asChild size="sm" variant="outline" className="gap-1.5 h-9 text-xs font-bold uppercase tracking-wider cursor-pointer border-neutral-300">
+            <Button asChild size="sm" variant="outline" className="gap-1.5 h-9 text-xs font-bold uppercase tracking-wider cursor-pointer border-border">
               <Link href={`/dashboard/city-hall/births/${birth.id}/view`}>
                 <FileCheckIcon className="size-3.5" />
                 Consulter l&apos;acte
@@ -129,7 +129,7 @@ export default async function CityHallBirthDetailsPage({
 
       {/* Rendu A4 physique */}
       <main className="flex-1 flex items-start justify-center p-6 md:p-8 overflow-y-auto">
-        <div className="w-full max-w-[820px] bg-white rounded-lg border border-neutral-200 shadow-xl p-8 md:p-12">
+        <div className="w-full max-w-[820px] bg-card rounded-lg border border-border shadow-xl p-8 md:p-12">
           <DocumentPreview type="declaration" data={previewData} />
         </div>
       </main>

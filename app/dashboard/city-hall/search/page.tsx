@@ -132,7 +132,7 @@ export default async function CityHallSearchPage({
   return (
     <div className="flex-1 overflow-y-auto p-6 space-y-6">
       <div>
-        <h1 className="text-sm font-bold uppercase tracking-wider text-neutral-800">
+        <h1 className="text-lg font-semibold tracking-tight text-foreground">
           Recherche d&apos;actes
         </h1>
         <p className="mt-0.5 text-xs text-muted-foreground">

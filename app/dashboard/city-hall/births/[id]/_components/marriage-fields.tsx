@@ -12,7 +12,7 @@ export function MarriageFields({ form }: { form: UseFormReturn<any> }) {
 
   return (
     <div className="rounded-md border border-border p-4 space-y-4 bg-card shadow-xs">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
         Situation matrimoniale / Marital Status
       </h3>
 
@@ -22,7 +22,7 @@ export function MarriageFields({ form }: { form: UseFormReturn<any> }) {
           onClick={() => setValue("parentsMarried", false)}
           className={cn(
             "flex-1 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer",
-            !parentsMarried ? "bg-neutral-800 text-white" : "bg-muted/40 text-neutral-600 hover:bg-muted/60"
+            !parentsMarried ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
           )}
         >
           Non mariés / Unmarried
@@ -32,7 +32,7 @@ export function MarriageFields({ form }: { form: UseFormReturn<any> }) {
           onClick={() => setValue("parentsMarried", true)}
           className={cn(
             "flex-1 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer",
-            parentsMarried ? "bg-neutral-800 text-white" : "bg-muted/40 text-neutral-600 hover:bg-muted/60"
+            parentsMarried ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
           )}
         >
           Mariés / Married

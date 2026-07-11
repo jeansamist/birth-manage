@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   ArrowLeftIcon,
   Building2Icon,
+  EyeIcon,
+  EyeOffIcon,
   FileTextIcon,
   LockIcon,
   UserIcon,
@@ -43,6 +45,7 @@ export function LoginForm() {
   const [serverError, setServerError] = useState("")
   const [hospitalChoices, setHospitalChoices] = useState<HospitalOption[] | null>(null)
   const [selectedHospitalId, setSelectedHospitalId] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   const form = useForm<CredentialsInput>({
@@ -91,7 +94,7 @@ export function LoginForm() {
         </p>
       </div>
 
-      <Card className="shadow-lg border-0">
+      <Card className="border border-border/60 shadow-lg shadow-black/5">
         <CardContent className="overflow-hidden p-0">
           <AnimatePresence mode="wait" initial={false}>
             {hospitalChoices === null ? (
@@ -140,14 +143,29 @@ export function LoginForm() {
                         <LockIcon className="size-3.5" />
                         Mot de passe
                       </Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        autoComplete="current-password"
-                        placeholder="••••••••"
-                        aria-invalid={!!form.formState.errors.password}
-                        {...form.register("password")}
-                      />
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          autoComplete="current-password"
+                          placeholder="••••••••"
+                          aria-invalid={!!form.formState.errors.password}
+                          className="pr-10"
+                          {...form.register("password")}
+                        />
+                        <button
+                          type="button"
+                          tabIndex={-1}
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/50"
+                        >
+                          {showPassword ? (
+                            <EyeOffIcon className="size-4" />
+                          ) : (
+                            <EyeIcon className="size-4" />
+                          )}
+                        </button>
+                      </div>
                       {form.formState.errors.password && (
                         <p className="text-xs text-destructive">
                           {form.formState.errors.password.message}

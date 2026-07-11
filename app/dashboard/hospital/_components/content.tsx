@@ -47,7 +47,7 @@ export function DashboardContent({
       {showAlertBanner && alertMessage && !bannerDismissed && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-border bg-card p-4 sm:p-5 shadow-sm">
           <div className="flex items-start sm:items-center gap-4">
-            <span className="text-3xl select-none">🗒️</span>
+            <span className="text-3xl select-none" aria-hidden="true">🗒️</span>
             <p className="text-sm leading-relaxed text-muted-foreground">
               {alertMessage}
             </p>

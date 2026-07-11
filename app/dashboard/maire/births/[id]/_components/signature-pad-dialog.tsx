@@ -219,7 +219,7 @@ export function SignaturePadDialog({
             <canvas
               ref={canvasRef}
               style={{ touchAction: "none" }}
-              className="block h-[180px] w-full cursor-crosshair rounded-md border border-dashed border-neutral-300 bg-neutral-50"
+              className="block h-[180px] w-full cursor-crosshair rounded-md border border-dashed border-border bg-muted/50"
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
@@ -244,7 +244,7 @@ export function SignaturePadDialog({
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="flex items-center justify-center rounded-md border border-neutral-200 bg-neutral-50 p-4">
+            <div className="flex items-center justify-center rounded-md border border-border bg-muted/50 p-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={savedSignature!}
@@ -278,7 +278,7 @@ export function SignaturePadDialog({
           </Button>
           <Button
             type="button"
-            className="h-9 bg-neutral-800 px-5 text-xs font-semibold tracking-wider text-white uppercase hover:bg-neutral-900"
+            className="h-9 bg-primary px-5 text-xs font-semibold tracking-wider text-primary-foreground uppercase hover:bg-primary/90"
             onClick={confirm}
             disabled={isPending || (showPad && !hasDrawn)}
           >

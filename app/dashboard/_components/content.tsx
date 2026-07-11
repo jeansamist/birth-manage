@@ -98,7 +98,7 @@ export function DashboardContent({
       {showAlertBanner && alertMessage && !bannerDismissed && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-border bg-card p-4 sm:p-5 shadow-sm">
           <div className="flex items-start sm:items-center gap-4">
-            <span className="text-3xl select-none">🗒️</span>
+            <span className="text-3xl select-none" aria-hidden="true">🗒️</span>
             <p className="text-sm leading-relaxed text-muted-foreground">
               {alertMessage}
             </p>
@@ -137,7 +137,7 @@ export function DashboardContent({
             return (
               <div
                 key={stat.title}
-                className="relative p-5 rounded-xl border bg-card overflow-hidden"
+                className="relative p-5 rounded-xl border bg-card overflow-hidden hover:bg-muted/20 transition-all duration-200 cursor-default"
               >
                 <div className="absolute inset-0 bg-linear-to-br from-black/5 to-transparent pointer-events-none" />
                 <div className="relative flex items-start justify-between">

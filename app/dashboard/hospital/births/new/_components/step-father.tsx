@@ -33,7 +33,7 @@ export function StepFather({ form, fatherUnknown, onToggle }: StepFatherProps) {
             onClick={() => onToggle(isUnknown)}
             className={cn(
               "flex-1 py-2.5 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer",
-              fatherUnknown === isUnknown ? "bg-neutral-800 text-white" : "bg-muted/40 text-neutral-600 hover:bg-muted/60"
+              fatherUnknown === isUnknown ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
             )}
           >
             {isUnknown ? "Père inconnu / Father Unknown" : "Père connu / Father Known"}
@@ -63,7 +63,7 @@ export function StepFather({ form, fatherUnknown, onToggle }: StepFatherProps) {
           </div>
 
           <div className="rounded-md border border-border p-4 space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-neutral-700">Identité & Documents / Identity Details</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-foreground">Identité & Documents / Identity Details</p>
             <div className="grid grid-cols-2 gap-4">
               <FormField label="Date de naissance / Date of Birth">
                 <Controller

@@ -26,17 +26,17 @@ export function FatherSummary({ birth }: FatherSummaryProps) {
   if (!hasFather) {
     return (
       <div className="rounded-md border border-border p-4 bg-card shadow-xs">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700 mb-2">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground mb-2">
           Informations du père / Father's details
         </h3>
-        <p className="text-xs text-neutral-500 italic">Non déclaré / Father unknown</p>
+        <p className="text-xs text-muted-foreground italic">Non déclaré / Father unknown</p>
       </div>
     )
   }
 
   return (
     <div className="rounded-md border border-border p-4 space-y-4 bg-card shadow-xs">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
         Informations du père / Father's details
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

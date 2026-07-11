@@ -32,7 +32,7 @@ export function StepMother({ form }: StepMotherProps) {
 
       {/* Identity block */}
       <div className="rounded-md border border-border p-4 space-y-4">
-        <p className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+        <p className="text-xs font-semibold uppercase tracking-wider text-foreground">
           Identité & Documents / Identity Details
         </p>
         <div className="grid grid-cols-2 gap-4">

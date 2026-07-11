@@ -31,7 +31,7 @@ export function MedicalSummary({ birth }: MedicalSummaryProps) {
 
   return (
     <div className="rounded-md border border-border p-4 space-y-4 bg-card shadow-xs">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
         Données médicales / Medical details
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -44,8 +44,8 @@ export function MedicalSummary({ birth }: MedicalSummaryProps) {
       </div>
       {birth.medicalNotes && (
         <div className="bg-muted/15 p-3 rounded-md border border-border/50">
-          <dt className="text-[9px] font-bold uppercase tracking-wider text-neutral-500">Notes médicales / Medical Notes</dt>
-          <dd className="font-semibold text-xs text-neutral-800 mt-1 whitespace-pre-line">{birth.medicalNotes}</dd>
+          <dt className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Notes médicales / Medical Notes</dt>
+          <dd className="font-semibold text-xs text-foreground mt-1 whitespace-pre-line">{birth.medicalNotes}</dd>
         </div>
       )}
     </div>

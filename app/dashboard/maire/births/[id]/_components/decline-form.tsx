@@ -24,14 +24,14 @@ export function DeclineForm({ onSubmit, onCancel, isPending }: DeclineFormProps)
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 bg-muted/10 p-4 rounded-md border border-border">
       <div className="space-y-1.5">
-        <Label className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+        <Label className="text-xs font-semibold uppercase tracking-wider text-foreground">
           Motif du refus / Reason for rejection <span className="text-destructive">*</span>
         </Label>
         <textarea
           {...register("reason")}
           rows={3}
           placeholder="Veuillez préciser la raison détaillée du refus (min. 10 caractères)…"
-          className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-all outline-none resize-none"
+          className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm shadow-sm focus:border-ring focus:ring-1 focus:ring-ring transition-all outline-none resize-none"
         />
         {errors.reason && (
           <p className="text-xs text-destructive mt-1 font-semibold">{errors.reason.message}</p>

@@ -36,7 +36,7 @@ export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEdit
         <FormField label="Mairie de destination / City Hall" required error={errors.cityHallId?.message}>
           <select
             {...register("cityHallId")}
-            className="w-full h-10 px-3 border border-neutral-300 rounded-md bg-white text-sm text-black cursor-pointer outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500"
+            className="w-full h-10 px-3 border border-border rounded-md bg-card text-sm text-foreground cursor-pointer outline-none focus:border-primary focus:ring-1 focus:ring-primary"
           >
             <option value="">Sélectionner une mairie</option>
             {cityHalls.map((c) => (
@@ -56,7 +56,7 @@ export function StepReview({ form, cityHalls, serverError, fatherUnknown, onEdit
                 onClick={() => setValue("parentsMarried", isMarried)}
                 className={cn(
                   "flex-1 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer",
-                  parentsMarried === isMarried ? "bg-neutral-800 text-white" : "bg-muted/40 text-neutral-600 hover:bg-muted/60"
+                  parentsMarried === isMarried ? "bg-primary text-primary-foreground" : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
                 )}
               >
                 {isMarried ? "Oui / Yes" : "Non / No"}
