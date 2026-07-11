@@ -343,7 +343,7 @@ function SubmittedTable({ births }: { births: any[] }) {
       </thead>
       <tbody>
         {births.map((b) => (
-          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors duration-150">
             <td className="px-4 py-3 font-medium text-sm">
               {b.babyFirstName || b.babyLastName
                 ? `${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim()
@@ -376,7 +376,7 @@ function MineTable({ births }: { births: any[] }) {
       </thead>
       <tbody>
         {births.map((b) => (
-          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors duration-150">
             <td className="px-4 py-3 font-medium text-sm">{`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}</td>
             <Td>{b.hospital.name}</Td>
             <td className="px-4 py-3"><StatusBadge status={b.status} /></td>
@@ -408,7 +408,7 @@ function AllBirthsTable({ births, currentUserId }: { births: any[]; currentUserI
       </thead>
       <tbody>
         {births.map((b) => (
-          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors duration-150">
             <td className="px-4 py-3 font-medium text-sm">
               <Link href={`/dashboard/city-hall/births/${b.id}/details`} className="hover:text-primary hover:underline">
                 {`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}
@@ -451,7 +451,7 @@ function ApprovedTable({ births, canDownload }: { births: any[]; canDownload: bo
       </thead>
       <tbody>
         {births.map((b) => (
-          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors duration-150">
             <td className="px-4 py-3 font-medium text-sm">
               <Link href={`/dashboard/city-hall/births/${b.id}/view`} className="hover:text-primary hover:underline">
                 {`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}
@@ -495,7 +495,7 @@ function CopiesTable({ copies }: { copies: any[] }) {
       </thead>
       <tbody>
         {copies.map((copy) => (
-          <tr key={copy.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+          <tr key={copy.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors duration-150">
             <td className="px-4 py-3 font-medium text-sm">
               {`${copy.birthRecord.babyFirstName ?? ""} ${copy.birthRecord.babyLastName ?? ""}`.trim() || "—"}
               <span className="block font-normal text-muted-foreground text-[10px] mt-0.5">

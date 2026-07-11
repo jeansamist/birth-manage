@@ -2,6 +2,7 @@
 
 import { MobileNav } from "@/components/mobile-nav"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { useScroll } from "@/hooks/use-scroll"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
@@ -52,6 +53,7 @@ export function Header() {
                 src="/bunec-logo.png"
                 alt="BUNEC Logo"
                 fill
+                sizes="32px"
                 className="object-contain"
                 priority
               />
@@ -80,6 +82,8 @@ export function Header() {
               </Button>
             ))}
           </div>
+          <span className="h-4 w-px bg-border" />
+          <ThemeToggle />
           {/* <span className="h-4 w-px bg-neutral-200" />
           <Button
             asChild
@@ -90,7 +94,8 @@ export function Header() {
             <Link href="/auth/login">Espace Agents</Link>
           </Button> */}
         </div>
-        <div className="flex md:hidden">
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
           <MobileNav />
         </div>
       </nav>

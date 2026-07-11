@@ -104,16 +104,16 @@ export default async function MaireReviewPage({
             <div className="flex items-center gap-4">
               <Link
                 href="/dashboard/maire"
-                className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-neutral-300 bg-white text-xs font-semibold text-neutral-700 transition-colors hover:bg-neutral-50"
+                className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-border bg-card text-xs font-semibold text-foreground transition-colors hover:bg-muted/50"
               >
                 <ArrowLeftIcon className="size-3.5 mr-1" />
                 Retour
               </Link>
               <div className="flex flex-col">
-                <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">
+                <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider">
                   Officier d'État Civil · Maire
                 </span>
-                <h2 className="text-sm font-bold tracking-tight text-neutral-800 uppercase">
+                <h2 className="text-sm font-bold tracking-tight text-foreground uppercase">
                   Examen et signature du dossier
                 </h2>
               </div>
@@ -123,11 +123,11 @@ export default async function MaireReviewPage({
           <div className="flex-1 overflow-y-auto p-6 space-y-6 flex flex-col">
             {/* Informations de l'hôpital en lecture seule */}
             <div className="rounded-md border border-border bg-muted/20 p-5 space-y-3 shrink-0">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                 Informations d'Origine / Origin details
               </h3>
-              <p className="text-[10px] text-neutral-500 font-medium">
-                Établissement hospitalier : <span className="text-neutral-800 uppercase font-bold">{birth.hospital?.name}</span> · Agent d'État Civil : <span className="text-neutral-800 font-semibold">{secretaireFullName}</span>
+              <p className="text-[10px] text-muted-foreground font-medium">
+                Établissement hospitalier : <span className="text-foreground uppercase font-bold">{birth.hospital?.name}</span> · Agent d'État Civil : <span className="text-foreground font-semibold">{secretaireFullName}</span>
               </p>
             </div>
 
@@ -147,10 +147,10 @@ export default async function MaireReviewPage({
         {/* Aperçu de l'acte officiel à droite (50%) */}
         <div className="hidden xl:flex xl:w-1/2 shrink-0 bg-muted/10 p-8 overflow-y-auto border-l border-border select-none items-start justify-center">
           <div className="w-full max-w-[780px]">
-            <p className="mb-4 text-[9px] font-bold tracking-wider text-neutral-400 uppercase text-center">
+            <p className="mb-4 text-[9px] font-bold tracking-wider text-muted-foreground uppercase text-center">
               Aperçu de l'Acte de Naissance Officiel (Généré en temps réel)
             </p>
-            <div className="border shadow-lg rounded-sm overflow-hidden bg-white">
+            <div className="border shadow-lg rounded-lg overflow-hidden bg-card">
               <DocumentPreview type="certificate" data={previewData} />
             </div>
           </div>

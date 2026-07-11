@@ -36,7 +36,7 @@ export function StepBabyMedical({ form }: StepBabyMedicalProps) {
         onClick={() => setMedicalExpanded(!medicalExpanded)}
         className="w-full flex items-center justify-between px-4 py-3 bg-muted/40 hover:bg-muted/60 transition-colors text-left"
       >
-        <span className="text-xs font-semibold uppercase tracking-wider text-neutral-700">Données médicales / Medical details (Facultatif)</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-foreground">Données médicales / Medical details (Facultatif)</span>
         <ChevronDownIcon className={cn("size-4 text-muted-foreground transition-transform", medicalExpanded && "rotate-180")} />
       </button>
 
@@ -53,24 +53,24 @@ export function StepBabyMedical({ form }: StepBabyMedicalProps) {
                 <FormField label="Poids / Weight (g)">
                   <Input type="number" {...register("weightGrams")} placeholder="3200" className="h-10" />
                   <div className="flex gap-1 mt-1">
-                    <button type="button" onClick={() => setValue("weightGrams", Math.max(0, weight - 100))} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer">-100g</button>
-                    <button type="button" onClick={() => setValue("weightGrams", Math.max(0, weight + 100))} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer">+100g</button>
+                    <button type="button" onClick={() => setValue("weightGrams", Math.max(0, weight - 100))} className="text-[9px] border border-border px-1.5 py-0.5 rounded-md hover:bg-muted cursor-pointer">-100g</button>
+                    <button type="button" onClick={() => setValue("weightGrams", Math.max(0, weight + 100))} className="text-[9px] border border-border px-1.5 py-0.5 rounded-md hover:bg-muted cursor-pointer">+100g</button>
                   </div>
                 </FormField>
 
                 <FormField label="Taille / Height (cm)">
                   <Input type="number" step="0.1" {...register("heightCm")} placeholder="50" className="h-10" />
                   <div className="flex gap-1 mt-1">
-                    <button type="button" onClick={() => setValue("heightCm", Math.max(0, height - 1))} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer">-1</button>
-                    <button type="button" onClick={() => setValue("heightCm", Math.max(0, height + 1))} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer">+1</button>
+                    <button type="button" onClick={() => setValue("heightCm", Math.max(0, height - 1))} className="text-[9px] border border-border px-1.5 py-0.5 rounded-md hover:bg-muted cursor-pointer">-1</button>
+                    <button type="button" onClick={() => setValue("heightCm", Math.max(0, height + 1))} className="text-[9px] border border-border px-1.5 py-0.5 rounded-md hover:bg-muted cursor-pointer">+1</button>
                   </div>
                 </FormField>
 
                 <FormField label="Score Apgar">
                   <Input type="number" min="0" max="10" {...register("apgarScore")} placeholder="9" className="h-10" />
                   <div className="flex gap-1 mt-1">
-                    <button type="button" onClick={() => setValue("apgarScore", 9)} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer">9</button>
-                    <button type="button" onClick={() => setValue("apgarScore", 10)} className="text-[9px] border border-neutral-300 px-1.5 py-0.5 rounded-sm hover:bg-muted cursor-pointer font-bold">10</button>
+                    <button type="button" onClick={() => setValue("apgarScore", 9)} className="text-[9px] border border-border px-1.5 py-0.5 rounded-md hover:bg-muted cursor-pointer">9</button>
+                    <button type="button" onClick={() => setValue("apgarScore", 10)} className="text-[9px] border border-border px-1.5 py-0.5 rounded-md hover:bg-muted cursor-pointer font-bold">10</button>
                   </div>
                 </FormField>
               </div>

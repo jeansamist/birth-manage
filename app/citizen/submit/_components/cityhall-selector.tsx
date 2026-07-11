@@ -13,11 +13,11 @@ interface CityHallSelectorProps {
 export function CityHallSelector({ form, cityHalls }: CityHallSelectorProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 border-b border-neutral-100 pb-1">
+      <h3 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-border/50 pb-1">
         1. Mairie destinataire / Target City Hall
       </h3>
       <div className="space-y-1.5">
-        <Label htmlFor="cityHallId" className="text-[9px] font-bold text-neutral-700 uppercase tracking-wider">
+        <Label htmlFor="cityHallId" className="text-[9px] font-bold text-foreground uppercase tracking-wider">
           Sélectionner la Mairie / Select City Hall
         </Label>
         <Select

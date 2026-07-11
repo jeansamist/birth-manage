@@ -284,11 +284,11 @@ export function RecordDetails({ birth }: RecordDetailsProps) {
       {/* Printable Preview Modal */}
       {showPreviewModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/60 p-4 print:absolute print:inset-0 print:bg-white print:p-0">
-          <div className="my-8 flex w-full max-w-[840px] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl print:my-0 print:rounded-none print:shadow-none">
+          <div className="my-8 flex w-full max-w-[840px] flex-col overflow-hidden rounded-2xl bg-card shadow-2xl print:my-0 print:rounded-none print:shadow-none">
             {/* Modal header (hidden when printing) */}
-            <div className="flex items-center justify-between bg-neutral-900 px-6 py-4 text-white print:hidden">
+            <div className="flex items-center justify-between bg-foreground px-6 py-4 text-white print:hidden">
               <div className="flex items-center gap-2">
-                <PrinterIcon className="size-4 text-neutral-400" />
+                <PrinterIcon className="size-4 text-muted-foreground" />
                 <span className="text-xs font-bold tracking-wider uppercase">
                   Aperçu officiel de l&apos;acte de naissance
                 </span>
@@ -296,14 +296,14 @@ export function RecordDetails({ birth }: RecordDetailsProps) {
               <div className="flex items-center gap-2">
                 <Button
                   onClick={() => window.print()}
-                  className="h-9 rounded-lg bg-white px-4 text-xs font-bold tracking-wider text-neutral-900 uppercase hover:bg-neutral-100"
+                  className="h-9 rounded-lg bg-card px-4 text-xs font-bold tracking-wider text-foreground uppercase hover:bg-muted/50"
                 >
                   <PrinterIcon className="mr-1 size-3.5" />
                   Imprimer
                 </Button>
                 <button
                   onClick={() => setShowPreviewModal(false)}
-                  className="text-neutral-400 transition-colors hover:text-white"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
                 >
                   <XIcon className="size-5" />
                 </button>
@@ -311,7 +311,7 @@ export function RecordDetails({ birth }: RecordDetailsProps) {
             </div>
 
             {/* Document display */}
-            <div className="flex justify-center overflow-y-auto bg-neutral-100 p-6 md:p-12 print:hidden">
+            <div className="flex justify-center overflow-y-auto bg-muted p-6 md:p-12 print:hidden">
               <div className="w-full max-w-[760px]">
                 <DocumentPreview type="certificate" data={previewData} />
               </div>

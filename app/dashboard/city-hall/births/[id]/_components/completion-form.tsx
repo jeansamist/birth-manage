@@ -141,16 +141,16 @@ export function CompletionForm({ birth }: { birth: any }) {
             <div className="flex items-center gap-4">
               <Link
                 href="/dashboard/city-hall"
-                className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-neutral-300 bg-white text-xs font-semibold text-neutral-700 transition-colors hover:bg-neutral-50"
+                className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-border bg-card text-xs font-semibold text-foreground transition-colors hover:bg-muted/50"
               >
                 <ArrowLeftIcon className="size-3.5 mr-1" />
                 Retour
               </Link>
               <div className="flex flex-col">
-                <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">
+                <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider">
                   Agent d'État Civil · Traitement de dossier
                 </span>
-                <h2 className="text-sm font-bold tracking-tight text-neutral-800 uppercase">
+                <h2 className="text-sm font-bold tracking-tight text-foreground uppercase">
                   Compléter le dossier
                 </h2>
               </div>
@@ -160,29 +160,29 @@ export function CompletionForm({ birth }: { birth: any }) {
           <form onSubmit={handleSubmit(onSave)} className="flex-1 overflow-y-auto p-6 space-y-6 flex flex-col">
             {/* Informations de l'hôpital en lecture seule */}
             <div className="rounded-md border border-border bg-muted/20 p-5 space-y-3 shrink-0">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
                 Informations reçues de l'hôpital / Hospital details
               </h3>
-              <p className="text-[10px] text-neutral-500 font-medium">
-                Établissement : <span className="text-neutral-800 uppercase font-bold">{birth.hospital?.name}</span> · Médecin : <span className="text-neutral-800 font-semibold">Dr. {birth.doctor?.firstName} {birth.doctor?.lastName}</span>
+              <p className="text-[10px] text-muted-foreground font-medium">
+                Établissement : <span className="text-foreground uppercase font-bold">{birth.hospital?.name}</span> · Médecin : <span className="text-foreground font-semibold">Dr. {birth.doctor?.firstName} {birth.doctor?.lastName}</span>
               </p>
               <Separator />
               <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-xs">
                 <div>
-                  <dt className="text-neutral-400 uppercase text-[9px] font-bold">Enfant / Child</dt>
-                  <dd className="font-semibold text-neutral-800 text-sm mt-0.5 uppercase">{birth.babyFirstName} {birth.babyLastName}</dd>
+                  <dt className="text-muted-foreground uppercase text-[9px] font-bold">Enfant / Child</dt>
+                  <dd className="font-semibold text-foreground text-sm mt-0.5 uppercase">{birth.babyFirstName} {birth.babyLastName}</dd>
                 </div>
                 <div>
-                  <dt className="text-neutral-400 uppercase text-[9px] font-bold">Sexe / Gender</dt>
-                  <dd className="font-semibold text-neutral-800 text-sm mt-0.5">{birth.babyGender === "MALE" ? "Masculin / Male" : "Féminin / Female"}</dd>
+                  <dt className="text-muted-foreground uppercase text-[9px] font-bold">Sexe / Gender</dt>
+                  <dd className="font-semibold text-foreground text-sm mt-0.5">{birth.babyGender === "MALE" ? "Masculin / Male" : "Féminin / Female"}</dd>
                 </div>
                 <div>
-                  <dt className="text-neutral-400 uppercase text-[9px] font-bold">Né le / Born on</dt>
-                  <dd className="font-semibold text-neutral-800 text-sm mt-0.5">{fmt(birth.birthDate)} à {birth.birthTime ?? "—"}</dd>
+                  <dt className="text-muted-foreground uppercase text-[9px] font-bold">Né le / Born on</dt>
+                  <dd className="font-semibold text-foreground text-sm mt-0.5">{fmt(birth.birthDate)} à {birth.birthTime ?? "—"}</dd>
                 </div>
                 <div>
-                  <dt className="text-neutral-400 uppercase text-[9px] font-bold">Mère / Mother</dt>
-                  <dd className="font-semibold text-neutral-800 text-sm mt-0.5 uppercase">{birth.motherFirstName} {birth.motherLastName}</dd>
+                  <dt className="text-muted-foreground uppercase text-[9px] font-bold">Mère / Mother</dt>
+                  <dd className="font-semibold text-foreground text-sm mt-0.5 uppercase">{birth.motherFirstName} {birth.motherLastName}</dd>
                 </div>
               </dl>
             </div>
@@ -205,7 +205,7 @@ export function CompletionForm({ birth }: { birth: any }) {
               <Button type="submit" variant="outline" className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer" disabled={isPending}>
                 {isPending ? "Sauvegarde..." : "Sauvegarder"}
               </Button>
-              <Button type="button" className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer bg-neutral-800 hover:bg-neutral-900 text-white" disabled={isPending} onClick={onSubmitToMaire}>
+              <Button type="button" className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isPending} onClick={onSubmitToMaire}>
                 {isPending ? "Envoi..." : "Soumettre au Maire"}
               </Button>
             </div>
@@ -215,10 +215,10 @@ export function CompletionForm({ birth }: { birth: any }) {
         {/* Aperçu de l'acte officiel à droite (50%) */}
         <div className="hidden xl:flex xl:w-1/2 shrink-0 bg-muted/10 p-8 overflow-y-auto border-l border-border select-none items-start justify-center">
           <div className="w-full max-w-[780px]">
-            <p className="mb-4 text-[9px] font-bold tracking-wider text-neutral-400 uppercase text-center">
+            <p className="mb-4 text-[9px] font-bold tracking-wider text-muted-foreground uppercase text-center">
               Aperçu de l'Acte de Naissance Officiel (Généré en temps réel)
             </p>
-            <div className="border shadow-lg rounded-sm overflow-hidden bg-white">
+            <div className="border shadow-lg rounded-lg overflow-hidden bg-card">
               <DocumentPreview type="certificate" data={previewData} />
             </div>
           </div>

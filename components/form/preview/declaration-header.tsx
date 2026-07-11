@@ -35,6 +35,7 @@ export function DeclarationHeader({ declarationRef, cityHallCity, hospitalName }
               src="/cameroon-logo.png" 
               alt="Armoiries du Cameroun" 
               fill 
+              sizes="56px"
               className="object-contain" 
             />
           </div>

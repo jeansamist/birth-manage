@@ -70,8 +70,8 @@ export default async function VerifyPage({ params }: VerifyPageProps) {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-50/50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-xl bg-white border border-neutral-200 rounded-md shadow-lg overflow-hidden font-sans">
+    <main className="min-h-screen bg-muted/50 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-xl bg-card border border-border rounded-md shadow-lg overflow-hidden font-sans">
         
         {/* Verification Status Header */}
         <div className={`${headerBg} p-6 text-center space-y-2`}>
@@ -86,11 +86,11 @@ export default async function VerifyPage({ params }: VerifyPageProps) {
               {/* Cas 1: Acte Approuvé & Authentique */}
               {birth.status === "APPROVED" && (
                 <>
-                  <p className="text-xs text-neutral-500 leading-relaxed text-center">
+                  <p className="text-xs text-muted-foreground leading-relaxed text-center">
                     Ce document est certifié cryptographiquement par le Registre National de l'État Civil (BUNEC). Les informations ci-dessous doivent correspondre exactement aux mentions portées sur le document papier présenté.
                   </p>
 
-                  <div className="border border-neutral-100 rounded-md divide-y divide-neutral-100 text-xs">
+                  <div className="border border-border/50 rounded-md divide-y divide-border/50 text-xs">
                     <VerifyRow label="N° Acte / Certificate No." value={birth.certificateNumber} />
                     <VerifyRow label="Nom de l'enfant / Surname" value={birth.babyLastName} isUpper />
                     <VerifyRow label="Prénoms de l'enfant / Given Name" value={birth.babyFirstName} isUpper />
@@ -120,7 +120,7 @@ export default async function VerifyPage({ params }: VerifyPageProps) {
                     </Button>
                   </div>
 
-                  <div className="border border-neutral-100 rounded-md divide-y divide-neutral-100 text-xs">
+                  <div className="border border-border/50 rounded-md divide-y divide-border/50 text-xs">
                     <VerifyRow label="Code de Suivi / Tracking Code" value={birth.citizenTrackingCode} />
                     <VerifyRow label="Maternité / Hospital" value={birth.hospital.name} isUpper />
                     <VerifyRow label="Date de naissance / Birth Date" value={formatDate(birth.birthDate)} />
@@ -135,7 +135,7 @@ export default async function VerifyPage({ params }: VerifyPageProps) {
                 <div className="space-y-5">
                   <div className="border border-rose-200 bg-rose-50/50 p-5 rounded-md space-y-3">
                     <h3 className="text-xs font-bold text-rose-800 uppercase tracking-wide">Motif de renvoi / Correction Reason :</h3>
-                    <p className="text-xs font-semibold text-rose-700 bg-white p-3 border border-rose-100 rounded leading-relaxed">
+                    <p className="text-xs font-semibold text-rose-700 bg-card p-3 border border-rose-100 rounded leading-relaxed">
                       {birth.declineReason || "Aucun motif spécifié. Veuillez vous rapprocher de la mairie d'enregistrement."}
                     </p>
                     <p className="text-[10px] text-rose-500 leading-relaxed">
@@ -143,7 +143,7 @@ export default async function VerifyPage({ params }: VerifyPageProps) {
                     </p>
                   </div>
 
-                  <div className="border border-neutral-100 rounded-md divide-y divide-neutral-100 text-xs">
+                  <div className="border border-border/50 rounded-md divide-y divide-border/50 text-xs">
                     <VerifyRow label="Code de Suivi / Tracking Code" value={birth.citizenTrackingCode} />
                     <VerifyRow label="Centre d'état civil / City Hall" value={birth.cityHall?.name} isUpper />
                     <VerifyRow label="Nom de l'enfant / Surname" value={birth.babyLastName} isUpper />
@@ -155,12 +155,12 @@ export default async function VerifyPage({ params }: VerifyPageProps) {
               {/* Cas 4: Soumis et en cours d'instruction en Mairie */}
               {["SUBMITTED", "PROCESSING", "PENDING_APPROVAL"].includes(birth.status) && (
                 <div className="space-y-6">
-                  <p className="text-xs text-neutral-500 leading-relaxed text-center">
+                  <p className="text-xs text-muted-foreground leading-relaxed text-center">
                     La déclaration de naissance a été complétée et est en cours d'instruction à la mairie compétente.
                   </p>
 
                   {/* Timeline visuelle simple et élégante */}
-                  <div className="bg-neutral-50/50 p-5 border border-neutral-100 rounded-md space-y-5">
+                  <div className="bg-muted/50 p-5 border border-border/50 rounded-md space-y-5">
                     <TimelineStep 
                       title="1. Déclaration médicale en maternité" 
                       subtitle={`Effectuée par le centre hospitalier (${birth.hospital.name})`}
@@ -185,7 +185,7 @@ export default async function VerifyPage({ params }: VerifyPageProps) {
                     />
                   </div>
 
-                  <div className="border border-neutral-100 rounded-md divide-y divide-neutral-100 text-xs">
+                  <div className="border border-border/50 rounded-md divide-y divide-border/50 text-xs">
                     <VerifyRow label="Code de Suivi / Tracking Code" value={birth.citizenTrackingCode} />
                     <VerifyRow label="Mairie d'enregistrement / City Hall" value={birth.cityHall?.name} isUpper />
                     <VerifyRow label="Enfant / Child" value={`${birth.babyFirstName ?? ""} ${birth.babyLastName ?? ""}`} isUpper />
@@ -196,18 +196,18 @@ export default async function VerifyPage({ params }: VerifyPageProps) {
             </>
           ) : (
             <div className="space-y-4 text-center">
-              <p className="text-xs text-neutral-500 leading-relaxed">
-                Aucune déclaration ou aucun acte approuvé ne correspond au code ou à l'identifiant fourni (<code className="bg-neutral-100 px-1.5 py-0.5 rounded-sm text-neutral-800 font-mono text-[10px] font-bold">{token}</code>).
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Aucune déclaration ou aucun acte approuvé ne correspond au code ou à l'identifiant fourni (<code className="bg-muted px-1.5 py-0.5 rounded-sm text-foreground font-mono text-[10px] font-bold">{token}</code>).
               </p>
-              <p className="text-[10px] text-neutral-400">
+              <p className="text-[10px] text-muted-foreground">
                 Si ce document papier a été récemment établi, veuillez patienter le temps de sa synchronisation sur le registre national ou contacter l'administration concernée.
               </p>
             </div>
           )}
 
           {/* Action buttons */}
-          <div className="border-t border-neutral-100 pt-6 flex justify-center">
-            <Button asChild variant="outline" className="h-9 px-4 rounded-sm text-xs font-semibold uppercase tracking-wider cursor-pointer border-neutral-300">
+          <div className="border-t border-border/50 pt-6 flex justify-center">
+            <Button asChild variant="outline" className="h-9 px-4 rounded-sm text-xs font-semibold uppercase tracking-wider cursor-pointer border-border">
               <Link href="/citizen">
                 <ArrowLeftIcon className="size-3.5 mr-1.5" />
                 Retour au portail citoyen
@@ -223,8 +223,8 @@ export default async function VerifyPage({ params }: VerifyPageProps) {
 function VerifyRow({ label, value, isUpper = false }: { label: string; value: string | null | undefined; isUpper?: boolean }) {
   return (
     <div className="grid grid-cols-3 p-3 gap-2 text-left">
-      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider col-span-1">{label}</span>
-      <span className={`font-semibold text-neutral-800 col-span-2 ${isUpper ? "uppercase" : ""}`}>
+      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider col-span-1">{label}</span>
+      <span className={`font-semibold text-foreground col-span-2 ${isUpper ? "uppercase" : ""}`}>
         {value || "—"}
       </span>
     </div>
@@ -240,19 +240,19 @@ function TimelineStep({ title, subtitle, isDone, isActive = false }: { title: st
             ? "bg-emerald-600 border-emerald-600 text-white" 
             : isActive 
             ? "bg-blue-600 border-blue-600 text-white" 
-            : "bg-white border-neutral-200 text-neutral-300"
+            : "bg-card border-border text-muted-foreground"
         }`}>
           {isDone ? "✓" : isActive ? "•" : " "}
         </div>
-        <div className="w-0.5 bg-neutral-200 flex-1 my-1 min-h-[15px]" />
+        <div className="w-0.5 bg-muted flex-1 my-1 min-h-[15px]" />
       </div>
       <div className="space-y-0.5 pb-2">
         <h4 className={`text-[10px] font-bold uppercase tracking-wider ${
-          isDone ? "text-emerald-700" : isActive ? "text-blue-700" : "text-neutral-400"
+          isDone ? "text-emerald-700" : isActive ? "text-blue-700" : "text-muted-foreground"
         }`}>
           {title}
         </h4>
-        <p className="text-neutral-500 text-[9px] leading-relaxed">{subtitle}</p>
+        <p className="text-muted-foreground text-[9px] leading-relaxed">{subtitle}</p>
       </div>
     </div>
   )

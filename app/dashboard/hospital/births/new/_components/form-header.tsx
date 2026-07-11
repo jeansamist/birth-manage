@@ -42,19 +42,19 @@ export function FormHeader({
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard/hospital"
-            className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-neutral-300 bg-white text-xs font-semibold text-neutral-700 transition-colors hover:bg-neutral-50"
+            className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-border bg-card text-xs font-semibold text-foreground transition-colors hover:bg-muted/50"
           >
             <ArrowLeftIcon className="size-3.5 mr-1" />
             Retour
           </Link>
           <div className="flex flex-col">
             <div className="flex items-center gap-3">
-              <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider">
+              <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-wider">
                 Régistre d'État Civil · Étape {step + 1}/{totalSteps}
               </span>
               <AutoSaveIndicator state={saveState} savedAt={savedAt} />
             </div>
-            <h2 className="text-sm font-bold tracking-tight text-neutral-800 uppercase">
+            <h2 className="text-sm font-bold tracking-tight text-foreground uppercase">
               {stepLabel}
             </h2>
           </div>
@@ -79,7 +79,7 @@ export function FormHeader({
               type="button"
               onClick={onSubmit}
               disabled={isPending}
-              className="h-8.5 px-4 rounded-md text-xs font-semibold cursor-pointer bg-neutral-800 hover:bg-neutral-900 text-white shadow-xs uppercase tracking-wider"
+              className="h-8.5 px-4 rounded-md text-xs font-semibold cursor-pointer bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm uppercase tracking-wider"
             >
               {isPending ? <Loader2Icon className="size-3 animate-spin mr-1" /> : <SendIcon className="size-3 mr-1" />}
               Soumettre
@@ -99,7 +99,7 @@ export function FormHeader({
       </header>
 
       {/* Indicateur de progression horizontal minimaliste */}
-      <div className="flex border-t border-border bg-neutral-50/50 text-[9px] font-semibold text-neutral-500 select-none">
+      <div className="flex border-t border-border bg-muted/50 text-[9px] font-semibold text-muted-foreground select-none">
         {steps.map((s, idx) => {
           const isActive = idx === step
           const isPassed = idx < step
@@ -112,10 +112,10 @@ export function FormHeader({
               className={cn(
                 "flex-1 py-2 text-center border-b-2 transition-colors cursor-pointer uppercase tracking-wider",
                 isActive
-                  ? "border-neutral-800 text-neutral-950 font-bold"
+                  ? "border-primary text-foreground font-bold"
                   : isPassed
-                  ? "border-neutral-400 text-neutral-600"
-                  : "border-transparent text-neutral-400 hover:text-neutral-600"
+                  ? "border-muted-foreground text-muted-foreground"
+                  : "border-transparent text-muted-foreground hover:text-muted-foreground"
               )}
             >
               {idx + 1}. {s.label}

@@ -19,6 +19,7 @@ export function CertificatePreview({ data }: CertificatePreviewProps) {
             src="/cameroon-logo.png" 
             alt="Armoiries du Cameroun" 
             fill 
+            sizes="384px"
             className="object-contain"
             priority 
           />

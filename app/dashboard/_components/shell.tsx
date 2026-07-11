@@ -25,9 +25,9 @@ export function DashboardShell({ session, children }: DashboardShellProps) {
     <SidebarProvider className="bg-sidebar">
       <DashboardSidebar session={session} />
       <div className="h-svh overflow-hidden lg:p-2 w-full">
-        <div className="lg:border lg:rounded-md overflow-hidden flex flex-col items-center justify-start h-full w-full bg-background shadow-xs">
+        <div className="lg:border lg:rounded-xl overflow-hidden flex flex-col items-center justify-start h-full w-full bg-background shadow-sm">
           <DashboardHeader />
-          <main className="flex-1 w-full overflow-y-auto bg-card/10">{children}</main>
+          <main className="flex-1 w-full overflow-y-auto bg-muted/20">{children}</main>
         </div>
       </div>
     </SidebarProvider>

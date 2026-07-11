@@ -35,6 +35,7 @@ export function CertificateHeader({
               src="/cameroon-logo.png"
               alt="Armoiries du Cameroun"
               fill
+              sizes="48px"
               className="object-contain"
             />
           </div>

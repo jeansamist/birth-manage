@@ -47,7 +47,7 @@ export function CredentialsRevealDialog({
             l'intéressé(e) avant de fermer cette fenêtre.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-2 rounded-md border bg-muted/40 p-3 font-mono text-sm">
+        <div className="space-y-2 rounded-xl border bg-muted/40 p-3 font-mono text-sm">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs text-muted-foreground">Identifiant</span>
             <span className="font-semibold">{username}</span>

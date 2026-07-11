@@ -46,7 +46,7 @@ export function ApproveDeclinePanel({
       <Separator />
       
       <div className="space-y-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-700">Décision de signature / Signature Decision</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">Décision de signature / Signature Decision</h3>
 
         {serverError && (
           <p className="text-xs text-destructive bg-destructive/10 rounded-md px-4 py-2.5 font-semibold">
@@ -57,7 +57,7 @@ export function ApproveDeclinePanel({
         {!showDeclineForm ? (
           <div className="flex items-center gap-3">
             <Button
-              className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider bg-neutral-800 hover:bg-neutral-900 text-white shadow-sm transition-all cursor-pointer"
+              className="h-10 px-5 rounded-md text-xs font-semibold uppercase tracking-wider bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm transition-all cursor-pointer"
               onClick={() => setShowSignatureDialog(true)}
               disabled={isPending}
             >

@@ -35,7 +35,7 @@ export function StepFatherContact({ form }: StepFatherContactProps) {
       </FormField>
       <FormField label="Téléphone / Phone">
         <div className="flex">
-          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-neutral-300 bg-muted text-neutral-600 text-xs">
+          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-border bg-muted text-muted-foreground text-xs">
             +237
           </span>
           <Input

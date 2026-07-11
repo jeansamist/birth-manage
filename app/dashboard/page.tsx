@@ -41,12 +41,12 @@ export default async function DashboardPage() {
   return (
     <DashboardContent statsCards={statsCards}>
       <div>
-        <h1 className="text-sm font-bold uppercase tracking-wider text-neutral-800">Administration</h1>
+        <h1 className="text-lg font-semibold tracking-tight text-foreground">Administration</h1>
         <p className="mt-0.5 text-xs text-muted-foreground">
           Connecté en tant que <strong>{session.username}</strong> · {doctorCount} médecin{doctorCount > 1 ? "s" : ""} actif{doctorCount > 1 ? "s" : ""}
         </p>
       </div>
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {ADMIN_LINKS.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}

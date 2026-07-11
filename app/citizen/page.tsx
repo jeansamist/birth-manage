@@ -219,6 +219,7 @@ export default async function CitizenPortal({
                         src={logo.src}
                         alt={logo.alt}
                         fill
+                        sizes="56px"
                         className="object-contain"
                       />
                     </div>

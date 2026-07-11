@@ -86,6 +86,7 @@ export default function FooterStandard() {
                   src="/bunec-logo.png"
                   alt="BUNEC Logo"
                   fill
+                  sizes="48px"
                   className="object-contain"
                 />
               </div>

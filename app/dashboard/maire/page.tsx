@@ -340,7 +340,7 @@ function PendingTable({ births }: { births: any[] }) {
       </thead>
       <tbody>
         {births.map((b) => (
-          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors duration-150">
             <td className="px-4 py-3 font-medium text-sm">{`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}</td>
             <Td>{b.hospital.name}</Td>
             <Td>{b.secretaire ? `${b.secretaire.firstName} ${b.secretaire.lastName}` : "—"}</Td>
@@ -373,7 +373,7 @@ function TransferTable({ requests }: { requests: any[] }) {
       </thead>
       <tbody>
         {requests.map((req) => (
-          <tr key={req.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+          <tr key={req.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors duration-150">
             <td className="px-4 py-3">
               <p className="font-medium text-sm">{`${req.birthRecord.babyFirstName ?? ""} ${req.birthRecord.babyLastName ?? ""}`.trim() || "—"}</p>
               <p className="text-[10px] text-muted-foreground font-mono mt-0.5">{req.birthRecord.certificateNumber ?? req.birthRecord.citizenAccessId ?? "—"}</p>
@@ -414,7 +414,7 @@ function HistoryTable({ births }: { births: any[] }) {
       </thead>
       <tbody>
         {births.map((b) => (
-          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+          <tr key={b.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors duration-150">
             <td className="px-4 py-3 font-medium text-sm">{`${b.babyFirstName ?? ""} ${b.babyLastName ?? ""}`.trim() || "—"}</td>
             <Td>{b.hospital.name}</Td>
             <td className="px-4 py-3"><StatusBadge status={b.status} /></td>
