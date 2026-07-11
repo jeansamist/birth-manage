@@ -77,21 +77,21 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-sm">
+    <div className="w-full max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Header */}
-      <div className="mb-6 text-center">
-        <div className="mb-3 inline-flex size-10 items-center justify-center border border-border bg-primary/5">
-          <FileTextIcon className="size-4 text-primary" />
+      <div className="mb-8 text-center">
+        <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl border border-primary/10 bg-primary/5 shadow-sm">
+          <FileTextIcon className="size-6 text-primary" />
         </div>
-        <h1 className="font-heading text-sm font-semibold">
+        <h1 className="text-xl font-bold tracking-tight">
           Gestion des Actes de Naissance
         </h1>
-        <p className="mt-0.5 text-xs text-muted-foreground">
+        <p className="mt-1.5 text-sm text-muted-foreground">
           Plateforme Numérique d&apos;État Civil du Cameroun
         </p>
       </div>
 
-      <Card>
+      <Card className="shadow-lg border-0">
         <CardContent className="overflow-hidden p-0">
           <AnimatePresence mode="wait" initial={false}>
             {hospitalChoices === null ? (
@@ -102,23 +102,23 @@ export function LoginForm() {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                className="p-4"
+                className="p-6"
               >
                 <form
                   onSubmit={form.handleSubmit(handleSubmit)}
-                  className="space-y-4"
+                  className="space-y-5"
                 >
                   <div>
-                    <p className="text-xs font-medium">Connexion</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
+                    <p className="text-sm font-semibold">Connexion</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
                       Votre espace est déterminé automatiquement selon votre compte.
                     </p>
                   </div>
 
-                  <div className="space-y-3">
-                    <div className="space-y-1.5">
-                      <Label htmlFor="username" className="gap-1.5">
-                        <UserIcon className="size-3" />
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="username" className="gap-1.5 text-sm">
+                        <UserIcon className="size-3.5" />
                         Nom d&apos;utilisateur
                       </Label>
                       <Input
@@ -135,9 +135,9 @@ export function LoginForm() {
                       )}
                     </div>
 
-                    <div className="space-y-1.5">
-                      <Label htmlFor="password" className="gap-1.5">
-                        <LockIcon className="size-3" />
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="gap-1.5 text-sm">
+                        <LockIcon className="size-3.5" />
                         Mot de passe
                       </Label>
                       <Input
@@ -157,13 +157,13 @@ export function LoginForm() {
                   </div>
 
                   {serverError && (
-                    <p className="border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+                    <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
                       {serverError}
-                    </p>
+                    </div>
                   )}
 
-                  <Button type="submit" className="w-full" disabled={isPending}>
-                    {isPending && <Spinner className="size-3.5" />}
+                  <Button type="submit" className="w-full h-11 text-sm font-semibold" disabled={isPending}>
+                    {isPending && <Spinner className="size-4" />}
                     {isPending ? "Connexion en cours…" : "Se connecter"}
                   </Button>
                 </form>
@@ -176,21 +176,21 @@ export function LoginForm() {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                className="p-4"
+                className="p-6"
               >
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                    className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    <ArrowLeftIcon className="size-3" />
+                    <ArrowLeftIcon className="size-4" />
                     Retour
                   </button>
 
                   <div>
-                    <p className="text-xs font-medium">Choisissez votre hôpital</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
+                    <p className="text-sm font-semibold">Choisissez votre hôpital</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
                       Votre compte est approuvé dans plusieurs établissements.
                     </p>
                   </div>
@@ -201,13 +201,13 @@ export function LoginForm() {
                         key={h.id}
                         type="button"
                         onClick={() => setSelectedHospitalId(h.id)}
-                        className={`flex w-full items-center gap-2 border px-3 py-2.5 text-left text-xs transition-colors ${
+                        className={`flex w-full items-center gap-3 rounded-lg border px-4 py-3 text-left text-sm transition-all ${
                           selectedHospitalId === h.id
-                            ? "border-primary bg-primary/5 font-medium"
-                            : "border-border hover:bg-muted/50"
+                            ? "border-primary bg-primary/5 font-medium shadow-sm"
+                            : "border-border hover:bg-muted/50 hover:shadow-sm"
                         }`}
                       >
-                        <Building2Icon className="size-3.5 shrink-0 text-muted-foreground" />
+                        <Building2Icon className="size-4 shrink-0 text-muted-foreground" />
                         <span>
                           {h.name}
                           <span className="text-muted-foreground"> — {h.city}</span>
@@ -217,17 +217,17 @@ export function LoginForm() {
                   </div>
 
                   {serverError && (
-                    <p className="border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+                    <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
                       {serverError}
-                    </p>
+                    </div>
                   )}
 
                   <Button
-                    className="w-full"
+                    className="w-full h-11 text-sm font-semibold"
                     disabled={isPending || !selectedHospitalId}
                     onClick={() => submitLogin(selectedHospitalId)}
                   >
-                    {isPending && <Spinner className="size-3.5" />}
+                    {isPending && <Spinner className="size-4" />}
                     {isPending ? "Connexion en cours…" : "Continuer"}
                   </Button>
                 </div>
@@ -236,6 +236,10 @@ export function LoginForm() {
           </AnimatePresence>
         </CardContent>
       </Card>
+
+      <p className="mt-6 text-center text-xs text-muted-foreground">
+        © {new Date().getFullYear()} BUNEC — Bureau National de l&apos;État Civil
+      </p>
     </div>
   )
 }

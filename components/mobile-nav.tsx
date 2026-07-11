@@ -15,10 +15,10 @@ export function MobileNav() {
         aria-controls="mobile-menu"
         aria-expanded={open}
         aria-label="Toggle menu"
-        className="md:hidden border-neutral-300 rounded-sm cursor-pointer"
+        className="md:hidden cursor-pointer"
         onClick={() => setOpen(!open)}
         size="icon"
-        variant="outline"
+        variant="ghost"
       >
         {open ? (
           <XIcon className="size-4.5" />
@@ -32,7 +32,7 @@ export function MobileNav() {
           <div
             className={cn(
               "data-[slot=open]:zoom-in-97 ease-out data-[slot=open]:animate-in",
-              "size-full p-4 bg-white/95 backdrop-blur-md border-t border-neutral-200"
+              "size-full p-4 bg-background/95 backdrop-blur-md border-t border-border"
             )}
             data-slot={open ? "open" : "closed"}
           >
@@ -40,7 +40,7 @@ export function MobileNav() {
               {navLinks.map((link) => (
                 <Button
                   asChild
-                  className="justify-start text-neutral-700 font-semibold uppercase tracking-wider rounded-sm text-xs"
+                  className="justify-start text-muted-foreground font-semibold uppercase tracking-wider rounded-lg text-xs hover:text-foreground hover:bg-muted/50"
                   key={link.label}
                   variant="ghost"
                   onClick={() => setOpen(false)}
@@ -50,7 +50,7 @@ export function MobileNav() {
               ))}
             </div>
             <div className="mt-8 flex flex-col gap-2">
-              <Button asChild className="w-full text-xs font-semibold uppercase tracking-wider rounded-sm border-neutral-300" variant="outline" onClick={() => setOpen(false)}>
+              <Button asChild className="w-full text-xs font-semibold uppercase tracking-wider rounded-lg" variant="outline" onClick={() => setOpen(false)}>
                 <Link href="/auth/login">Espace Agents</Link>
               </Button>
             </div>
